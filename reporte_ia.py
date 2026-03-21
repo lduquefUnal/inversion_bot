@@ -32,25 +32,28 @@ def obtener_datos_mercado(tickers):
     return market_data
 
 def main():
-    # Validar variables de entorno
+    # Validar variables de entorno (al menos las necesarias para Telegram)
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
     TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
     CHAT_ID = os.environ.get('CHAT_ID')
     
-    if not all([GEMINI_API_KEY, TELEGRAM_TOKEN, CHAT_ID]):
-        print("Error: Faltan variables de entorno (GEMINI_API_KEY, TELEGRAM_TOKEN, CHAT_ID)")
+    if not all([TELEGRAM_TOKEN, CHAT_ID]):
+        print("Error: Faltan TELEGRAM_TOKEN o CHAT_ID. No se pueden enviar mensajes.")
         return
 
-    # Configuración de clientes
-    genai.configure(api_key=GEMINI_API_KEY)
+    # Configuración del bot de Telegram
     bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
     tickers = ["URA", "NLR", "ICLN", "GRID"]
     print("Obteniendo datos del mercado...")
     market_data = obtener_datos_mercado(tickers)
     
-    print("Generando reporte con Gemini...")
-    prompt = f"""
+    reporte = None
+    
+    if GEMINI_API_KEY:
+        print("Generando reporte con Gemini...")
+        genai.configure(api_key=GEMINI_API_KEY)
+        prompt = f"""
 Eres un asistente experto en inversiones para un inversionista en Colombia con perfil "Valiente". 
 La tesis principal de inversión es que el desarrollo de la Inteligencia Artificial aumentará masivamente la demanda y el costo de la energía, impulsando los sectores de energía Nuclear y Verdes (Renovables, Redes Eléctricas).
 
@@ -64,12 +67,36 @@ Redacta un reporte en formato Markdown que contenga las siguientes partes:
 
 Mantén el reporte conciso, motivador y directo.
 """
+        try:
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(prompt)
+            reporte = response.text
+        except Exception as e:
+            error_msg = f"⚠️ **Error con la API de Gemini:**\n`{str(e)}`\n\n_Generando reporte de respaldo sin IA..._"
+            print(error_msg)
+            try:
+                bot.send_message(CHAT_ID, error_msg, parse_mode="Markdown")
+            except Exception as tg_e:
+                print(f"No se pudo enviar el error por Telegram: {tg_e}")
+    else:
+        error_msg = "⚠️ No se encontró `GEMINI_API_KEY` en los Secrets. Ejecutando el reporte de respaldo sin Inteligencia Artificial."
+        print(error_msg)
+        try:
+            bot.send_message(CHAT_ID, error_msg, parse_mode="Markdown")
+        except:
+            pass
 
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(prompt)
-    reporte = response.text
+    # Fallback: si falla la IA (por la apikey o error de la API), armamos un reporte manual con precios reales.
+    if not reporte:
+        print("Usando reporte de precios directo (fallback)...")
+        reporte = "📊 *REPORTE BÁSICO DE MERCADO (Modo Respaldo)*\n\n"
+        for ticker, datos in market_data.items():
+            reporte += f"*{ticker}*\n"
+            reporte += f"Precio: {datos['Precio Actual']} (Mín Semanal: {datos['Mínimo Semanal']})\n"
+            reporte += f"¿Posible Dip?: {datos['¿En Dip?']}\n\n"
+        reporte += "💡 _Nota: Este mensaje de emergencia garantiza que tengas los datos de mercado incluso si la IA no está disponible._"
 
-    print("Enviando reporte a Telegram...")
+    print("Enviando reporte (completo o de respaldo) a Telegram...")
     try:
         # Telegram no siempre renderiza bien las tablas en Markdown nativo por API,
         # enviamos el texto directamente para que Telegram lo formatee
