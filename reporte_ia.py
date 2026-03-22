@@ -64,8 +64,13 @@ def main():
             print(f"No se pudo leer .agent/SKILL.md: {e}")
             skill_content = "No se proporcionó skill."
 
+        import datetime
+        fecha_actual = datetime.datetime.now().strftime("%d de %B de %Y")
+
         prompt = f"""
 Eres un asistente experto en inversiones para una cuenta en Colombia con perfil "Valiente". 
+IMPORTANTE: Hoy es {fecha_actual}. El reporte que vas a hacer corresponde al mercado de esta fecha.
+
 La tesis principal de inversión a largo plazo es que el desarrollo de la Inteligencia Artificial aumentará masivamente la demanda y el costo de la energía, impulsando sectores de energía Nuclear y Verdes (Renovables, Redes Eléctricas).
 
 He aquí los datos del mercado de los últimos 7 días para los ETFs objetivo (URA, NLR, ICLN, GRID):
@@ -80,6 +85,7 @@ Aplica estrictamente los principios, marcos de trabajo (frameworks) y formato de
 1. Redacta todo el reporte estructurado **COMPLETAMENTE EN ESPAÑOL** (traduce los encabezados de la SKILL al español).
 2. Debes incluir una "Tabla Comparativa" en la sección de 'Estado del Mercado' detallando: Ticker, Precio Actual, Mínimo Semanal y ¿En Dip?.
 3. Aplica todos los consejos de la SKILL alineados a mi Perfil "Valiente" y tesis de IA.
+4. Mantén el análisis **MUY COMPACTO Y DIRECTO** (Bullet-points breves, no uses grandes bloques de texto) dado que es un resumen diario rápido.
 """
         modelos_a_probar = ['gemini-3.0-pro', 'gemini-3.0-flash', 'gemini-2.5-flash', 'gemini-flash-latest']
         reporte = None
