@@ -31,6 +31,8 @@ def obtener_datos_mercado(tickers):
             
     return market_data
 
+import sys
+
 def main():
     # Validar variables de entorno (al menos las necesarias para Telegram)
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
@@ -38,8 +40,8 @@ def main():
     CHAT_ID = os.environ.get('CHAT_ID')
     
     if not all([TELEGRAM_TOKEN, CHAT_ID]):
-        print("Error: Faltan TELEGRAM_TOKEN o CHAT_ID. No se pueden enviar mensajes.")
-        return
+        print("Error crítico: Faltan TELEGRAM_TOKEN o CHAT_ID en los Secrets. No se pueden enviar mensajes.")
+        sys.exit(1)
 
     # Configuración del bot de Telegram
     bot = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -122,12 +124,19 @@ Aplica estrictamente los principios, marcos de trabajo (frameworks) y formato de
 
     print("Enviando reporte (completo o de respaldo) a Telegram...")
     try:
-        # Telegram no siempre renderiza bien las tablas en Markdown nativo por API,
-        # enviamos el texto directamente para que Telegram lo formatee
-        bot.send_message(CHAT_ID, reporte, disable_web_page_preview=True)
-        print("¡Reporte enviado con éxito!")
+        # Telegram tiene un límite estricto de 4096 caracteres por mensaje.
+        # Dividimos el reporte en pedazos de 4000 caracteres para evitar que falle silenciosamente.
+        max_len = 4000
+        mensajes = [reporte[i:i+max_len] for i in range(0, len(reporte), max_len)]
+        
+        for msg in mensajes:
+            # Enviamos cada bloque secuencialmente (Telegram parsea Markdown básico pero frecuentemente falla con Gemini, lo dejamos seguro sin parse_mode o preformateado).
+            bot.send_message(CHAT_ID, msg, disable_web_page_preview=True)
+            
+        print("¡Reporte enviado con éxito a Telegram!")
     except Exception as e:
         print(f"Error al enviar a Telegram: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
