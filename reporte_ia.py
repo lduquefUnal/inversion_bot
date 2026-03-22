@@ -53,26 +53,50 @@ def main():
     if GEMINI_API_KEY:
         print("Generando reporte con Gemini...")
         genai.configure(api_key=GEMINI_API_KEY)
-        prompt = f"""
-Eres un asistente experto en inversiones para un inversionista en Colombia con perfil "Valiente". 
-La tesis principal de inversión es que el desarrollo de la Inteligencia Artificial aumentará masivamente la demanda y el costo de la energía, impulsando los sectores de energía Nuclear y Verdes (Renovables, Redes Eléctricas).
+        skill_content = ""
+        try:
+            # Intentar leer la skill desde el repositorio
+            with open(os.path.join(os.path.dirname(__file__), ".agent", "SKILL.md"), "r", encoding="utf-8") as f:
+                skill_content = f.read()
+        except Exception as e:
+            print(f"No se pudo leer .agent/SKILL.md: {e}")
+            skill_content = "No se proporcionó skill."
 
-He aquí los datos de los últimos 7 días para los ETFs objetivo (URA, NLR, ICLN, GRID):
+        prompt = f"""
+Eres un asistente experto en inversiones para una cuenta en Colombia con perfil "Valiente". 
+La tesis principal de inversión a largo plazo es que el desarrollo de la Inteligencia Artificial aumentará masivamente la demanda y el costo de la energía, impulsando sectores de energía Nuclear y Verdes (Renovables, Redes Eléctricas).
+
+He aquí los datos del mercado de los últimos 7 días para los ETFs objetivo (URA, NLR, ICLN, GRID):
 {market_data}
 
-Redacta un reporte en formato Markdown que contenga las siguientes partes:
-1. **Introducción**: Saludo rápido y recordatorio de la tesis de inversión (Data Centers = alta demanda de energía).
-2. **Tabla Comparativa de Precios**: Crea una tabla con las columnas: Ticker, Precio Actual, Mínimo Semanal, ¿En Dip? y Enlace a Yahoo Finance. 
-3. **Análisis de Sentimiento IA**: Una sección enfocada en cómo el panorama actual de IA y la demanda de energía de los Data Centers justifican mantener o aprovechar los "Dips" en estos activos.
+Aplica estrictamente los principios, marcos de trabajo (frameworks) y formato de salida dictados por la siguiente SKILL de análisis de inversiones:
+--- INICIO DE LA SKILL ---
+{skill_content}
+--- FIN DE LA SKILL ---
 
-Mantén el reporte conciso, motivador y directo.
+**INSTRUCCIONES FINALES:** 
+1. Redacta todo el reporte estructurado **COMPLETAMENTE EN ESPAÑOL** (traduce los encabezados de la SKILL al español).
+2. Debes incluir una "Tabla Comparativa" en la sección de 'Estado del Mercado' detallando: Ticker, Precio Actual, Mínimo Semanal y ¿En Dip?.
+3. Aplica todos los consejos de la SKILL alineados a mi Perfil "Valiente" y tesis de IA.
 """
-        try:
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            response = model.generate_content(prompt)
-            reporte = response.text
-        except Exception as e:
-            error_msg = f"⚠️ **Error con la API de Gemini:**\n`{str(e)}`\n\n_Generando reporte de respaldo sin IA..._"
+        modelos_a_probar = ['gemini-3.0-pro', 'gemini-3.0-flash', 'gemini-2.5-flash', 'gemini-flash-latest']
+        reporte = None
+        error_general = None
+        for modelo_nombre in modelos_a_probar:
+            try:
+                print(f"Intentando generar reporte con modelo: {modelo_nombre}...")
+                model = genai.GenerativeModel(modelo_nombre)
+                response = model.generate_content(prompt)
+                reporte = response.text
+                reporte += f"\n\n---\n*Metadata:* Reporte generado con IA usando el modelo `{modelo_nombre}`."
+                print(f"Generado exitosamente con {modelo_nombre}")
+                break
+            except Exception as e:
+                print(f"Error con {modelo_nombre}: {e}")
+                error_general = e
+                
+        if not reporte and error_general:
+            error_msg = f"⚠️ **Error intermitente con la API de Gemini:**\n`{str(error_general)}`\n\n_Generando reporte de respaldo sin IA..._"
             print(error_msg)
             try:
                 bot.send_message(CHAT_ID, error_msg, parse_mode="Markdown")
