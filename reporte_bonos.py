@@ -59,6 +59,11 @@ def main():
     print("Obteniendo datos del mercado de Bonos...")
     market_data, last_trading_date = obtener_datos_bonos(tickers)
     
+    if not market_data:
+        print("Error crítico: Yahoo Finance devolvió datos vacíos para todos los tickers.")
+        bot.send_message(CHAT_ID, "⚠️ *Error crítico*: No se pudieron descargar los datos de Bonos de Yahoo Finance. Intenta correr la tarea más tarde.", parse_mode="Markdown")
+        sys.exit(1)
+        
     fecha_actual_ejecucion = datetime.datetime.now().strftime("%d de %B de %Y")
 
     reporte = None

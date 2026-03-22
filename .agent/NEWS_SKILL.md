@@ -1,4 +1,4 @@
----
+|---
 name: news-reporter
 description: Generar reportes automatizados de noticias sobre temas diversos (tecnología, economía, IA, geopolítica). Enfocado en síntesis rápida, análisis de impacto (So What?) y reducción estricta de "ruido". Se lanza cuando el usuario quiere un resumen de las noticias del día o de un evento particular.
 ---
