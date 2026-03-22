@@ -5,6 +5,8 @@ import telebot
 
 def obtener_datos_mercado(tickers):
     market_data = {}
+    last_trading_date = "No disponible"
+    
     for ticker in tickers:
         try:
             stock = yf.Ticker(ticker)
@@ -14,6 +16,9 @@ def obtener_datos_mercado(tickers):
             if hist.empty:
                 continue
                 
+            last_valid_date = hist.index[-1]
+            last_trading_date = last_valid_date.strftime("%d de %B de %Y")
+            
             current_price = hist['Close'].iloc[-1]
             min_price = hist['Low'].min()
             
@@ -29,7 +34,7 @@ def obtener_datos_mercado(tickers):
         except Exception as e:
             print(f"Error obteniendo datos de {ticker}: {e}")
             
-    return market_data
+    return market_data, last_trading_date
 
 import sys
 
@@ -48,7 +53,7 @@ def main():
 
     tickers = ["URA", "NLR", "ICLN", "GRID"]
     print("Obteniendo datos del mercado...")
-    market_data = obtener_datos_mercado(tickers)
+    market_data, last_trading_date = obtener_datos_mercado(tickers)
     
     reporte = None
     
@@ -69,11 +74,12 @@ def main():
 
         prompt = f"""
 Eres un asistente experto en inversiones para una cuenta en Colombia con perfil "Valiente". 
-IMPORTANTE: Hoy es {fecha_actual}. El reporte que vas a hacer corresponde al mercado de esta fecha.
+IMPORTANTE: El script se ejecuta el {fecha_actual}, pero los **datos de bolsa más recientes son del cierre del {last_trading_date}** (el mercado quizá no ha abierto hoy o venimos del fin de semana). 
+El reporte debe referirse explícitamente a los datos como el cierre del {last_trading_date}.
 
 La tesis principal de inversión a largo plazo es que el desarrollo de la Inteligencia Artificial aumentará masivamente la demanda y el costo de la energía, impulsando sectores de energía Nuclear y Verdes (Renovables, Redes Eléctricas).
 
-He aquí los datos del mercado de los últimos 7 días para los ETFs objetivo (URA, NLR, ICLN, GRID):
+He aquí los datos del mercado del último día válido para los ETFs objetivo (URA, NLR, ICLN, GRID):
 {market_data}
 
 Aplica estrictamente los principios, marcos de trabajo (frameworks) y formato de salida dictados por la siguiente SKILL de análisis de inversiones:
