@@ -1,125 +1,68 @@
-import yfinance as yf
-import os
-import google.generativeai as genai
-import telebot
 import sys
 import datetime
+import os
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-def obtener_datos_cripto(tickers):
-    market_data = {}
-    last_trading_date = "No disponible"
-    
-    for ticker in tickers:
-        try:
-            stock = yf.Ticker(ticker)
-            # Cripto es 24/7, así que 7d siempre baja hasta "hoy"
-            hist = stock.history(period="7d")
-            
-            if hist.empty:
-                continue
-                
-            last_valid_date = hist.index[-1]
-            last_trading_date = last_valid_date.strftime("%d de %B de %Y")
-            
-            current_price = hist['Close'].iloc[-1]
-            min_price = hist['Low'].min()
-            max_price = hist['High'].max()
-            
-            # Alerta de oportunidad (Dip): Caída mayor al 5% desde el máximo de la semana
-            caida_porcentaje = ((max_price - current_price) / max_price) * 100
-            en_dip = caida_porcentaje >= 5.0
-            
-            market_data[ticker] = {
-                'Precio Actual': f"${current_price:,.2f}",
-                'Mínimo Semanal': f"${min_price:,.2f}",
-                'Máximo Semanal': f"${max_price:,.2f}",
-                'Caída vs Máximo': f"-{caida_porcentaje:.1f}%",
-                '🚨 Oportunidad / Dip': "✅ SÍ (Caída >5%)" if en_dip else "❌ No"
-            }
-        except Exception as e:
-            print(f"Error obteniendo datos de {ticker}: {e}")
-            
-    return market_data, last_trading_date
+from utils.market_data import analizar_tickers
+
+from utils.telegram_sender import inicializar_bot, enviar_reporte
+from utils.llm_analyst import call_gemini
 
 def main():
-    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-    TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
-    CHAT_ID = os.environ.get('CHAT_ID')
-    
-    if not all([TELEGRAM_TOKEN, CHAT_ID]):
-        print("Error crítico: Faltan TELEGRAM_TOKEN o CHAT_ID en los Secrets.")
+    print("Iniciando Bot Cripto (Módulo DCA Agresivo)...")
+    bot, chat_id = inicializar_bot()
+    if not bot:
         sys.exit(1)
 
-    bot = telebot.TeleBot(TELEGRAM_TOKEN)
-
-    # Top criptomonedas
     tickers = ["BTC-USD", "ETH-USD", "SOL-USD", "LINK-USD"]
+    print("Analizando mercado Cripto 1Y (Buscando RSI y SMA200)...")
     
-    print("Obteniendo datos del mercado Cripto...")
-    market_data, last_trading_date = obtener_datos_cripto(tickers)
+    market_data, last_trading_date, chart_path = analizar_tickers(tickers, es_bono=False, es_cripto=True)
     
     if not market_data:
-        bot.send_message(CHAT_ID, "⚠️ *Error crítico*: YFinance falló al obtener datos de Crypto. Revisa logs.", parse_mode="Markdown")
+        enviar_reporte(bot, chat_id, "⚠️ *Error crítico*: Falló descarga Cripto. Revisa logs.", None)
         sys.exit(1)
         
     fecha_actual_ejecucion = datetime.datetime.now().strftime("%d de %B de %Y")
 
-    reporte = None
-    if GEMINI_API_KEY:
-        print("Generando alerta de Cripto con Gemini...")
-        genai.configure(api_key=GEMINI_API_KEY)
+    prompt = f"""
+Eres un analista macroeconómico institucional (estilos Ray Dalio y Howard Marks) enfocado en Cripto. 
+Hoy es {fecha_actual_ejecucion}. Datos procesados: {last_trading_date}.
 
-        prompt = f"""
-Eres un analista experto en Criptomonedas enfocado en buscar **Oportunidades de Compra (Dips)** y generar Alertas.
-Hoy es {fecha_actual_ejecucion} (Foto de los datos: {last_trading_date}). Cripto opera 24/7.
+Nuestra estrategia de fondo es un DCA Agresivo de 3 años, con una Base de $100 pero un bono de +20% ($120) si los activos están en un 'Deep Dip' basado en medias largas (Pánico irracional).
 
-Aquí están las métricas de los últimos 7 días de los activos top:
+Aquí están las métricas de oportunidad a 1 año:
 {market_data}
 
-Reglas de tu reporte:
-1. Enumera y explica si en alguna criptomoneda se encendió la 🚨 **Alerta de Oportunidad** (que caen más de un 5% vs su punto más alto de la semana).
-2. Si Bitcoin (BTC) arrastró al resto del mercado (altcoins como SOL o LINK), destácalo.
-3. El tono debe ser directo, estilo "Trader Flash". 
-4. Tu respuesta completa debe estar formateada en Markdown, en ESPAÑOL, usando listas cortas. Incluye la tabla de métricas.
+Reglas:
+1. Enumera a TODOS los activos que tengan encendida la 🚨 **Alerta de Oportunidad** (`✅ 🎯 Dip` o similares en el Veredicto Técnico). Si hay más de uno, detállalos a todos. Las gráficas te darán la primicia de una, pero tú debes reportar sobre cada oportunidad.
+2. Justifica por qué el RSI o el quiebre de la media de 200 días es una oportunidad generacional y no simple ruido.
+3. El tono debe ser institucional pero ágil. 
+4. Tu respuesta debe estar en Markdown, en ESPAÑOL.
 
 Estructura:
-# ⚡ Alerta Cripto de Alta Velocidad
-## Resumen
+# ⚡ Alerta Cripto Inteligente (Visión 3 Años)
+## Contexto de Mercado (Macro/Miedo)
 [1 frase]
 
-## 📊 Scanner de Precios
+## 📊 Medidor de Dips (SMA 200 y RSI)
 [Tabla Markdown]
 
-## 🎯 Dips y Oportunidades
-[Focus sólo en las que cayeron más del 5%. Si ninguna cayó, dilo]
+## 🎯 Veredicto: ¿Activamos los $120?
+[Decisión clara: Si el RSI o SMA justifican el Dip, di 'SÍ, aplicar inyección táctica'. Si no, di 'No, el precio está normal o caro, mantener los $100 base'.]
 """
-        modelos_a_probar = ['gemini-3.0-pro', 'gemini-3.0-flash', 'gemini-2.5-flash']
-        error_general = None
-        for modelo_nombre in modelos_a_probar:
-            try:
-                model = genai.GenerativeModel(modelo_nombre)
-                response = model.generate_content(prompt)
-                reporte = response.text + f"\n\n---\n*Bot Cripto | Modelo: {modelo_nombre}*"
-                break
-            except Exception as e:
-                error_general = e
-                
-        if not reporte and error_general:
-            bot.send_message(CHAT_ID, f"⚠️ **Error API Gemini (Cripto):**\n`{str(error_general)}`", parse_mode="Markdown")
-            sys.exit(1)
-            
-    else:
+    print("Generando análisis avanzado con Gemini...")
+    reporte_texto, modelo_usado = call_gemini(prompt)
+    
+    if not reporte_texto:
+        error_msg = f"⚠️ **Error API Gemini (Cripto):**\n`{modelo_usado}`\nFallback: Usa los datos base."
+        enviar_reporte(bot, chat_id, error_msg, chart_path)
         sys.exit(1)
-
-    print("Enviando alerta cripto a Telegram...")
-    try:
-        max_len = 4000
-        mensajes = [reporte[i:i+max_len] for i in range(0, len(reporte), max_len)]
-        for msg in mensajes:
-            bot.send_message(CHAT_ID, msg, disable_web_page_preview=True)
-            
-    except Exception as e:
-        sys.exit(1)
+        
+    reporte_final = reporte_texto + f"\n\n---\n*Inteligencia Híbrida | IA: {modelo_usado} | RSI y Velas por Utils*"
+    
+    enviar_reporte(bot, chat_id, reporte_final, chart_path)
 
 if __name__ == "__main__":
     main()
