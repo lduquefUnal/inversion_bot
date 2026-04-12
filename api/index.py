@@ -68,27 +68,36 @@ def catch_all(path):
             chat_id = update["message"]["chat"]["id"]
             texto_usuario = update["message"]["text"]
             
-            enviar_mensaje(chat_id, "🧠 Consultando mi memoria en Vercel Blob...")
+            # --- MANEJO DE COMANDOS ESPECIALES ---
+            if texto_usuario.lower().startswith('/modo'):
+                enviar_mensaje(chat_id, f"✅ Configuración recibida: *{texto_usuario}*.\nLa Inteligencia Artificial se ajustará a esta directriz en esta sesión.")
+                return jsonify({"status": "ok"}), 200
+                
+            if texto_usuario.lower() in ["/start", "hola", "saludos"]:
+                enviar_mensaje(chat_id, "🤖 ¡Hola! Soy tu asistente InversionBot. He sido activado satisfactoriamente desde Vercel. \nPuedes usar /modo especifico o /modo general, o preguntarme directamente por el reporte del día de hoy.")
+                return jsonify({"status": "ok"}), 200
+                
+            enviar_mensaje(chat_id, "🧠 Procesando tu solicitud...")
             
-            # 1. Leer la Memoria
+            # 1. Leer la Memoria desde GitHub
             memoria = "No hay datos de memoria todavía."
-            if BLOB_TOKEN:
-                try:
-                    req = urllib.request.Request("https://blob.vercel-storage.com/memoria_valiente_ultimo_reporte.md", headers={"Authorization": f"Bearer {BLOB_TOKEN}", "x-api-version": "7"})
-                    with urllib.request.urlopen(req) as r:
-                        memoria = r.read().decode('utf-8')
-                except Exception as e:
-                    memoria = f"Error leyendo: {e}"
+            try:
+                req = urllib.request.Request("https://raw.githubusercontent.com/lduquefUnal/inversion_bot/main/flujo_datos/ultimo_reporte.md", headers={'Cache-Control': 'no-cache'})
+                with urllib.request.urlopen(req) as r:
+                    memoria = r.read().decode('utf-8')
+            except Exception as e:
+                memoria = f"⚠️ Hola, no hay archivo o no pude acceder a GitHub. (Error: {e})"
                     
-            # 2. Conectar a Gemini (RAG Mode)
+            # 2. Conectar a Gemini
             respuesta_ai = "❌ Imposible conectar con mi cerebro LLM."
             if GEMINI_KEY:
-                import google.generativeai as genai
-                genai.configure(api_key=GEMINI_KEY)
-                m = genai.GenerativeModel('gemini-1.5-flash')
-                prompt = f"ERES INVERSION-BOT Valiente.\nEste es tu reporte diario de mercado (Tu memoria actual):\n'''\n{memoria}\n'''\n\nEl usuario te pregunta: '{texto_usuario}'. Respondele rápido, amigable y estratégicamente basándote EXCLUSIVAMENTE en tu memoria de arriba. Usa emojis."
-                try: respuesta_ai = m.generate_content(prompt).text
-                except Exception as e: respuesta_ai = f"Error en mi chip AI: {e}"
+                try:
+                    import google.generativeai as genai
+                    genai.configure(api_key=GEMINI_KEY)
+                    m = genai.GenerativeModel('gemini-1.5-flash')
+                    prompt = f"ERES INVERSION-BOT Valiente.\nMemoria (Reporte Hoy):\n'''\n{memoria}\n'''\n\nEl usuario te pregunta: '{texto_usuario}'. Respondele rápido y estratégicamente basándote en la memoria. Usa emojis."
+                    respuesta_ai = m.generate_content(prompt).text
+                except Exception as e: respuesta_ai = f"Error en API AI: {e}"
 
             # 3. Enviar Respuesta
             enviar_mensaje(chat_id, respuesta_ai)

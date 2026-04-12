@@ -46,22 +46,14 @@ def main():
                 parse_mode="Markdown"
             )
             
-        import urllib.request
-        BLOB_TOKEN = os.environ.get("BLOB_READ_WRITE_TOKEN")
-        if BLOB_TOKEN:
-            try:
-                print("Inyectando nueva memoria en Vercel Blob...")
-                req_blob = urllib.request.Request(
-                    "https://blob.vercel-storage.com/memoria_valiente_ultimo_reporte.md",
-                    data=contenido_md.encode('utf-8'),
-                    headers={"Authorization": f"Bearer {BLOB_TOKEN}", "x-api-version": "7"},
-                    method="PUT"
-                )
-                with urllib.request.urlopen(req_blob) as resp:
-                    print("✅ Memoria cognitiva sincronizada con Vercel.")
-            except Exception as e:
-                print(f"⚠️ No se pudo sincronizar memoria Blob: {e}")
-                
+        import shutil
+        ruta_memoria = "flujo_datos/ultimo_reporte.md"
+        try:
+            shutil.copyfile(file_path, ruta_memoria)
+            print(f"✅ Memoria copiada localmente a {ruta_memoria} (Será empujada a GitHub en el próximo commit)")
+        except Exception as e:
+            print(f"⚠️ No se pudo copiar la memoria local: {e}")
+            
         print("✅ Documentos de Análisis despachados correctamente.")
     except Exception as e:
         print(f"❌ Error enviando documento de Telegram: {e}")
