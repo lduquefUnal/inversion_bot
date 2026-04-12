@@ -1,47 +1,39 @@
-from http.server import BaseHTTPRequestHandler
+from flask import Flask, request, jsonify
 import json
 import os
 import urllib.request
+
+app = Flask(__name__)
 
 # Token de lectura/escritura de Vercel Blob
 BLOB_TOKEN = os.environ.get("BLOB_READ_WRITE_TOKEN")
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 
-class handler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        try:
-            content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length)
-            update = json.loads(post_data.decode('utf-8'))
+@app.route('/', defaults={'path': ''}, methods=['GET', 'POST'])
+@app.route('/<path:path>', methods=['GET', 'POST'])
+def catch_all(path):
+    if request.method == 'GET':
+        return "Sistema de Inversión IA - API y Webhook Operativos.", 200
+        
+    try:
+        update = request.get_json(silent=True)
+        if update and "message" in update and "text" in update["message"]:
+            chat_id = update["message"]["chat"]["id"]
+            texto_usuario = update["message"]["text"]
             
-            # 1. Extraer mensaje del usuario
-            if "message" in update and "text" in update["message"]:
-                chat_id = update["message"]["chat"]["id"]
-                texto_usuario = update["message"]["text"]
-                
-                # 2. Enviar respuesta temporal de "Pensando..." a Telegram
-                self.enviar_mensaje(chat_id, "🧠 Analizando tu pregunta consultando el último reporte...")
-                
-                # (AQUÍ LEEREMOS DE VERCEL BLOB LUEGO)
-                
-                # (AQUÍ CONSULTAREMOS A GEMINI LUEGO)
-                
-                # 3. Respuesta Final Dummy
-                self.enviar_mensaje(chat_id, f"He recibido tu duda: '{texto_usuario}'. Mi módulo de IA conversacional estará listo pronto!")
+            enviar_mensaje(chat_id, "🧠 Analizando tu directriz...")
+            enviar_mensaje(chat_id, f"Sistema en línea. Comando recibido: '{texto_usuario}'. El módulo RAG estará habilitado pronto.")
             
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(b'OK')
-        except Exception as e:
-            self.send_response(500)
-            self.end_headers()
-            self.wfile.write(f'Error: {str(e)}'.encode())
+        return jsonify({"status": "ok"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    # Mini-agente de despacho
-    def enviar_mensaje(self, chat_id, texto):
-        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-        data = json.dumps({"chat_id": chat_id, "text": texto}).encode('utf-8')
-        req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
-        try: urllib.request.urlopen(req)
-        except: pass
+def enviar_mensaje(chat_id, texto):
+    if not TELEGRAM_TOKEN: return
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    data = json.dumps({"chat_id": chat_id, "text": texto}).encode('utf-8')
+    req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+    try: urllib.request.urlopen(req)
+    except: pass
+
