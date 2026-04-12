@@ -1,23 +1,21 @@
 # Contexto del Proyecto: Inversion Bot
 
-Este proyecto es un bot automatizado basado en Inteligencia Artificial e Ingeniería de Agentes. Inicialmente creado para alertar y analizar la compra de acciones y activos relacionados a la transición energética y criptomonedas, ahora posee un enfoque multifacético y multicíclico. Su arquitectura está orientada a procesar datos en las mañanas y proveer reportes detallados usando modelos de Lenguaje y de Agentes.
+Este proyecto es un bot automatizado basado en Inteligencia Artificial e Ingeniería de Agentes (Perfil Valiente - Smart DCA). Su arquitectura procesa datos, cruza Sentimiento y Análisis Cuantitativo en las mañanas y provee reportes detallados en Telegram.
 
 ## Arquitectura de Agentes y Skills (.agent)
 En la carpeta `.agent` mantenemos nuestros marcos de trabajo mentales y promts estructurados (llamados "Skills"):
-- **SKILL.md**: Establece las reglas y el rol general que asume Gemini como analista financiero ("Perfil Valiente").
+- **SKILL.md**: Establece las reglas y el rol general que asume Gemini.
 - **NEWS_SKILL.md**: Habilidad orientada al procesamiento de noticias.
-- **SKILL_creator.md**: Skill maestra intocable. Sirve para crear iterativamente e inteligentemente otras Skills u optimizar las actuales utilizando herramientas de LLM.
+- **SKILL_creator.md**: Skill maestra intocable. Sirve para crear u optimizar otras skills.
 
-## Flujos de Trabajo en GitHub Actions
-Todo el ecosistema vive en `.github/workflows` que programan cron-jobs de manera paralela y automatizada.
-1. **main.yml**: Ejecuta el análisis de Energía Nuclear, Redes e IA (`reporte_ia.py`).
-2. **bonos.yml**: Responsable del mercado de renta fija y yields (`reporte_bonos.py`).
-3. **criptos.yml**: Monitorea Bitcoin, Ethereum, e inversiones blockchain en las mañanas (`reporte_criptos.py`).
-4. **orquestador_acciones.yml**: Un sistema de múltiples pasos (Pipeline de Python) y de capacidades complejas:
-   - *Paso 1 (Escáner Masivo Python)*: Construye un Universo con más de 70 Tickers incluyendo el **Portafolio Actual**, ETFs globales (Emergentes/Asia/Colombia) y Big Tech, filtrando matemáticamente por "Dips" (caídas mensuales extremas).
-   - *Paso 2 (Agente Autónomo ReAct)*: El LLM ya no se limita a responder pasivamente. Tiene habilitado el motor de "Llamado a Funciones" (`enable_automatic_function_calling=True`), dándole una herramienta programada para interactuar en la red (`consultar_noticias_y_foros`). La IA decide independientemente cuándo consultar datos vivos de Reddit u otras fuentes libres para fundamentar su posición final entre un caso Alcista y Bajista. El error-handling (manejo de excepciones) en las Request evita caídas generalizadas.
-   - *Paso 3 (Despacho Documental)*: Un motor que exporta el análisis como un archivo adjunto `.md` directo a Telegram.
+## Flujos de Trabajo (Orquestador Principal)
+El archivo `.github/workflows/orquestador_acciones.yml` es el motor central. Ejecuta una cadena de ensamblaje (Pipeline) robusta, estática y text-based, eliminando los fallos de llamada a funciones de librerías experimentales:
 
----
-### Expansiones a Futuro
-- Se planea empaquetar de ser necesario archivos "PDF". Ahora mismo se optó por generar archivos **Markdown (.md)** porque ofrecen excelente formato nativo con títulos y tablas, mientras logran una entrega ultra liviana para la app móvil y desktop de Telegram a través del método `bot.send_document()`.
+1. **Paso 1 (Escáner Matemático y Extractor, Python)**: Construye un Universo con más de 100 Tickers incluyendo el Portafolio Actual y perfiles ultra "Valientes" (Nuclear, Startups Espaciales, Biotech, Small Caps). 
+   - **Cuantitativo:** Calcula RSI 14D (Pánico), la SMA 200 y distancias contra mínimos y máximos de los últimos 200 días. Extrae el Dólar (USD/COP) y VIX. Identifica métricas tácticas del "Dip".
+   - **Social:** Para el Top 3, ejecuta Request estáticos a Reddit (foros) y a Polymarket (apuestas) recopilando la psicología humana directa en texto. 
+   - **Visualización:** Crea gráficas Candlestick profesionales vía `mplfinance` dibujando las velas, el volumen, el RSI (panel 2) y las SMA 50/200. Reúne todo en `mercado.json`.
+
+2. **Paso 2 (Analista IA)**: El Agente LLM de Gemini recibe el gigantesco reporte pre-digerido y extraído por Python. Siguiendo la estrategia *Smart DCA* a años, reflexiona en el Pánico y Noticias inyectadas sin usar `tools` dinámicos frágiles, devolviendo su conclusión experta en código Markdown.
+
+3. **Paso 3 (Despacho a Telegram)**: Lee la carpeta de salida, envía las Gráficas de Velas (.png) en ráfaga como álbum de fotografías a Telegram, y luego despacha el Documento `.md` completo.

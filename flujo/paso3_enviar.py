@@ -1,5 +1,7 @@
 import telebot
 import os
+from dotenv import load_dotenv
+load_dotenv()
 import sys
 import glob
 
@@ -25,12 +27,13 @@ def main():
             print(f"Error enviando gráfica {png}: {e}")
             
     # 2. ENVIAR REPORTE MD
-    file_path = "flujo_datos/Reporte_Acciones.md"
-    if not os.path.exists(file_path):
+    md_files = glob.glob("flujo_datos/*.md")
+    if not md_files:
         bot.send_message(CHAT_ID, "⚠️ *Error*: No se generó el Reporte de Acciones MD este día.", parse_mode="Markdown")
         sys.exit(1)
         
-    print("Iniciando envío del documento Markdown a Telegram...")
+    file_path = sorted(md_files)[-1] # Toma el más reciente o el único que existe
+    print(f"Iniciando envío del documento {file_path} a Telegram...")
     try:
         with open(file_path, "rb") as document:
             bot.send_document(
