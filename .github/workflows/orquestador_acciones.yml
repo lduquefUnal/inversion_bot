@@ -1,0 +1,45 @@
+name: Orquestador - Análisis de Acciones
+
+on:
+  schedule:
+    - cron: '45 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  flujo-orquestado:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+          
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyTelegramBotAPI matplotlib pandas
+          
+      - name: Paso 1 - Agente de Extracción, Gráficas y Macro
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python flujo/paso1_descargar.py
+        
+      - name: Paso 2 - Agente Analista ReAct Multitool (Gemini IA)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python flujo/paso2_analizar.py
+        
+      - name: Paso 3 - Distribución a Telegram (.md y PNGs)
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python flujo/paso3_enviar.py

@@ -2,9 +2,9 @@ name: Sistema de Inversión Automático - Alertas Cripto
 
 on:
   schedule:
-    # 22:00 UTC = 05:00 PM (17:00) en Hora de Colombia (UTC-5)
-    # Recomendado al caer la tarde / cierre de bolsa US clásica.
-    - cron: '0 22 * * *'
+    # 12:00 UTC = 07:00 AM en Hora de Colombia (UTC-5)
+    # Cambiado a las mañanas según requerimiento
+    - cron: '0 12 * * *'
   workflow_dispatch:
 
 jobs:

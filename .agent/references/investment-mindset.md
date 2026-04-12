@@ -105,9 +105,32 @@ Reference for thinking like accomplished investors when analyzing assets. Use to
 
 ---
 
+## Estrategia Sistemática de Agentes IA (Modelo de 5 Pasos / Autopilot)
+
+**Core**: Sistematización algorítmica, análisis exhaustivo (típicamente impulsado por IA como Gemini) de universos amplios de acciones, balance constante, cálculo probabilístico enfocado a encontrar valor o momentum.
+
+### Key Frameworks (Los 5 Pasos)
+1. **Escaneo de Universo**: Analiza una lista grande de acciones (Ej: S&P 500 o Russell 1000) buscando anomalías, caídas drásticas (Dips), o fundamentales baratos respecto al histórico en volumen.
+2. **Construcción de Tesis (Bull/Bear)**: Nunca te fijes solo en la narrativa alcista. Se requiere exigir al modelo que desarrolle un *Bull Case* y un *Bear Case* fundamentado con base en gráficos, noticias y macro.
+3. **Asignación Probabilística**: Establecer una ponderación (% de éxito teórico) a la probabilidad de ocurrencia del escenario Bull vs el escenario Bear basado en el contraste entre el precio bajo (Dip) y el análisis fundamental.
+4. **Ranking y Optimización**: Se priorizan estrictamente las "Mejores X acciones" (Ej: Top 15), teniendo cuidado de diversificar entre múltiples sectores para equilibrar la exposición al riesgo en la cartera.
+5. **Ajuste Frecuente / Rebalanceo**: Reevaluar las tesis constamentamente (Ej. 1 o 2 veces por semana) para retirar dinero de ideas mermadas y colocarlo donde las métricas favorecen.
+
+### Consideraciones y Riesgos Críticos a evaluar:
+- **Sesgo de Supervivencia**: Solo vemos los portafolios "ganadores" en el marketing; muchas optimizaciones estadísticas fallan en la vida real.
+- **Costos de Transacción y 'Turnover'**: Altos volúmenes de transacciones/rebalanceos reducen rápidamente los retornos netos una vez se consideran comisiones e impuestos en la vida real.
+- **Intereses Económicos de Copiado**: Estar atentos si un portafolio te es recomendado; plataformas (como Autopilot) tienen incentivo orgánico a mover fondos, por ello nosotros debemos mantener la IA autónoma de sesgos.
+- **Simplicidad Sostenible de Datas**: La IA hoy en día suele basarse en datos como Yahoo Finance y Wikipedia. Su ventaja competitiva a largo plazo a base de Prompts "sencillos" se puede agotar, por lo tanto requiere sofisticar y alinear continuamente la toma de decisión con variables sólidas a tu tesis personal de años.
+
+### When to Apply
+- Al correr portafolios orquestados y escaners masivos en Python.
+- Optimizar el rankeo de oportunidades y forzar la vista de un caso pesimista (Bear).
+
+---
+
 ## Pattern Synthesis
 
-| Investor | Best For                 | Mindset Lens                            |
+| Investor / Model | Best For                 | Mindset Lens                            |
 | -------- | ------------------------ | --------------------------------------- |
 | Buffett  | Quality, moat, valuation | Circle of competence, margin of safety  |
 | Dalio    | Macro, diversification   | Principles, multi-environment           |
@@ -115,5 +138,6 @@ Reference for thinking like accomplished investors when analyzing assets. Use to
 | Graham   | Value, discipline        | Intrinsic value, Mr. Market             |
 | Wood     | Disruption, long horizon | Innovation convergence, conviction      |
 | Marks    | Risk, cycles             | Second-level thinking, margin for error |
+| **Sistemático IA** | Escaneo Masivo, Ranking probabilístico | Tesis Bull/Bear constante, filtrado algorítmico de Dips |
 
 Use multiple lenses. Deep analysis applies several frameworks and synthesizes them for the user's profile.
