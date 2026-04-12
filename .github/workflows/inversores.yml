@@ -1,0 +1,84 @@
+name: Bot Inversiones (DCA Agresivo)
+
+on:
+  schedule:
+    # Recuerda: Los servidores de GitHub usan hora UTC. 
+    # Colombia es UTC-5, por lo tanto 11:00 UTC = 6:00 AM en Colombia.
+    # Se ejecuta los Martes (2), Miércoles (3) y Jueves (4)
+    
+    # 1. Criptomonedas a las 6:00 AM (Colombia)
+    - cron: '0 11 * * 2,3,4'
+    
+    # 2. Bonos (Refugios) a las 6:30 AM (Colombia)
+    - cron: '30 11 * * 2,3,4'
+    
+    # 3. ETFs y Energía a las 7:00 AM (Colombia)
+    - cron: '0 12 * * 2,3,4'
+    
+    # 4. Colombia y Latam a las 7:30 AM (Colombia)
+    - cron: '30 12 * * 2,3,4'
+
+  # Permite ejecutarlo manualmente desde GitHub si quieres
+  workflow_dispatch:
+
+jobs:
+  run-bots:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Clonar Repositorio
+      uses: actions/checkout@v3
+
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11' # Versión recomendada
+
+    - name: Instalar Dependencias
+      run: pip install -r requirements.txt
+
+    - name: Restaurar Memoria (Caché de Tickers)
+      uses: actions/cache@v3
+      with:
+        path: .last_ticker*
+        key: ${{ runner.os }}-ticker-memory-${{ github.run_id }}
+        restore-keys: |
+          ${{ runner.os }}-ticker-memory-
+
+    - name: Ejecutar Reporte Correspondiente a la Hora
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        CHAT_ID: ${{ secrets.CHAT_ID }}
+      run: |
+        # Usamos la hora UTC del servidor para saber qué script ejecutar
+        current_minute=$(date +"%H:%M")
+        
+        echo "Ejecución iniciada a las $current_minute UTC"
+        
+        if [[ "$current_minute" > "10:50" && "$current_minute" < "11:15" ]]; then
+            echo "⏰ Ejecutando Reporte CRIPTO (6:00 AM Colombia)..."
+            python reporte_criptos.py
+            
+        elif [[ "$current_minute" > "11:20" && "$current_minute" < "11:45" ]]; then
+            echo "⏰ Ejecutando Reporte BONOS (6:30 AM Colombia)..."
+            python reporte_bonos.py
+            
+        elif [[ "$current_minute" > "11:50" && "$current_minute" < "12:15" ]]; then
+            echo "⏰ Ejecutando Reporte ETFs/ENERGÍA (7:00 AM Colombia)..."
+            python reporte_etfs_energia.py
+            
+        elif [[ "$current_minute" > "12:20" && "$current_minute" < "12:45" ]]; then
+            echo "⏰ Ejecutando Reporte COLOMBIA (7:30 AM Colombia)..."
+            python reporte_colombia.py
+            
+        else
+            echo "Ejecución Manual: Disparando todos los bots con pausa de seguridad..."
+            python reporte_criptos.py
+            sleep 10
+            python reporte_bonos.py
+            sleep 10
+            python reporte_etfs_energia.py
+            sleep 10
+            python reporte_colombia.py
+        fi
