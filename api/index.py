@@ -94,7 +94,7 @@ def catch_all(path):
                 try:
                     import google.generativeai as genai
                     genai.configure(api_key=GEMINI_KEY)
-                    m = genai.GenerativeModel('gemini-1.5-flash')
+                    m = genai.GenerativeModel('gemini-pro')
                     prompt = f"ERES INVERSION-BOT Valiente.\nMemoria (Reporte Hoy):\n'''\n{memoria}\n'''\n\nEl usuario te pregunta: '{texto_usuario}'. Respondele rápido y estratégicamente basándote en la memoria. Usa emojis."
                     respuesta_ai = m.generate_content(prompt).text
                 except Exception as e: respuesta_ai = f"Error en API AI: {e}"
