@@ -101,34 +101,11 @@ def main():
     crypto_tickers = ["BTC-USD", "ETH-USD", "SOL-USD"]
     latam_tickers = ["MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH", "EWW", "BBD", "CX", "BMA", "PAM", "TGS", "CIB", "EC", "TGLS", "AVAL", "SQM", "ARCO", "CPA", "BSBR", "SUZ"]
     
-    top_5_graficas = []
-    latam_agregadas = 0
-    cryptos_agregadas = 0
-    
-    # Asegurar 1 LatAm si existe
-    for c in top_15_candidatas:
-        if c['Ticker'] in latam_tickers and latam_agregadas < 1:
-            top_5_graficas.append(c)
-            latam_agregadas += 1
-            break
-            
-    # Rellenar hasta 5, máximo 1 crypto general
-    for c in top_15_candidatas:
-        if len(top_5_graficas) >= 5: break
-        if c in top_5_graficas: continue
-        
-        if c['Ticker'] in crypto_tickers:
-            if cryptos_agregadas < 1:
-                top_5_graficas.append(c)
-                cryptos_agregadas += 1
-        else:
-            top_5_graficas.append(c)
-            
     # Re-ordenar por drawdown para mantener el orden matemático natural
-    top_5_graficas = sorted(top_5_graficas, key=lambda x: x["Drawdown 52W %"])
+    top_15_candidatas = sorted(top_15_candidatas, key=lambda x: x["Drawdown 52W %"])
     
-    print("Pre-procesando Top 5 Estricto y graficando velas japonesas...")
-    for i, candidato in enumerate(top_5_graficas):
+    print("Pre-procesando Top 15 Estricto y graficando velas japonesas...")
+    for i, candidato in enumerate(top_15_candidatas):
         ticker = candidato['Ticker']
         nombre = candidato.get('Nombre', ticker)
         try:

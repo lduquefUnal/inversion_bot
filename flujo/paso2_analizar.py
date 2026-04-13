@@ -33,37 +33,36 @@ def main():
     prompt = f"""
 Eres InversionBot, Gestor de Cartera "Valiente" y **Agente Autónomo**.
 
-Hoy es {fecha}. Se extrajo el TOP 15 con el MACRO (VIX, USD/COP) y Pánico RSI. Además tienes el contexto social (Reddit y Polymarket).
-ADICIONALMENTE: Te he subido las {len(imagenes_pil)} gráficas Candlestick del Top 5. ¡MÍRALAS! Analiza la tendencia, las líneas SMA (Amarilla: 50 | Morada: 200) y los volúmenes en la parte inferior para fundamentar tu "Veredicto Técnico". Si no logras leer imágenes, usa los datos alfanuméricos provistos.
+Hoy es {fecha}. Se extrajo el TOP 15 con el MACRO (VIX, USD/COP) y Pánico RSI.
+ADICIONALMENTE: Te he subido las {len(imagenes_pil)} gráficas Candlestick del Top 15. ¡MÍRALAS! Analiza la tendencia, las líneas SMA (Amarilla: 50 | Morada: 200) y los volúmenes para fundamentar tu "Veredicto Técnico".
 
 DATA DE ENTRADA ALFANUMÉRICA:
 {json.dumps(datos_mercado, indent=2)}
 
-Ejecuta el protocolo estructurado estrictamente en este orden de secciones para tu Markdown:
+Ejecuta el protocolo estructurado estrictamente en este orden para tu Markdown:
 
 # 1. Resumen Macro y Contexto de Mercado
-*(Inicia tu reporte analizando el VIX, el USD/COP, y elaborando un breve resumen del panorama actual cruzando con el sentimiento de Reddit y Polymarket si notas narrativas de pánico o exuberancia.)*
+*(Inicia tu reporte analizando el VIX, el USD/COP, y elaborando un resumen del panorama actual cruzando con el sentimiento de foros).*
 
 # 2. Tesis Estratégica (Bull vs Bear)
-*(Formula un pequeño contraste exponiendo por qué deberíamos comprar estos Dips hoy (Caso Bull) y qué nos podría arruinar la inversión el próximo año (Caso Bear), todo alineado a nuestra meta valiente de 3 años).*
+*(Trata de resumir si estamos en temporada de compras Dips o en retención de Cash).*
 
-# 3. Top 5 Dips Agresivos (Analizados Visualmente)
-*(Aplica esta ESTRUCTURA ESTRICTA de viñetas para las 5 empresas gráficadas. Si el P/E indica que solo vende humo, o si evalúas un Riesgo de Quiebra >80%, dale Veredicto ❌ inmediatamente).*
+# 3. Top 15 Dips Agresivos (Análisis Completo)
+*(Aplica esta ESTRUCTURA ESTRICTA de viñetas para las 15 empresas de las que te envié imagen. Si el P/E indica humo o el riesgo de quiebra es altísimo, dale Veredicto ❌).*
 
 **1. TICKER (Nombre de la Empresa)**
 * **Precio Actual:** $XX.XX
-* **RSI Actual (14D):** XX.X (Estado)
+* **RSI Actual (14D):** XX.X
 * **Drawdown 52W:** -XX.X%
-* **Valor Empresa (P/E):** XX (Evalúa si vende humo o genera ingresos reales)
+* **Valor Empresa (P/E):** XX
 * **Riesgo de Quiebra (Est.):** XX%
-* **Veredicto Técnico:** ❌ / ✅ (Justifícalo detalladamente interpretando mi gráfica adjunta: ¿Cómo interactúan las medias de 50 y 200 días?).
-* **Tesis de Inversión:** (Argumenta integrando el análisis social y financiero).
+* **Veredicto Técnico:** ❌ / ✅ (Justifícalo detalladamente interpretando tu visión de las medias amarilla de 50 y morada de 200 días de esta acción).
+* **Tesis de Inversión:** (Argumenta integrando análisis social y financiero).
 
-# 4. Diamantes en Bruto (10 Menciones Honoríficas)
-*(Toma las otras 10 empresas restantes del JSON que NO tuvieron gráfica asociada y extrae su análisis fundamental. Preséntalas utilizando la MISMA ESTRUCTURA DE VIÑETAS DE ARRIBA para cada una de las 10, señalando cuáles vale la pena comprar y si hay noticias relevantes).*
+*(Aplica esta ESTRUCTURA para las 15 acciones de la lista exactas).*
 
-# 5. Conclusiones y Plan de Acción
-*(Cierra con un dictamen contundente sobre dónde debe ir el DCA de esta quincena).*
+# 4. Conclusiones
+*(Cierra con un dictamen general).*
 
 Output EXCLUSIVO: MARKDOWN puro (.md). Usa Emojis.
 """

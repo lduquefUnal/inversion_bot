@@ -14,7 +14,50 @@ GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def catch_all(path):
     if request.method == 'GET':
-        html_design = """
+        # Descargar el reporte en bruto
+        try:
+            req = urllib.request.Request("https://raw.githubusercontent.com/lduquefUnal/inversion_bot/main/flujo_datos/ultimo_reporte.md", headers={'Cache-Control': 'no-cache'})
+            with urllib.request.urlopen(req) as r:
+                memoria = r.read().decode('utf-8')
+        except:
+            memoria = "⚠️ Reporte no disponible o en construcción."
+
+        # Parsear el documento Markdown
+        import re
+        html_cards = ""
+        
+        # Regex para agarrar la estructura "**1. TICKER (Nombre)**" hasta el siguiente número
+        pattern = r"\*\*(\d+)\.\s+([A-Z0-9\^\-]+)\s+(.*?)\*\*\n(.*?)(?=\*\*\d+\.|\n#|\Z)"
+        matches = re.finditer(pattern, memoria, re.DOTALL)
+        
+        for match in matches:
+            num = match.group(1)
+            ticker = match.group(2)
+            nombre = match.group(3).strip('()')
+            detalles = match.group(4).strip()
+            
+            # Formateamos las viñetas sueltas de Markdown a HTML simple
+            detalles_html = re.sub(r"\*\s+\*\*(.*?):\*\*(.*)", r"<li><strong style='color:#a78bfa;'>\1:</strong>\2</li>", detalles)
+            
+            # La imagen producida por paso1
+            img_url = f"https://raw.githubusercontent.com/lduquefUnal/inversion_bot/main/flujo_datos/top_{num}_{ticker}.png"
+            
+            html_cards += f"""
+            <div class="action-card">
+                <div class="card-content">
+                    <span class="badge" style="background:#2dd4bf; color:#0f172a;">#{num}</span>
+                    <h2 style="margin: 10px 0; color:#f8fafc;">{ticker} <span style="font-weight:300; font-size:1.2rem; color:#94a3b8;">({nombre})</span></h2>
+                    <ul style="list-style:none; padding:0; line-height: 1.6; color:#cbd5e1;">
+                        {detalles_html}
+                    </ul>
+                </div>
+                <div class="card-image">
+                    <img src="{img_url}" alt="Gráfica {ticker}" onerror="this.parentElement.style.display='none'">
+                </div>
+            </div>
+            """
+
+        html_design = f"""
         <!DOCTYPE html>
         <html lang="es">
         <head>
@@ -22,40 +65,52 @@ def catch_all(path):
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>InversionBot | Dashboard Valiente</title>
             <style>
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap');
-                body {
-                    background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif;
-                    display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    min-height: 100vh; margin: 0;
-                    background-image: radial-gradient(at 40% 20%, hsla(228,100%,74%,0.15) 0px, transparent 50%),
-                                      radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%);
-                }
-                .glass-card {
-                    background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px);
-                    border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
-                    padding: 50px; max-width: 600px; text-align: center;
-                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-                }
-                h1 { font-weight: 800; font-size: 2.8rem; margin-bottom: 0px; background: -webkit-linear-gradient(#60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-                h3 { font-weight: 300; color: #94a3b8; font-size: 1.1rem; margin-top: 10px; }
-                .badge { background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; border: 1px solid rgba(59, 130, 246, 0.5); display: inline-block; margin-bottom: 20px; }
-                .footer { margin-top: 40px; font-size: 0.9rem; color: #475569; }
-                .pulse { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 10px #22c55e; animation: pulse 2s infinite; }
-                @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&display=swap');
+                body {{
+                    background-color: #0f172a; color: #f8fafc; font-family: 'Outfit', sans-serif;
+                    margin: 0; padding: 20px;
+                    background-image: 
+                        radial-gradient(at 40% 20%, hsla(228,100%,74%,0.1) 0px, transparent 50%),
+                        radial-gradient(at 80% 0%, hsla(189,100%,56%,0.1) 0px, transparent 50%);
+                    background-attachment: fixed;
+                }}
+                .header {{ text-align: center; margin-bottom: 40px; padding: 40px 10px; }}
+                h1 {{ font-weight: 800; font-size: 3rem; margin-bottom: 0px; background: -webkit-linear-gradient(#60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
+                p.sub {{ color: #94a3b8; font-size: 1.2rem; max-width: 600px; margin: 15px auto; }}
+                
+                .grid {{ display: flex; flex-direction: column; gap: 30px; max-width: 1000px; margin: 0 auto; }}
+                
+                .action-card {{
+                    background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px);
+                    border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px;
+                    display: flex; flex-direction: row; align-items: stretch; overflow: hidden;
+                    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); transition: transform 0.3s;
+                }}
+                .action-card:hover {{ transform: translateY(-5px); border-color: rgba(96, 165, 250, 0.2); }}
+                
+                .card-content {{ padding: 30px; flex: 1; }}
+                .card-image {{ flex: 1.2; background: #0b1120; display:flex; align-items:center; justify-content:center; padding: 20px; }}
+                .card-image img {{ max-width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }}
+                
+                .badge {{ padding: 5px 12px; border-radius: 20px; font-size: 1rem; font-weight: 800; display: inline-block; }}
+                
+                @media (max-width: 800px) {{
+                    .action-card {{ flex-direction: column; }}
+                }}
             </style>
         </head>
         <body>
-            <div class="glass-card">
-                <span class="badge">Estrategia Smart DCA</span>
+            <div class="header">
                 <h1>InversionBot</h1>
-                <h3>Orquestador de Inteligencia Artificial para Múltiples Mercados</h3>
-                <br>
-                <p><span class="pulse"></span> <b style="color: #f8fafc;">Sistemas Operativos (API & Webhook en Línea)</b></p>
-                <p style="color: #94a3b8; font-weight: 300; line-height: 1.6;">La memoria Blob está activa en la nube resguardando el análisis. En el próximo parche vincularemos las gráficas interactivas directamente aquí.</p>
-                
-                <div class="footer">
-                    <p>Hecho con precisión matemática | Arquitectura por <b>Luis Duque</b></p>
-                </div>
+                <p class="sub">Dashboard Diario de Dips Agresivos. Estrategia Valiente (Smart DCA). Extracción y analítica IA 100% Autónoma.</p>
+            </div>
+            
+            <div class="grid">
+                {html_cards if html_cards else "<p style='text-align:center;'>Procesando el reporte de hoy o formato no reconocido...</p>"}
+            </div>
+            
+            <div style="text-align: center; margin-top: 50px; color: #475569;">
+                <p>Arquitectura diseñada por <b>Luis Duque</b></p>
             </div>
         </body>
         </html>
