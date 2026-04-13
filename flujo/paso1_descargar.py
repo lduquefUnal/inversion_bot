@@ -179,10 +179,10 @@ def main():
         import urllib.parse
         q = urllib.parse.quote(ticker + " stock")
         try:
-            req = urllib.request.Request(f"https://www.reddit.com/search.json?q={q}&sort=relevance&t=month&limit=4", headers={'User-Agent': 'Mozilla/5.0InversionBot'})
-            with urllib.request.urlopen(req, timeout=5) as r:
-                candidato["Contexto_Reddit"] = [f"[{h['data']['subreddit_name_prefixed']}]: {h['data']['title']}" for h in json.loads(r.read().decode()).get("data",{}).get("children",[])]
-        except: candidato["Contexto_Reddit"] = ["Sin foros"]
+            req = urllib.request.Request(f"https://www.reddit.com/search.json?q={candidato['Nombre'].replace(' ', '+')}&sort=new&limit=4", headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req) as r:
+                candidato["Contexto_Reddit"] = [{"titulo": f"[{h['data']['subreddit_name_prefixed']}]: {h['data']['title']}", "url": f"https://reddit.com{h['data']['permalink']}"} for h in json.loads(r.read().decode()).get("data",{}).get("children",[])]
+        except: candidato["Contexto_Reddit"] = [{"titulo": "Sin foros", "url": "#"}]
              
         try:
              req_p = urllib.request.Request(f"https://gamma-api.polymarket.com/events?title={q}&active=true&limit=2", headers={'User-Agent': 'Mozilla/5.0'})

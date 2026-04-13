@@ -65,12 +65,22 @@ def catch_all(path):
             reddit_news = item_json.get("Contexto_Reddit", [])
             
             noticias_html = ""
-            if reddit_news and reddit_news[0] != "Sin foros":
-                noticias_html = "<div style='margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;'>"
-                noticias_html += "<h4 style='color:#94a3b8; font-size:0.9rem; margin:0 0 5px 0;'>📰 Sentimiento Social Reciente:</h4>"
-                for noticia in reddit_news[:2]:
-                    noticias_html += f"<p style='margin: 3px 0; font-size: 0.85rem; color: #cbd5e1;'>• {noticia}</p>"
-                noticias_html += "</div>"
+            if reddit_news:
+                noticia_test = reddit_news[0]
+                is_valid = True
+                if isinstance(noticia_test, str) and noticia_test == "Sin foros": is_valid = False
+                elif isinstance(noticia_test, dict) and noticia_test.get("titulo") == "Sin foros": is_valid = False
+                
+                if is_valid:
+                    noticias_html = "<div style='margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;'>"
+                    noticias_html += "<h4 style='color:#94a3b8; font-size:0.9rem; margin:0 0 5px 0;'>📰 Sentimiento Social Reciente:</h4>"
+                    for noticia in reddit_news[:2]:
+                        if isinstance(noticia, dict):
+                            t, u = noticia.get("titulo", "Info"), noticia.get("url", "#")
+                        else:
+                            t, u = noticia, "https://reddit.com/search?q=" + ticker
+                        noticias_html += f"<p style='margin: 3px 0; font-size: 0.85rem; color: #cbd5e1;'>• <a href='{u}' target='_blank' style='color:#60a5fa; text-decoration:none; font-weight:500;'>{t}</a></p>"
+                    noticias_html += "</div>"
             
             # Endpoint nativo que crearemos en Flask para devolver la imagen!
             img_url = f"/imagen/top_{num}_{ticker}.png"
