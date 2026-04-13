@@ -63,8 +63,10 @@ def main():
         "O", "PLD", "AMT", "CCI", "EQIX", "SPG",
         # --- CONSUMO, TURISMO Y BANCA TRADICIONAL ---
         "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP", "WMT", "SBUX", "GS", "MS", "AXP", "BLK", "DAL", "UAL",
-        # --- ÍNDICES GENERALES ---
-        "SPY", "QQQ", "^TNX"
+        # --- BONOS (EMERGENTES, EEUU, High Yield) ---
+        "EMB", "VWOB", "EMLC", "PCY", "BND", "AGG", "LQD", "HYG", "JNK", 
+        # --- ETFs DIVIDENDOS Y GENERALES ---
+        "SPY", "QQQ", "QQQM", "VTI", "VEA", "VWO", "SCHD", "JEPI", "^TNX"
     ]
     
     macro_data = {}
