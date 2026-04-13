@@ -55,7 +55,7 @@ def main():
     except: pass
     
     try:
-        macro_cop = yf.Ticker("COP=X").history(period="1d")
+        macro_cop = yf.Ticker("USDCOP=X").history(period="1d", timeout=5)
         macro_data["USD/COP"] = round(float(macro_cop['Close'].iloc[-1]), 2) if not macro_cop.empty else "N/A"
     except: pass
 
@@ -85,6 +85,12 @@ def main():
             
             rsi_actual = calcular_rsi(hist)
             rsi_estado = "Desconocido" if pd.isna(rsi_actual) else "🔥 Caro" if rsi_actual > 70 else "🚨 Sobrevendido" if rsi_actual < 35 else "Neutral"
+            
+            # Smart DCA Inversión
+            base_inv = 100
+            agresividad = 0.20
+            delta_dip = 1 if ((not pd.isna(rsi_actual) and rsi_actual < 30) or drawdown_52w_pct < -50) else 0
+            monto_dca = int(base_inv * (1 + delta_dip * agresividad))
                 
             datos_completos.append({
                 "Ticker": t,
@@ -93,6 +99,7 @@ def main():
                 "Drawdown 52W %": round(drawdown_52w_pct, 2),
                 "Valor Mercado (P/E Ratio)": pe_ratio,
                 "RSI 14D": f"{round(rsi_actual, 1)} - {rsi_estado}" if not pd.isna(rsi_actual) else "N/A",
+                "Monto Sugerido (SmartDCA)": f"${monto_dca} USD",
                 "Historia_Precios": hist 
             })
             print(f"✅ Escaneado {t}")

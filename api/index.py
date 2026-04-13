@@ -29,14 +29,20 @@ def catch_all(path):
         except Exception as e:
             memoria = f"⚠️ Reporte no disponible. Espera el siguiente despliegue. Error: {e}"
             
+        import datetime
         try:
             with open(ruta_json, "r", encoding="utf-8") as fj:
                 mercado = json.load(fj)
                 vix = mercado.get("MACRO", {}).get("VIX", "N/A")
                 cop = mercado.get("MACRO", {}).get("USD/COP", "N/A")
+                
+            mtime = os.path.getmtime(ruta_json)
+            fecha_act = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M')
         except:
             vix = "N/A"
             cop = "N/A"
+            fecha_act = "N/A"
+            mercado = {"TOP_25_DIPS": []}
 
         # Parsear el documento Markdown
         import re
@@ -53,17 +59,34 @@ def catch_all(path):
             
             detalles_html = re.sub(r"\*\s+\*\*(.*?):\*\*(.*)", r"<li><strong style='color:#a78bfa;'>\1:</strong>\2</li>", detalles)
             
+            # Buscar en json
+            item_json = next((it for it in mercado.get("TOP_25_DIPS", []) if it["Ticker"] == ticker), {})
+            monto_dca = item_json.get("Monto Sugerido (SmartDCA)", "$100 USD")
+            reddit_news = item_json.get("Contexto_Reddit", [])
+            
+            noticias_html = ""
+            if reddit_news and reddit_news[0] != "Sin foros":
+                noticias_html = "<div style='margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;'>"
+                noticias_html += "<h4 style='color:#94a3b8; font-size:0.9rem; margin:0 0 5px 0;'>📰 Sentimiento Social Reciente:</h4>"
+                for noticia in reddit_news[:2]:
+                    noticias_html += f"<p style='margin: 3px 0; font-size: 0.85rem; color: #cbd5e1;'>• {noticia}</p>"
+                noticias_html += "</div>"
+            
             # Endpoint nativo que crearemos en Flask para devolver la imagen!
             img_url = f"/imagen/top_{num}_{ticker}.png"
             
             html_cards += f"""
             <div class="action-card">
                 <div class="card-content">
-                    <span class="badge" style="background:#2dd4bf; color:#0f172a;">#{num}</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="badge" style="background:#2dd4bf; color:#0f172a;">#{num}</span>
+                        <span class="badge" style="background:rgba(234,179,8,0.2); color:#eab308; border:1px solid #eab308;">🛒 {monto_dca}</span>
+                    </div>
                     <h2 style="margin: 10px 0; color:#f8fafc;">{ticker} <span style="font-weight:300; font-size:1.2rem; color:#94a3b8;">({nombre})</span></h2>
                     <ul style="list-style:none; padding:0; line-height: 1.6; color:#cbd5e1;">
                         {detalles_html}
                     </ul>
+                    {noticias_html}
                 </div>
                 <div class="card-image">
                     <img src="{img_url}" alt="Gráfica {ticker}" onerror="this.parentElement.style.display='none'">
@@ -122,6 +145,11 @@ def catch_all(path):
             </style>
         </head>
         <body>
+            
+            <div style="position: absolute; top: 15px; right: 25px; font-size: 0.85rem; color: #94a3b8; background: rgba(30, 41, 59, 0.8); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                ⏱️ Último Escáner AI: {fecha_act}
+            </div>
+
             <div class="header">
                 <h1>InversionBot</h1>
                 <p class="sub">Dashboard de Dips Agresivos.</p>
