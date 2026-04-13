@@ -1,32 +1,37 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import json
 import os
 import urllib.request
 
 app = Flask(__name__)
 
-# Token de lectura/escritura de Vercel Blob
-BLOB_TOKEN = os.environ.get("BLOB_READ_WRITE_TOKEN")
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
+
+# Rutas nativas para saltarnos la lentitud y censura de GitHub Raw
+@app.route('/imagen/<path:filename>')
+def serve_image(filename):
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return send_from_directory(os.path.join(base_dir, 'flujo_datos'), filename)
 
 @app.route('/', defaults={'path': ''}, methods=['GET', 'POST'])
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def catch_all(path):
     if request.method == 'GET':
-        # Descargar el reporte en bruto
+        # Vercel aloja estos archivos nativamente tras cada Push de Github Actions
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ruta_reporte = os.path.join(base_dir, "flujo_datos", "ultimo_reporte.md")
+        
         try:
-            req = urllib.request.Request("https://raw.githubusercontent.com/lduquefUnal/inversion_bot/main/flujo_datos/ultimo_reporte.md", headers={'Cache-Control': 'no-cache'})
-            with urllib.request.urlopen(req) as r:
-                memoria = r.read().decode('utf-8')
-        except:
-            memoria = "⚠️ Reporte no disponible o en construcción."
+            with open(ruta_reporte, "r", encoding="utf-8") as f:
+                memoria = f.read()
+        except Exception as e:
+            memoria = f"⚠️ Reporte no disponible o en construcción. Error local: {e}"
 
         # Parsear el documento Markdown
         import re
         html_cards = ""
         
-        # Regex para agarrar la estructura "**1. TICKER (Nombre)**" hasta el siguiente número
         pattern = r"\*\*(\d+)\.\s+([A-Z0-9\^\-]+)\s+(.*?)\*\*\n(.*?)(?=\*\*\d+\.|\n#|\Z)"
         matches = re.finditer(pattern, memoria, re.DOTALL)
         
@@ -36,11 +41,10 @@ def catch_all(path):
             nombre = match.group(3).strip('()')
             detalles = match.group(4).strip()
             
-            # Formateamos las viñetas sueltas de Markdown a HTML simple
             detalles_html = re.sub(r"\*\s+\*\*(.*?):\*\*(.*)", r"<li><strong style='color:#a78bfa;'>\1:</strong>\2</li>", detalles)
             
-            # La imagen producida por paso1
-            img_url = f"https://raw.githubusercontent.com/lduquefUnal/inversion_bot/main/flujo_datos/top_{num}_{ticker}.png"
+            # Endpoint nativo que crearemos en Flask para devolver la imagen!
+            img_url = f"/imagen/top_{num}_{ticker}.png"
             
             html_cards += f"""
             <div class="action-card">
