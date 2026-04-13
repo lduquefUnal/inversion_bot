@@ -55,7 +55,7 @@ Ejecuta el protocolo estructurado estrictamente en este orden para tu Markdown:
 * **RSI Actual (14D):** XX.X
 * **Drawdown 52W:** -XX.X%
 * **Valor Empresa (P/E):** XX
-* **Riesgo de Quiebra (Est.):** XX%
+* **Riesgo de Quiebra (Est.):** XX% (DEBE SER ESTRICTAMENTE UN NÚMERO DE 0% A 100%, E.G., 20%. NUNCA PONGAS PALABRAS COMO 'ALTO'. Estímalo matemáticamente.)
 * **Veredicto Técnico:** ❌ / ✅ (Justifícalo detalladamente interpretando tu visión de las medias amarilla de 50 y morada de 200 días de esta acción).
 * **Tesis de Inversión:** (Argumenta integrando análisis social y financiero).
 
