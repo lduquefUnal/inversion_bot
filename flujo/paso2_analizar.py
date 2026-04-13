@@ -48,7 +48,8 @@ Ejecuta el protocolo estructurado estrictamente en este orden para tu Markdown:
 *(Trata de resumir si estamos en temporada de compras Dips o en retención de Cash).*
 
 # 3. Top 25 Dips Agresivos (Análisis Completo)
-*(Aplica esta ESTRUCTURA ESTRICTA de viñetas para las 25 empresas de las que te envié imagen. Si el P/E indica humo o el riesgo de quiebra es altísimo, dale Veredicto ❌).*
+*(Aplica esta ESTRUCTURA ESTRICTA de viñetas para las 25 empresas de las que te envié imagen).*
+*(ATENCIÓN: Nuestra estrategia es "SmartDCA Valiente". NO rechaces una acción con ❌ solo porque su precio está debajo de las SMA 50 y 200. ¡Eso es lo que buscamos (Dips)! Otorga ✅ con valentía si aprecias sobreventa extrema (RSI bajo), si la caída parece exagerada, o si tiene un P/E sólido que justifique comprar la caída).*
 
 **1. TICKER (Nombre de la Empresa)**
 * **Precio Actual:** $XX.XX
@@ -56,7 +57,7 @@ Ejecuta el protocolo estructurado estrictamente en este orden para tu Markdown:
 * **Drawdown 52W:** -XX.X%
 * **Valor Empresa (P/E):** XX
 * **Riesgo de Quiebra (Est.):** XX% (DEBE SER ESTRICTAMENTE UN NÚMERO DE 0% A 100%, E.G., 20%. NUNCA PONGAS PALABRAS COMO 'ALTO'. Estímalo matemáticamente.)
-* **Veredicto Técnico:** ❌ / ✅ (Justifícalo detalladamente interpretando tu visión de las medias amarilla de 50 y morada de 200 días de esta acción).
+* **Veredicto Técnico:** ❌ / ✅ (Justifica tu decisión. Otorga ✅ si es un Dip con potencial de rebote por pánico exagerado, aunque las SMAs estén bajistas).
 * **Tesis de Inversión:** (Argumenta integrando análisis social y financiero).
 
 *(Aplica esta ESTRUCTURA para las 25 acciones de la lista exactas).*
