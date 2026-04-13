@@ -37,15 +37,34 @@ def main():
         except: pass
 
     universe = [
-        "BTC-USD", "ETH-USD", "SOL-USD", "GLD", "URNJ", "^TNX", "TLT", "EMB",
-        "LIT", "REMX", "COPX", "SILJ", "ARKK", "BOTZ", "ROBO", "SOXQ", "MOON", "XBI", "UFO", "ARKG", "BLOK", "DAPP", "EWZS", "RKLB", "ASTS", "JOBY", "SMR", "OKLO",
-        "MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH", "EWW", "BBD", "CX", "BMA", "PAM", "TGS", "CIB", "EC", "TGLS", "AVAL", "SQM", "ARCO", "CPA", "BSBR", "SUZ",
+        # --- CRIPTOMONEDAS Y MINEROS ---
+        "BTC-USD", "ETH-USD", "SOL-USD", "COIN", "MARA", "RIOT", "MSTR",
+        # --- MATERIAS PRIMAS, ORO, URANIO, SOJA ---
+        "GLD", "URNJ", "TLT", "EMB", "LIT", "REMX", "COPX", "SILJ", "CCJ", "NXE", "UUUU", "URA", "FCX", "SCCO", "BHP", "RIO",
+        # --- TECNOLOGÍA PURA E INTELIGENCIA ARTIFICIAL ---
+        "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "AMD", "INTC", "MU", "SMCI",
+        # --- CIBERSEGURIDAD, NUBE Y SAAS ---
+        "PLTR", "CRWD", "PANW", "FTNT", "ZS", "NET", "SNOW", "NOW",
+        # --- FINTECH Y PAGOS ---
+        "V", "MA", "PYPL", "SQ", "SOFI", "AFRM", "HOOD", 
+        # --- INNOVACIÓN ARKK Y ESPACIO ---
+        "ARKK", "BOTZ", "ROBO", "SOXQ", "MOON", "UFO", "ARKG", "BLOK", "DAPP", "RKLB", "ASTS", "JOBY", "SMR", "OKLO",
+        # --- LATAM Y MERCADOS EMERGENTES ---
+        "MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH", "EWW", "BBD", "CX", "BMA", "PAM", "TGS", "CIB", "EC", "TGLS", "AVAL", "SQM", "ARCO", "CPA", "BSBR", "SUZ", "EWZS",
+        # --- ASIA Y CHINA EXTENDIDO ---
         "TSM", "BABA", "ASML", "MCHI", "INDA", "SMIN", "EWY", "EWT", "VNM", "JD", "PDD", "SE", "GRAB", "UMC", "ASX", "INFY", "WIT", "SONY", "HDB", "TCEHY",
-        "CCJ", "NXE", "UUUU", "URA", "FSLR", "ENPH", "RUN", "SEDG", "BEP", "NEE", "ICLN", "TAN", "FAN", "CWEN",
-        "LMT", "RTX", "GD", "NOC", "PLTR", "CRWD", "PANW", "FTNT", "ZS", "NET", "SNOW", "NOW", 
-        "CRSP", "EDIT", "NTLA", "PACB", "LLY", "ABBV", "PFE", "MRK", "JNJ", "BMY", "O", "PLD", "AMT", "CCI", "EQIX", 
-        "FCX", "SCCO", "BHP", "RIO", "GS", "MS", "AXP", "BLK", "V", "MA", "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP", 
-        "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "SPY", "QQQ"
+        # --- ENERGÍA LIMPIA Y SOLAR ---
+        "FSLR", "ENPH", "RUN", "SEDG", "BEP", "NEE", "ICLN", "TAN", "FAN", "CWEN",
+        # --- DEFENSA Y AEROSPACIAL ---
+        "LMT", "RTX", "GD", "NOC",
+        # --- BIOTECNOLOGÍA Y SALUD ---
+        "XBI", "CRSP", "EDIT", "NTLA", "PACB", "LLY", "ABBV", "PFE", "MRK", "JNJ", "BMY",
+        # --- BIENES RAÍCES (REITs) ---
+        "O", "PLD", "AMT", "CCI", "EQIX", "SPG",
+        # --- CONSUMO, TURISMO Y BANCA TRADICIONAL ---
+        "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP", "WMT", "SBUX", "GS", "MS", "AXP", "BLK", "DAL", "UAL",
+        # --- ÍNDICES GENERALES ---
+        "SPY", "QQQ", "^TNX"
     ]
     
     macro_data = {}
