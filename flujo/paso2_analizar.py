@@ -33,8 +33,8 @@ def main():
     prompt = f"""
 Eres InversionBot, Gestor de Cartera "Valiente" y **Agente Autónomo**.
 
-Hoy es {fecha}. Se extrajo el TOP 15 con el MACRO (VIX, USD/COP) y Pánico RSI.
-ADICIONALMENTE: Te he subido las {len(imagenes_pil)} gráficas Candlestick del Top 15. ¡MÍRALAS! Analiza la tendencia, las líneas SMA (Amarilla: 50 | Morada: 200) y los volúmenes para fundamentar tu "Veredicto Técnico".
+Hoy es {fecha}. Se extrajo el TOP 25 con el MACRO (VIX, USD/COP) y Pánico RSI.
+ADICIONALMENTE: Te he subido las {len(imagenes_pil)} gráficas Candlestick del Top 25. ¡MÍRALAS! Analiza la tendencia, las líneas SMA (Amarilla: 50 | Morada: 200) y los volúmenes para fundamentar tu "Veredicto Técnico".
 
 DATA DE ENTRADA ALFANUMÉRICA:
 {json.dumps(datos_mercado, indent=2)}
@@ -47,8 +47,8 @@ Ejecuta el protocolo estructurado estrictamente en este orden para tu Markdown:
 # 2. Tesis Estratégica (Bull vs Bear)
 *(Trata de resumir si estamos en temporada de compras Dips o en retención de Cash).*
 
-# 3. Top 15 Dips Agresivos (Análisis Completo)
-*(Aplica esta ESTRUCTURA ESTRICTA de viñetas para las 15 empresas de las que te envié imagen. Si el P/E indica humo o el riesgo de quiebra es altísimo, dale Veredicto ❌).*
+# 3. Top 25 Dips Agresivos (Análisis Completo)
+*(Aplica esta ESTRUCTURA ESTRICTA de viñetas para las 25 empresas de las que te envié imagen. Si el P/E indica humo o el riesgo de quiebra es altísimo, dale Veredicto ❌).*
 
 **1. TICKER (Nombre de la Empresa)**
 * **Precio Actual:** $XX.XX
@@ -59,7 +59,7 @@ Ejecuta el protocolo estructurado estrictamente en este orden para tu Markdown:
 * **Veredicto Técnico:** ❌ / ✅ (Justifícalo detalladamente interpretando tu visión de las medias amarilla de 50 y morada de 200 días de esta acción).
 * **Tesis de Inversión:** (Argumenta integrando análisis social y financiero).
 
-*(Aplica esta ESTRUCTURA para las 15 acciones de la lista exactas).*
+*(Aplica esta ESTRUCTURA para las 25 acciones de la lista exactas).*
 
 # 4. Conclusiones
 *(Cierra con un dictamen general).*

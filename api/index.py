@@ -21,12 +21,22 @@ def catch_all(path):
         # Vercel aloja estos archivos nativamente tras cada Push de Github Actions
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         ruta_reporte = os.path.join(base_dir, "flujo_datos", "ultimo_reporte.md")
+        ruta_json = os.path.join(base_dir, "flujo_datos", "mercado.json")
         
         try:
             with open(ruta_reporte, "r", encoding="utf-8") as f:
                 memoria = f.read()
         except Exception as e:
-            memoria = f"⚠️ Reporte no disponible o en construcción. Error local: {e}"
+            memoria = f"⚠️ Reporte no disponible. Espera el siguiente despliegue. Error: {e}"
+            
+        try:
+            with open(ruta_json, "r", encoding="utf-8") as fj:
+                mercado = json.load(fj)
+                vix = mercado.get("MACRO", {}).get("VIX", "N/A")
+                cop = mercado.get("MACRO", {}).get("USD/COP", "N/A")
+        except:
+            vix = "N/A"
+            cop = "N/A"
 
         # Parsear el documento Markdown
         import re
@@ -98,6 +108,14 @@ def catch_all(path):
                 
                 .badge {{ padding: 5px 12px; border-radius: 20px; font-size: 1rem; font-weight: 800; display: inline-block; }}
                 
+                .btn-filter {{
+                    background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 30px; 
+                    font-family: inherit; font-size: 1rem; font-weight: bold; cursor: pointer; 
+                    transition: 0.3s; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); 
+                }}
+                .btn-filter:hover {{ background: #2563eb; transform: translateY(-2px); }}
+                .btn-filter.active {{ background: #10b981; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }}
+                
                 @media (max-width: 800px) {{
                     .action-card {{ flex-direction: column; }}
                 }}
@@ -106,7 +124,23 @@ def catch_all(path):
         <body>
             <div class="header">
                 <h1>InversionBot</h1>
-                <p class="sub">Dashboard Diario de Dips Agresivos. Estrategia Valiente (Smart DCA). Extracción y analítica IA 100% Autónoma.</p>
+                <p class="sub">Dashboard de Dips Agresivos.</p>
+                
+                <div style="background: rgba(30, 41, 59, 0.6); padding: 25px; border-radius: 20px; display: inline-block; margin-top: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: left; max-width: 800px;">
+                    <h3 style="margin:0 0 10px 0; color:#f8fafc; font-size:1.2rem; text-align: center;">♟️ Estrategia Valiente (Smart DCA)</h3>
+                    <p style="margin:0; font-size:1rem; color:#cbd5e1; line-height: 1.6; text-align: center;">
+                        Acumulación algorítmica en activos infravalorados con un Drawdown 52W agresivo (>40%).<br>
+                        Buscamos zonas de pánico (RSI) cruzadas con Veredicto IA Multimodal.
+                    </p>
+                    <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <span class="badge" style="background: rgba(244, 63, 94, 0.2); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.5);">⚡ Índice de Pánico VIX: {vix}</span>
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.5);">💵 Dólar a en COP: {cop}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <button onclick="togglePositivos(this)" class="btn-filter">✨ Mostrar solo Ganadoras (✅)</button>
+                </div>
             </div>
             
             <div class="grid">
@@ -116,6 +150,22 @@ def catch_all(path):
             <div style="text-align: center; margin-top: 50px; color: #475569;">
                 <p>Arquitectura diseñada por <b>Luis Duque</b></p>
             </div>
+            
+            <script>
+               function togglePositivos(btn) {{
+                   const isFiltering = btn.classList.toggle('active');
+                   btn.innerHTML = isFiltering ? '👀 Restablecer a Todo' : '✨ Mostrar solo Ganadoras (✅)';
+                   document.querySelectorAll('.action-card').forEach(card => {{
+                       const veredictoText = card.innerHTML;
+                       if(isFiltering && !veredictoText.includes('✅')) {{
+                           card.style.display = 'none';
+                       }} else {{
+                           card.style.display = window.innerWidth > 800 ? 'flex' : 'flex'; 
+                           // En CSS base es display flex. 
+                       }}
+                   }});
+               }}
+            </script>
         </body>
         </html>
         """

@@ -53,6 +53,11 @@ def main():
         macro_vix = yf.Ticker("^VIX").history(period="1d")
         macro_data["VIX"] = round(float(macro_vix['Close'].iloc[-1]), 2) if not macro_vix.empty else "N/A"
     except: pass
+    
+    try:
+        macro_cop = yf.Ticker("COP=X").history(period="1d")
+        macro_data["USD/COP"] = round(float(macro_cop['Close'].iloc[-1]), 2) if not macro_cop.empty else "N/A"
+    except: pass
 
     datos_completos = []
     
@@ -96,16 +101,16 @@ def main():
             
     # RANKING priorizando el extremo Drawdown 52W o RSI (más negativos)
     datos_completos = sorted(datos_completos, key=lambda x: x["Drawdown 52W %"])
-    top_15_candidatas = datos_completos[:15]
+    top_25_candidatas = datos_completos[:25]
     
     crypto_tickers = ["BTC-USD", "ETH-USD", "SOL-USD"]
     latam_tickers = ["MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH", "EWW", "BBD", "CX", "BMA", "PAM", "TGS", "CIB", "EC", "TGLS", "AVAL", "SQM", "ARCO", "CPA", "BSBR", "SUZ"]
     
     # Re-ordenar por drawdown para mantener el orden matemático natural
-    top_15_candidatas = sorted(top_15_candidatas, key=lambda x: x["Drawdown 52W %"])
+    top_25_candidatas = sorted(top_25_candidatas, key=lambda x: x["Drawdown 52W %"])
     
-    print("Pre-procesando Top 15 Estricto y graficando velas japonesas...")
-    for i, candidato in enumerate(top_15_candidatas):
+    print("Pre-procesando Top 25 Estricto y graficando velas japonesas...")
+    for i, candidato in enumerate(top_25_candidatas):
         ticker = candidato['Ticker']
         nombre = candidato.get('Nombre', ticker)
         try:
@@ -163,11 +168,11 @@ def main():
         except: candidato["Polymarket"] = ["N/A"]
              
     # Cleanup pre-json
-    for item in top_15_candidatas:
+    for item in top_25_candidatas:
         if "Historia_Precios" in item:
             del item["Historia_Precios"]
         
-    resultado_final = {"MACRO": macro_data, "TOP_15_DIPS": top_15_candidatas}
+    resultado_final = {"MACRO": macro_data, "TOP_25_DIPS": top_25_candidatas}
     with open("flujo_datos/mercado.json", "w", encoding='utf-8') as f:
         json.dump(resultado_final, f, indent=4, ensure_ascii=False)
         
