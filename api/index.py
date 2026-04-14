@@ -59,6 +59,10 @@ def catch_all(path):
             
             detalles_html = re.sub(r"\*\s+\*\*(.*?):\*\*(.*)", r"<li><strong style='color:#a78bfa;'>\1:</strong>\2</li>", detalles)
             
+            # Formatos especiales para los casos de AI Bull/Bear 
+            detalles_html = detalles_html.replace("<strong style='color:#a78bfa;'>Caso Bull (Alcista):</strong>", "<strong style='color:#10b981;'>📈 Caso Bull:</strong>")
+            detalles_html = detalles_html.replace("<strong style='color:#a78bfa;'>Caso Bear (Bajista):</strong>", "<strong style='color:#ef4444;'>📉 Caso Bear:</strong>")
+            
             # Buscar en json
             item_json = next((it for it in mercado.get("TOP_25_DIPS", []) if it["Ticker"] == ticker), {})
             monto_dca = item_json.get("Monto Sugerido (SmartDCA)", "$100 USD")
@@ -241,7 +245,7 @@ def catch_all(path):
                 try:
                     import google.generativeai as genai
                     genai.configure(api_key=GEMINI_KEY)
-                    m = genai.GenerativeModel('gemini-pro')
+                    m = genai.GenerativeModel('gemini-1.5-flash')
                     prompt = f"ERES INVERSION-BOT Valiente.\nMemoria (Reporte Hoy):\n'''\n{memoria}\n'''\n\nEl usuario te pregunta: '{texto_usuario}'. Respondele rápido y estratégicamente basándote en la memoria. Usa emojis."
                     respuesta_ai = m.generate_content(prompt).text
                 except Exception as e: respuesta_ai = f"Error en API AI: {e}"

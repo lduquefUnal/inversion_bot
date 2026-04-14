@@ -59,6 +59,8 @@ Ejecuta el protocolo estructurado estrictamente en este orden para tu Markdown:
 * **Riesgo de Quiebra (Est.):** XX% (DEBE SER ESTRICTAMENTE UN NÚMERO DE 0% A 100%, E.G., 20%. NUNCA PONGAS PALABRAS COMO 'ALTO'. Estímalo matemáticamente.)
 * **Veredicto Técnico:** ❌ / ✅ (Justifica tu decisión. Otorga ✅ si es un Dip con potencial de rebote por pánico exagerado, aunque las SMAs estén bajistas).
 * **Tesis de Inversión:** (Argumenta integrando análisis social y financiero).
+* **Caso Bull (Alcista):** (Escenario positivo 1 o 2 líneas).
+* **Caso Bear (Bajista):** (Escenario negativo o riesgo 1 o 2 líneas).
 
 *(Aplica esta ESTRUCTURA para las 25 acciones de la lista exactas).*
 

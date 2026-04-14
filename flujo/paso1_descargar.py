@@ -58,15 +58,17 @@ def main():
         # --- DEFENSA Y AEROSPACIAL ---
         "LMT", "RTX", "GD", "NOC",
         # --- BIOTECNOLOGÍA Y SALUD ---
-        "XBI", "CRSP", "EDIT", "NTLA", "PACB", "LLY", "ABBV", "PFE", "MRK", "JNJ", "BMY",
+        "XBI", "CRSP", "EDIT", "NTLA", "PACB", "LLY", "ABBV", "PFE", "MRK", "JNJ", "BMY", "UNH", "CVS", "ISRG", "TMO", "DHR",
         # --- BIENES RAÍCES (REITs) ---
         "O", "PLD", "AMT", "CCI", "EQIX", "SPG",
         # --- CONSUMO, TURISMO Y BANCA TRADICIONAL ---
-        "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP", "WMT", "SBUX", "GS", "MS", "AXP", "BLK", "DAL", "UAL",
+        "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP", "WMT", "SBUX", "GS", "MS", "AXP", "BLK", "DAL", "UAL", "JPM", "BAC", "WFC", "C", "NKE", "DIS", "V", "MA",
+        # --- ENERGÍA FÓSIL Y PETRÓLEO ---
+        "XOM", "CVX", "COP", "SLB", "OXY",
         # --- BONOS (EMERGENTES, EEUU, High Yield) ---
         "EMB", "VWOB", "EMLC", "PCY", "BND", "AGG", "LQD", "HYG", "JNK", 
         # --- ETFs DIVIDENDOS Y GENERALES ---
-        "SPY", "QQQ", "QQQM", "VTI", "VEA", "VWO", "SCHD", "JEPI", "^TNX"
+        "SPY", "QQQ", "QQQM", "VTI", "VEA", "VWO", "SCHD", "JEPI", "^TNX", "VDE", "XLV", "XLF", "XLC", "XLY", "XLP", "XLI", "XLB", "XLRE", "XLU"
     ]
     
     macro_data = {}
@@ -97,6 +99,22 @@ def main():
             max_price_52w = float(hist_52w['High'].max())
             drawdown_52w_pct = ((current_price - max_price_52w) / max_price_52w * 100) if max_price_52w > 0 else 0
             
+            # Validar Tendencia SMA200 para el ranking
+            hist['SMA200'] = hist['Close'].rolling(window=200).mean()
+            sma_200_actual = float(hist['SMA200'].iloc[-1])
+            sma_200_pasada = float(hist['SMA200'].iloc[-21]) if len(hist) > 220 else sma_200_actual
+            tendencia_bajista = False
+            if not pd.isna(sma_200_actual) and not pd.isna(sma_200_pasada):
+                if sma_200_actual < sma_200_pasada:
+                    tendencia_bajista = True
+            
+            # Guardamos el Drawdown original, pero calculamos uno ajustado para el ranking
+            score_ranking = drawdown_52w_pct
+            if tendencia_bajista:
+                # Sumamos +50 al score para que la empresa caiga al fondo del ranking,
+                # ya que se ordenan de menor a mayor (negativos primero)
+                score_ranking += 50.0
+            
             # Calcular P/E Ratio o P/S para identificar generación de valor vs vende humo
             # Nota: las APIs o info de crypto/ETFs no tienen PE, por lo que usamos fallback.
             try: info = stock.info
@@ -121,21 +139,23 @@ def main():
                 "Valor Mercado (P/E Ratio)": pe_ratio,
                 "RSI 14D": f"{round(rsi_actual, 1)} - {rsi_estado}" if not pd.isna(rsi_actual) else "N/A",
                 "Monto Sugerido (SmartDCA)": f"${monto_dca} USD",
+                "Score_Ranking": score_ranking,
+                "Tendencias": "Bajista (Cuchillo)" if tendencia_bajista else "Sana/Normal",
                 "Historia_Precios": hist 
             })
             print(f"✅ Escaneado {t}")
         except Exception as e:
             pass
             
-    # RANKING priorizando el extremo Drawdown 52W o RSI (más negativos)
-    datos_completos = sorted(datos_completos, key=lambda x: x["Drawdown 52W %"])
+    # RANKING penalizando a las empresas con tendencia bajista (cuchillos cayendo)
+    datos_completos = sorted(datos_completos, key=lambda x: x["Score_Ranking"])
     top_25_candidatas = datos_completos[:25]
     
     crypto_tickers = ["BTC-USD", "ETH-USD", "SOL-USD"]
     latam_tickers = ["MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH", "EWW", "BBD", "CX", "BMA", "PAM", "TGS", "CIB", "EC", "TGLS", "AVAL", "SQM", "ARCO", "CPA", "BSBR", "SUZ"]
     
-    # Re-ordenar por drawdown para mantener el orden matemático natural
-    top_25_candidatas = sorted(top_25_candidatas, key=lambda x: x["Drawdown 52W %"])
+    # Re-ordenar para consolidar
+    top_25_candidatas = sorted(top_25_candidatas, key=lambda x: x["Score_Ranking"])
     
     print("Pre-procesando Top 25 Estricto y graficando velas japonesas...")
     for i, candidato in enumerate(top_25_candidatas):

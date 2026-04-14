@@ -2,7 +2,7 @@ name: Orquestador - Análisis de Acciones
 
 on:
   schedule:
-    - cron: '45 12 * * *'
+    - cron: '0 11 * * *' # 11:00 UTC equivale a las 6:00 AM en Colombia/Perú (UTC-5)
   workflow_dispatch:
 
 jobs:

@@ -81,6 +81,13 @@ def analizar_tickers(tickers_dict, es_bono=False, es_cripto=False, top_n=5):
             rsi_actual = hist['RSI_14'].iloc[-1]
             ath_52w = hist['ATH_52w'].iloc[-1]
             
+            # Validamos la tendencia de largo plazo de la SMA200 (aprox 1 mes atrás)
+            sma_200_pasada = hist['SMA_200'].iloc[-21] if len(hist) > 220 else sma_200
+            tendencia_bajista = False
+            if not pd.isna(sma_200) and not pd.isna(sma_200_pasada):
+                if sma_200 < sma_200_pasada:
+                    tendencia_bajista = True
+            
             drawdown = 0
             if ath_52w > 0:
                 drawdown = ((current_price - ath_52w) / ath_52w) * 100
@@ -116,6 +123,13 @@ def analizar_tickers(tickers_dict, es_bono=False, es_cripto=False, top_n=5):
 
             # Score para ranking: usamos RSI. Si es NaN, ponemos 100 para enviarlo atrás.
             score_orden = rsi_actual if not pd.isna(rsi_actual) else 100.0
+            
+            # Penalización para empresas cuya SMA200 va hacia abajo (Cuchillo cayendo)
+            # Sumamos 50 al Score (RSI) para mandarlas lejos del TOP 5, pero conservarlas en la lista
+            if not es_bono and not es_cripto and tendencia_bajista:
+                score_orden += 50.0
+                if en_dip:
+                    estado_texto += " (Tendencia Bajista)"
             
             # Guardamos la data estructurada para luego filtrarla
             data_dict = {
