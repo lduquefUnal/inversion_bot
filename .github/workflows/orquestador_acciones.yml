@@ -8,7 +8,9 @@ on:
 jobs:
   flujo-orquestado:
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: write # <- Token temporal seguro de GitHub (No usa tu usuario)
+      
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
@@ -43,3 +45,11 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python flujo/paso3_enviar.py
+        
+      - name: Auto-Commit de Datos Persistentes (Activa a Vercel)
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add flujo_datos/
+          git commit -m "🤖 Memoria Diaria: Actualización de Gráficas y Reporte IA" || echo "No hay cambios para hacer commit"
+          git push
