@@ -154,7 +154,10 @@ def main():
             )
 
             # --- TIPO DE DIP (3 niveles) ---
-            if drawdown_abs <= 20:
+            if drawdown_abs < 7:
+                tipo_dip = "Rising/ATH"
+                monto_dca = 0  # No compramos en ATH
+            elif drawdown_abs <= 20:
                 tipo_dip = "Leve"
                 monto_dca = 80
             elif drawdown_abs <= 40:
@@ -165,10 +168,14 @@ def main():
                 monto_dca = 120
 
             # --- CATEGORÍA VISUAL ---
-            if tendencia_bajista:
+            if tipo_dip == "Rising/ATH":
+                categoria = "Momentum"
+            elif tendencia_bajista:
                 categoria = "Cuchillo Cayendo"
             elif tipo_dip == "Leve" and score_calidad >= 60 and not tendencia_bajista:
                 categoria = "Recuperacion Rapida"
+            elif tipo_dip == "Medio" and score_rsi >= 40:
+                categoria = "Sweet Spot"
             elif tipo_dip == "Alto" and score_rsi >= 50:
                 categoria = "Cazador de Dips"
             else:
@@ -299,10 +306,16 @@ def main():
         
     # Guardar timestamp dentro del JSON para que Vercel pueda leerlo correctamente
     # (os.path.getmtime en Vercel retorna la fecha de build del servidor, no la real)
-    fecha_ahora = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
+    fecha_ahora = datetime.datetime.now(datetime.timezone.UTC).strftime('%Y-%m-%d %H:%M UTC')
     resultado_final = {"fecha_generacion": fecha_ahora, "MACRO": macro_data, "TOP_25_DIPS": top_25_candidatas}
     with open("flujo_datos/mercado.json", "w", encoding='utf-8') as f:
         json.dump(resultado_final, f, indent=4, ensure_ascii=False)
+        
+    # Copia para desarrollo local en Vite (public folder)
+    try:
+        with open("frontend/public/mercado.json", "w", encoding='utf-8') as f:
+            json.dump(resultado_final, f, indent=4, ensure_ascii=False)
+    except: pass
         
     if bot:
         try: bot.send_message(CHAT_ID, "✅ *40%* - `Data Procesada`: Macro, RSI, Reddit, Polymarket y Gráficas de Velas listas. Nutriendo IA...", parse_mode="Markdown")

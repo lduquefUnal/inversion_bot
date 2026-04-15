@@ -10,6 +10,7 @@ const CAT_CONFIG = {
   "Recup. Rápida": { emoji: "⚡", label: "Recup. Rápida", bg: "rgba(16,185,129,0.2)", color: "#10b981", border: "#10b981" },
   "Cazador Dips":  { emoji: "🔥", label: "Cazador Dips",  bg: "rgba(239,68,68,0.2)",  color: "#ef4444", border: "#ef4444" },
   "Cuchillo":      { emoji: "⚠️", label: "Cuchillo",      bg: "rgba(100,116,139,0.2)",color: "#94a3b8", border: "#64748b" },
+  "Momentum":      { emoji: "🚀", label: "Momentum",      bg: "rgba(59,130,246,0.2)", color: "#60a5fa", border: "#60a5fa" },
 };
 
 const DIP_COLORS = { "Leve": "#10b981", "Medio": "#eab308", "Alto": "#ef4444" };
@@ -20,19 +21,21 @@ const AssetCard = ({ item, index }) => {
   
   const {
     Ticker, Nombre, "Drawdown 52W %": Drawdown, "RSI 14D": RSI_Str, "Tendencias": SMA200_Tendencia, 
-    "Score_Ranking": score_ranking, "Score_Total": score_total, "Categoria": categoria_raw, 
+    "Score_Ranking": score_ranking, "Score_Total": score_total_val, "Categoria": categoria_raw, 
     "Tipo_Dip": tipo_dip_raw, "Cambio 5D %": cambio_5d,
     "Monto Sugerido (SmartDCA)": monto_dca,
     "Contexto_Reddit": reddit_news,
     AI_Details
   } = item;
 
+  const score_val = score_total_val || score_ranking;
+
   const categoria = categoria_raw || "Sweet Spot";
   const tipo_dip = tipo_dip_raw || "Medio";
   const cfg = CAT_CONFIG[categoria] || CAT_CONFIG["Sweet Spot"];
   const dip_color = DIP_COLORS[tipo_dip] || "#94a3b8";
   
-  const score_display = score_total || (score_ranking ? Math.abs(Math.round(score_ranking)) : "N/A");
+  const score_display = score_val ? Math.abs(Math.round(score_val)) : "N/A";
   
   const cambio = cambio_5d !== undefined ? cambio_5d : 0;
   const cambio_5d_str = (typeof cambio === 'number') ? (cambio >= 0 ? `+${cambio}%` : `${cambio}%`) : cambio;
