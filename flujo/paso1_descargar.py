@@ -2,6 +2,7 @@ import yfinance as yf
 import json
 import os
 import glob
+import datetime
 from dotenv import load_dotenv
 load_dotenv()
 import telebot
@@ -94,12 +95,14 @@ def main():
                 
             current_price = float(hist['Close'].iloc[-1])
             
-            # Drawdown 52W (Calculado sobre el último año comercial ~252 días)
+            # --- FACTOR 1: Drawdown 52W ---
             hist_52w = hist.tail(252)
             max_price_52w = float(hist_52w['High'].max())
             drawdown_52w_pct = ((current_price - max_price_52w) / max_price_52w * 100) if max_price_52w > 0 else 0
-            
-            # Validar Tendencia SMA200 para el ranking
+            drawdown_abs = abs(drawdown_52w_pct)
+            score_drawdown = min(drawdown_abs / 60.0, 1.0) * 100
+
+            # --- FACTOR 2: Tendencia SMA200 ---
             hist['SMA200'] = hist['Close'].rolling(window=200).mean()
             sma_200_actual = float(hist['SMA200'].iloc[-1])
             sma_200_pasada = float(hist['SMA200'].iloc[-21]) if len(hist) > 220 else sma_200_actual
@@ -107,55 +110,95 @@ def main():
             if not pd.isna(sma_200_actual) and not pd.isna(sma_200_pasada):
                 if sma_200_actual < sma_200_pasada:
                     tendencia_bajista = True
-            
-            # Guardamos el Drawdown original, pero calculamos uno ajustado para el ranking
-            score_ranking = drawdown_52w_pct
-            if tendencia_bajista:
-                # Sumamos +50 al score para que la empresa caiga al fondo del ranking,
-                # ya que se ordenan de menor a mayor (negativos primero)
-                score_ranking += 50.0
-            
-            # Calcular P/E Ratio o P/S para identificar generación de valor vs vende humo
-            # Nota: las APIs o info de crypto/ETFs no tienen PE, por lo que usamos fallback.
+            score_sma200 = 30.0 if tendencia_bajista else 100.0
+
+            # --- FACTOR 3: RSI ---
+            rsi_actual = calcular_rsi(hist)
+            rsi_estado = "Desconocido" if pd.isna(rsi_actual) else "🔥 Caro" if rsi_actual > 70 else "🚨 Sobrevendido" if rsi_actual < 35 else "Neutral"
+            if pd.isna(rsi_actual):
+                score_rsi = 40.0
+            elif rsi_actual < 30:  score_rsi = 100.0
+            elif rsi_actual < 40:  score_rsi = 75.0
+            elif rsi_actual < 50:  score_rsi = 50.0
+            elif rsi_actual < 65:  score_rsi = 25.0
+            else:                  score_rsi = 0.0
+
+            # --- FACTOR 4: Calidad Fundamental (P/E) ---
             try: info = stock.info
             except: info = {}
             pe_ratio = info.get('trailingPE', info.get('forwardPE', "N/A (Crecimiento/Pérdida/ETF)"))
             nombre_corto = info.get('shortName', t)
-            
-            rsi_actual = calcular_rsi(hist)
-            rsi_estado = "Desconocido" if pd.isna(rsi_actual) else "🔥 Caro" if rsi_actual > 70 else "🚨 Sobrevendido" if rsi_actual < 35 else "Neutral"
-            
-            # Smart DCA Inversión
-            base_inv = 100
-            agresividad = 0.20
-            delta_dip = 1 if ((not pd.isna(rsi_actual) and rsi_actual < 30) or drawdown_52w_pct < -50) else 0
-            monto_dca = int(base_inv * (1 + delta_dip * agresividad))
+            if pe_ratio is None or str(pe_ratio).startswith("N/A"):
+                score_calidad = 60.0  # ETF o sin datos: neutro
+            elif isinstance(pe_ratio, (int, float)) and pe_ratio > 0:
+                score_calidad = 80.0 if pe_ratio < 50 else 60.0
+            else:
+                score_calidad = 20.0  # empresa con pérdidas
+
+            # --- FACTOR 5: Momentum de Recuperación (5 días) ---
+            precio_hace_5d = float(hist['Close'].iloc[-6]) if len(hist) >= 6 else current_price
+            cambio_5d = ((current_price - precio_hace_5d) / precio_hace_5d * 100) if precio_hace_5d > 0 else 0
+            if cambio_5d > 3:    score_momentum = 100.0
+            elif cambio_5d > 0:  score_momentum = 70.0
+            elif cambio_5d > -2: score_momentum = 40.0
+            else:                score_momentum = 10.0
+
+            # --- SCORE TOTAL PONDERADO ---
+            score_total = round(
+                score_drawdown  * 0.30 +
+                score_rsi       * 0.25 +
+                score_sma200    * 0.20 +
+                score_calidad   * 0.15 +
+                score_momentum  * 0.10,
+                1
+            )
+
+            # --- TIPO DE DIP (3 niveles) ---
+            if drawdown_abs <= 20:
+                tipo_dip = "Leve"
+                monto_dca = 80
+            elif drawdown_abs <= 40:
+                tipo_dip = "Medio"
+                monto_dca = 100
+            else:
+                tipo_dip = "Alto"
+                monto_dca = 120
+
+            # --- CATEGORÍA VISUAL ---
+            if tendencia_bajista:
+                categoria = "Cuchillo Cayendo"
+            elif tipo_dip == "Leve" and score_calidad >= 60 and not tendencia_bajista:
+                categoria = "Recuperacion Rapida"
+            elif tipo_dip == "Alto" and score_rsi >= 50:
+                categoria = "Cazador de Dips"
+            else:
+                categoria = "Sweet Spot"
                 
             datos_completos.append({
                 "Ticker": t,
                 "Nombre": nombre_corto,
                 "Precio Actual": round(current_price, 2),
                 "Drawdown 52W %": round(drawdown_52w_pct, 2),
+                "Cambio 5D %": round(cambio_5d, 2),
                 "Valor Mercado (P/E Ratio)": pe_ratio,
                 "RSI 14D": f"{round(rsi_actual, 1)} - {rsi_estado}" if not pd.isna(rsi_actual) else "N/A",
                 "Monto Sugerido (SmartDCA)": f"${monto_dca} USD",
-                "Score_Ranking": score_ranking,
+                "Score_Total": score_total,
+                "Tipo_Dip": tipo_dip,
+                "Categoria": categoria,
                 "Tendencias": "Bajista (Cuchillo)" if tendencia_bajista else "Sana/Normal",
-                "Historia_Precios": hist 
+                "Historia_Precios": hist
             })
-            print(f"✅ Escaneado {t}")
+            print(f"✅ Escaneado {t} | Score: {score_total} | {categoria} | Dip {tipo_dip}")
         except Exception as e:
             pass
             
-    # RANKING penalizando a las empresas con tendencia bajista (cuchillos cayendo)
-    datos_completos = sorted(datos_completos, key=lambda x: x["Score_Ranking"])
+    # RANKING por Score Total Ponderado V2 (mayor score = mejor oportunidad)
+    datos_completos = sorted(datos_completos, key=lambda x: x["Score_Total"], reverse=True)
     top_25_candidatas = datos_completos[:25]
     
-    crypto_tickers = ["BTC-USD", "ETH-USD", "SOL-USD"]
-    latam_tickers = ["MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH", "EWW", "BBD", "CX", "BMA", "PAM", "TGS", "CIB", "EC", "TGLS", "AVAL", "SQM", "ARCO", "CPA", "BSBR", "SUZ"]
-    
-    # Re-ordenar para consolidar
-    top_25_candidatas = sorted(top_25_candidatas, key=lambda x: x["Score_Ranking"])
+    # Re-ordenar para consolidar (ya está ordenado correctamente)
+    top_25_candidatas = sorted(top_25_candidatas, key=lambda x: x["Score_Total"], reverse=True)
     
     print("Pre-procesando Top 25 Estricto y graficando velas japonesas...")
     for i, candidato in enumerate(top_25_candidatas):
@@ -208,9 +251,15 @@ def main():
              req_p = urllib.request.Request(f"https://gamma-api.polymarket.com/events?title={q}&active=true&limit=2", headers={'User-Agent': 'Mozilla/5.0'})
              with urllib.request.urlopen(req_p, timeout=5) as resp:
                  p_res = []
+                 # Palabras clave deportivas a excluir (Polymarket mezcla deportes con finanzas)
+                 deportes_excluir = ['nba', 'nfl', 'nhl', 'mlb', 'mls', 'fifa', 'ufc', 'soccer', 'football', 'basketball', 'baseball', 'matchup', 'beat the', 'points in']
                  for ev in json.loads(resp.read().decode()):
                     for m in ev.get('markets', []):
-                       try: p_res.append(f"{m.get('question', '')} -> YES: {float(json.loads(m.get('outcomePrices', '[]'))[0])*100:.1f}%")
+                       try:
+                           pregunta = m.get('question', '').lower()
+                           # Solo incluir si NO es un evento deportivo
+                           if not any(d in pregunta for d in deportes_excluir):
+                               p_res.append(f"{m.get('question', '')} -> YES: {float(json.loads(m.get('outcomePrices', '[]'))[0])*100:.1f}%")
                        except: pass
                  candidato["Polymarket"] = p_res if p_res else ["N/A"]
         except: candidato["Polymarket"] = ["N/A"]
@@ -220,7 +269,10 @@ def main():
         if "Historia_Precios" in item:
             del item["Historia_Precios"]
         
-    resultado_final = {"MACRO": macro_data, "TOP_25_DIPS": top_25_candidatas}
+    # Guardar timestamp dentro del JSON para que Vercel pueda leerlo correctamente
+    # (os.path.getmtime en Vercel retorna la fecha de build del servidor, no la real)
+    fecha_ahora = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
+    resultado_final = {"fecha_generacion": fecha_ahora, "MACRO": macro_data, "TOP_25_DIPS": top_25_candidatas}
     with open("flujo_datos/mercado.json", "w", encoding='utf-8') as f:
         json.dump(resultado_final, f, indent=4, ensure_ascii=False)
         

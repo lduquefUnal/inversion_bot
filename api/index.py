@@ -37,7 +37,8 @@ def catch_all(path):
                 cop = mercado.get("MACRO", {}).get("USD/COP", "N/A")
                 
             mtime = os.path.getmtime(ruta_json)
-            fecha_act = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M')
+            fecha_act = mercado.get("fecha_generacion", 
+                        datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M'))
         except:
             vix = "N/A"
             cop = "N/A"
@@ -66,6 +67,12 @@ def catch_all(path):
             # Buscar en json
             item_json = next((it for it in mercado.get("TOP_25_DIPS", []) if it["Ticker"] == ticker), {})
             monto_dca = item_json.get("Monto Sugerido (SmartDCA)", "$100 USD")
+            tipo_dip = item_json.get("Tipo_Dip", "Medio")
+            categoria = item_json.get("Categoria", "Sweet Spot")
+            score_total = item_json.get("Score_Total", "N/A")
+            cambio_5d = item_json.get("Cambio 5D %", 0)
+            cambio_5d_str = f"+{cambio_5d}%" if cambio_5d >= 0 else f"{cambio_5d}%"
+            cambio_color = "#10b981" if cambio_5d >= 0 else "#ef4444"
             reddit_news = item_json.get("Contexto_Reddit", [])
             
             noticias_html = ""
@@ -86,17 +93,34 @@ def catch_all(path):
                         noticias_html += f"<p style='margin: 3px 0; font-size: 0.85rem; color: #cbd5e1;'>• <a href='{u}' target='_blank' style='color:#60a5fa; text-decoration:none; font-weight:500;'>{t}</a></p>"
                     noticias_html += "</div>"
             
-            # Endpoint nativo que crearemos en Flask para devolver la imagen!
+            # Configurar badge de categoría
+            cat_config = {
+                "Recuperacion Rapida": {"emoji": "⚡", "label": "Recup. Rápida", "bg": "rgba(16,185,129,0.2)", "color": "#10b981", "border": "#10b981"},
+                "Sweet Spot":          {"emoji": "🎯", "label": "Sweet Spot",    "bg": "rgba(234,179,8,0.2)",  "color": "#eab308", "border": "#eab308"},
+                "Cazador de Dips":     {"emoji": "🔥", "label": "Cazador Dips",  "bg": "rgba(239,68,68,0.2)",  "color": "#ef4444", "border": "#ef4444"},
+                "Cuchillo Cayendo":    {"emoji": "⚠️", "label": "Cuchillo",      "bg": "rgba(100,116,139,0.2)","color": "#94a3b8", "border": "#64748b"},
+            }
+            cfg = cat_config.get(categoria, cat_config["Sweet Spot"])
+            dip_colors = {"Leve": "#10b981", "Medio": "#eab308", "Alto": "#ef4444"}
+            dip_color = dip_colors.get(tipo_dip, "#94a3b8")
+
+            # Endpoint nativo para la imagen
             img_url = f"/imagen/top_{num}_{ticker}.png"
             
             html_cards += f"""
-            <div class="action-card">
+            <div class="action-card" data-cat="{categoria}">
                 <div class="card-content">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
                         <span class="badge" style="background:#2dd4bf; color:#0f172a;">#{num}</span>
-                        <span class="badge" style="background:rgba(234,179,8,0.2); color:#eab308; border:1px solid #eab308;">🛒 {monto_dca}</span>
+                        <span class="badge" style="background:{cfg['bg']}; color:{cfg['color']}; border:1px solid {cfg['border']};">{cfg['emoji']} {cfg['label']}</span>
+                        <span class="badge" style="background:rgba(99,102,241,0.15); color:#818cf8; border:1px solid #818cf8; font-size:0.8rem;">📊 Score: {score_total}</span>
                     </div>
                     <h2 style="margin: 10px 0; color:#f8fafc;">{ticker} <span style="font-weight:300; font-size:1.2rem; color:#94a3b8;">({nombre})</span></h2>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+                        <span style="font-size:0.85rem; background:rgba(30,41,59,0.8); padding:4px 10px; border-radius:12px; color:{dip_color}; border:1px solid {dip_color};">Dip {tipo_dip}</span>
+                        <span style="font-size:0.85rem; background:rgba(30,41,59,0.8); padding:4px 10px; border-radius:12px; color:{cambio_color};">5D: {cambio_5d_str}</span>
+                        <span class="badge" style="background:rgba(234,179,8,0.2); color:#eab308; border:1px solid #eab308;">🛒 {monto_dca}</span>
+                    </div>
                     <ul style="list-style:none; padding:0; line-height: 1.6; color:#cbd5e1;">
                         {detalles_html}
                     </ul>
@@ -145,13 +169,18 @@ def catch_all(path):
                 
                 .badge {{ padding: 5px 12px; border-radius: 20px; font-size: 1rem; font-weight: 800; display: inline-block; }}
                 
+                .filter-bar {{ display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 25px; }}
                 .btn-filter {{
-                    background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 30px; 
-                    font-family: inherit; font-size: 1rem; font-weight: bold; cursor: pointer; 
-                    transition: 0.3s; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); 
+                    background: rgba(30,41,59,0.8); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); 
+                    padding: 10px 20px; border-radius: 30px; font-family: inherit; font-size: 0.95rem; 
+                    font-weight: bold; cursor: pointer; transition: 0.3s;
                 }}
-                .btn-filter:hover {{ background: #2563eb; transform: translateY(-2px); }}
-                .btn-filter.active {{ background: #10b981; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }}
+                .btn-filter:hover {{ transform: translateY(-2px); border-color: rgba(255,255,255,0.3); color: #f8fafc; }}
+                .btn-filter.active-verde  {{ background: rgba(16,185,129,0.2);  color: #10b981; border-color: #10b981; box-shadow: 0 4px 15px rgba(16,185,129,0.3); }}
+                .btn-filter.active-yellow {{ background: rgba(234,179,8,0.2);   color: #eab308; border-color: #eab308; box-shadow: 0 4px 15px rgba(234,179,8,0.3); }}
+                .btn-filter.active-red    {{ background: rgba(239,68,68,0.2);   color: #ef4444; border-color: #ef4444; box-shadow: 0 4px 15px rgba(239,68,68,0.3); }}
+                .btn-filter.active-gray   {{ background: rgba(100,116,139,0.2); color: #94a3b8; border-color: #64748b; }}
+                .btn-filter.active-all    {{ background: #3b82f6; color: white;  border-color: #3b82f6; box-shadow: 0 4px 15px rgba(59,130,246,0.4); }}
                 
                 @media (max-width: 800px) {{
                     .action-card {{ flex-direction: column; }}
@@ -180,8 +209,12 @@ def catch_all(path):
                     </div>
                 </div>
                 
-                <div style="margin-top: 30px;">
-                    <button onclick="togglePositivos(this)" class="btn-filter">✨ Mostrar solo Ganadoras (✅)</button>
+                <div class="filter-bar">
+                    <button onclick="filtrarPor('all', this)" class="btn-filter active-all">🔭 Todos</button>
+                    <button onclick="filtrarPor('Recuperacion Rapida', this)" class="btn-filter">⚡ Recup. Rápida</button>
+                    <button onclick="filtrarPor('Sweet Spot', this)" class="btn-filter">🎯 Sweet Spot</button>
+                    <button onclick="filtrarPor('Cazador de Dips', this)" class="btn-filter">🔥 Cazador Dips</button>
+                    <button onclick="filtrarPor('Cuchillo Cayendo', this)" class="btn-filter">⚠️ Cuchillos</button>
                 </div>
             </div>
             
@@ -194,17 +227,18 @@ def catch_all(path):
             </div>
             
             <script>
-               function togglePositivos(btn) {{
-                   const isFiltering = btn.classList.toggle('active');
-                   btn.innerHTML = isFiltering ? '👀 Restablecer a Todo' : '✨ Mostrar solo Ganadoras (✅)';
+               function filtrarPor(cat, btn) {{
+                   // Limpiar estados activos
+                   document.querySelectorAll('.btn-filter').forEach(b => b.className = 'btn-filter');
+                   const colorMap = {{
+                       'all': 'active-all', 'Recuperacion Rapida': 'active-verde',
+                       'Sweet Spot': 'active-yellow', 'Cazador de Dips': 'active-red', 'Cuchillo Cayendo': 'active-gray'
+                   }};
+                   btn.classList.add(colorMap[cat] || 'active-all');
+                   
                    document.querySelectorAll('.action-card').forEach(card => {{
-                       const veredictoText = card.innerHTML;
-                       if(isFiltering && !veredictoText.includes('✅')) {{
-                           card.style.display = 'none';
-                       }} else {{
-                           card.style.display = window.innerWidth > 800 ? 'flex' : 'flex'; 
-                           // En CSS base es display flex. 
-                       }}
+                       const cardCat = card.getAttribute('data-cat');
+                       card.style.display = (cat === 'all' || cardCat === cat) ? 'flex' : 'none';
                    }});
                }}
             </script>
