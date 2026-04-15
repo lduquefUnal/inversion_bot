@@ -216,6 +216,7 @@ def main():
             
             # Pre calcular SMA
             df['SMA50'] = df['Close'].rolling(window=50).mean()
+            df['SMA100'] = df['Close'].rolling(window=100).mean()
             df['SMA200'] = df['Close'].rolling(window=200).mean()
             
             # Visualizar mas dias (200 dias de mercado en pantalla)
@@ -225,13 +226,14 @@ def main():
             s  = mpf.make_mpf_style(marketcolors=mc, gridstyle='--', gridaxis='both')
             
             my_addplots = [
-                mpf.make_addplot(df_plot['SMA50'], color='orange', width=1.4),
+                mpf.make_addplot(df_plot['SMA50'], color='orange', width=1.1),
+                mpf.make_addplot(df_plot['SMA100'], color='green', width=1.1),
                 mpf.make_addplot(df_plot['SMA200'], color='purple', width=2.0),
                 mpf.make_addplot(df_plot['RSI'], panel=2, color='blue', ylabel='RSI')
             ]
             
-            # Título y Leyenda explícita
-            plot_title = f"{nombre} ({ticker})\n[Leyenda] Línea Amarilla: SMA 50 | Línea Morada: SMA 200"
+            # Título y Leyenda explicática
+            plot_title = f"{nombre} ({ticker})\nSMA 50(Amar.) | SMA 100(Verd.) | SMA 200(Mor.)"
             mpf.plot(df_plot, type='candle', style=s, volume=True, addplot=my_addplots,
                      title=plot_title, ylabel="Precio (USD)", 
                      savefig=f"flujo_datos/top_{i+1}_{ticker}.png", tight_layout=True)
@@ -240,24 +242,50 @@ def main():
             
         import urllib.request
         import urllib.parse
-        q = urllib.parse.quote(ticker + " stock")
+        
+        # Búsqueda en Reddit más específica
         try:
-            req = urllib.request.Request(f"https://www.reddit.com/search.json?q={candidato['Nombre'].replace(' ', '+')}&sort=new&limit=4", headers={'User-Agent': 'Mozilla/5.0'})
+            termino_busqueda = ticker if len(ticker) > 2 else f"{nombre}+stock"
+            req = urllib.request.Request(f"https://www.reddit.com/search.json?q={termino_busqueda}&sort=new&limit=8", headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req) as r:
-                candidato["Contexto_Reddit"] = [{"titulo": f"[{h['data']['subreddit_name_prefixed']}]: {h['data']['title']}", "url": f"https://reddit.com{h['data']['permalink']}"} for h in json.loads(r.read().decode()).get("data",{}).get("children",[])]
-        except: candidato["Contexto_Reddit"] = [{"titulo": "Sin foros", "url": "#"}]
+                posts = json.loads(r.read().decode()).get("data",{}).get("children",[])
+                noticias = []
+                sentiment_points = 0
+                
+                palabras_bull = ['bull', 'buy', 'call', 'moon', 'long', 'undervalued', 'gem', 'growth', 'opportunity', 'squeeze', 'up', 'ath']
+                palabras_bear = ['bear', 'sell', 'put', 'short', 'drop', 'crash', 'overvalued', 'dip', 'down', 'dump', 'scam', 'bagholder']
+                
+                for h in posts:
+                    titulo = h['data']['title']
+                    subreddit = h['data']['subreddit_name_prefixed']
+                    noticias.append({"titulo": f"[{subreddit}]: {titulo}", "url": f"https://reddit.com{h['data']['permalink']}"})
+                    
+                    # Heurística simple de sentimiento
+                    t_lower = titulo.lower()
+                    for w in palabras_bull:
+                        if w in t_lower: sentiment_points += 15
+                    for w in palabras_bear:
+                        if w in t_lower: sentiment_points -= 20
+                
+                # Normalizar sentimiento (0 a 100, 50 es neutral)
+                score_sent = 50 + sentiment_points
+                score_sent = max(5, min(95, score_sent))
+                
+                candidato["Contexto_Reddit"] = noticias
+                candidato["Sentimiento_Reddit"] = score_sent
+        except: 
+            candidato["Contexto_Reddit"] = [{"titulo": "Sin foros", "url": "#"}]
+            candidato["Sentimiento_Reddit"] = 50
              
         try:
-             req_p = urllib.request.Request(f"https://gamma-api.polymarket.com/events?title={q}&active=true&limit=2", headers={'User-Agent': 'Mozilla/5.0'})
+             req_p = urllib.request.Request(f"https://gamma-api.polymarket.com/events?title={urllib.parse.quote(ticker)}&active=true&limit=2", headers={'User-Agent': 'Mozilla/5.0'})
              with urllib.request.urlopen(req_p, timeout=5) as resp:
                  p_res = []
-                 # Palabras clave deportivas a excluir (Polymarket mezcla deportes con finanzas)
                  deportes_excluir = ['nba', 'nfl', 'nhl', 'mlb', 'mls', 'fifa', 'ufc', 'soccer', 'football', 'basketball', 'baseball', 'matchup', 'beat the', 'points in']
                  for ev in json.loads(resp.read().decode()):
                     for m in ev.get('markets', []):
                        try:
                            pregunta = m.get('question', '').lower()
-                           # Solo incluir si NO es un evento deportivo
                            if not any(d in pregunta for d in deportes_excluir):
                                p_res.append(f"{m.get('question', '')} -> YES: {float(json.loads(m.get('outcomePrices', '[]'))[0])*100:.1f}%")
                        except: pass

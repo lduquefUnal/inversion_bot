@@ -2,8 +2,10 @@ from flask import Flask, request, jsonify, send_from_directory
 import json
 import os
 import urllib.request
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
@@ -13,6 +15,66 @@ GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 def serve_image(filename):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return send_from_directory(os.path.join(base_dir, 'flujo_datos'), filename)
+
+@app.route('/api/historico', methods=['GET'])
+def get_historico():
+    ticker = request.args.get('ticker')
+    period = request.args.get('period', '5y')
+    
+    if not ticker:
+        return jsonify({"error": "Ticker es requerido"}), 400
+        
+    try:
+        import yfinance as yf
+        import pandas as pd
+        stock = yf.Ticker(ticker)
+        
+        # Mapeo de periodos solicitados
+        per_map = {'1S': '5d', '1M': '1mo', '3M': '3mo', '1A': '1y', '3A': '3y', '5A': '5y'}
+        p = per_map.get(period, '5y')
+        
+        # Siempre descargamos lo suficiente para que la SMA200 esté completa en el periodo destino.
+        # Descargamos 5 años por defecto para tener buffer de sobra (yfinance es rápido para esto).
+        df = stock.history(period='5y')
+        if df.empty:
+            return jsonify({"error": "No hay datos para este ticker"}), 404
+            
+        # Calcular indicadores sobre el dataset completo (5 años)
+        df['SMA50'] = df['Close'].rolling(window=50).mean()
+        df['SMA100'] = df['Close'].rolling(window=100).mean()
+        df['SMA200'] = df['Close'].rolling(window=200).mean()
+        
+        # Bollinger Bands
+        df['SMA20'] = df['Close'].rolling(window=20).mean()
+        df['STD20'] = df['Close'].rolling(window=20).std()
+        df['BollingerUpper'] = df['SMA20'] + (df['STD20'] * 2)
+        df['BollingerLower'] = df['SMA20'] - (df['STD20'] * 2)
+        
+        # Ahora recortamos el DataFrame para que solo contenga el periodo que el usuario pidió ver
+        # pero con los indicadores ya calculados desde antes.
+        limit_map = {'5d': 7, '1mo': 22, '3mo': 66, '1y': 252, '3y': 756, '5y': 1260}
+        n_days = limit_map.get(p, 252)
+        df_target = df.tail(n_days)
+        
+        data = []
+        for idx, row in df_target.iterrows():
+            data.append({
+                "time": idx.strftime('%Y-%m-%d'),
+                "open": float(row['Open']),
+                "high": float(row['High']),
+                "low": float(row['Low']),
+                "close": float(row['Close']),
+                "value": float(row['Volume']),
+                "sma50": float(row['SMA50']) if not pd.isna(row['SMA50']) else None,
+                "sma100": float(row['SMA100']) if not pd.isna(row['SMA100']) else None,
+                "sma200": float(row['SMA200']) if not pd.isna(row['SMA200']) else None,
+                "bollingerUpper": float(row['BollingerUpper']) if not pd.isna(row['BollingerUpper']) else None,
+                "bollingerLower": float(row['BollingerLower']) if not pd.isna(row['BollingerLower']) else None
+            })
+            
+        return jsonify({"data": data})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/', defaults={'path': ''}, methods=['GET', 'POST'])
 @app.route('/<path:path>', methods=['GET', 'POST'])
