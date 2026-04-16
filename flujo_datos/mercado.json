@@ -1,213 +1,22 @@
 {
-    "fecha_generacion": "2026-04-15 11:51 UTC",
+    "fecha_generacion": "2026-04-16 01:54 UTC",
     "MACRO": {
-        "VIX": 18.19,
-        "USD/COP": 3578.58
+        "VIX": 18.17,
+        "USD/COP": 3604.47
     },
     "TOP_25_DIPS": [
         {
-<<<<<<< HEAD
-            "Ticker": "NKE",
-            "Nombre": "Nike, Inc.",
-            "Precio Actual": 44.2,
-            "Drawdown 52W %": -43.86,
-            "Cambio 5D %": 3.54,
-            "Valor Mercado (P/E Ratio)": 29.078949,
-            "RSI 14D": "24.5 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 74.9,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "JOBY",
-            "Nombre": "Joby Aviation, Inc.",
-            "Precio Actual": 8.8,
-            "Drawdown 52W %": -58.0,
-            "Cambio 5D %": 5.01,
-            "Valor Mercado (P/E Ratio)": -18.924732,
-            "RSI 14D": "47.1 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 74.5,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-=======
-            "Ticker": "JOBY",
-            "Nombre": "Joby Aviation, Inc.",
-            "Precio Actual": 8.52,
-            "Drawdown 52W %": -59.33,
-            "Cambio 5D %": -12.5,
-            "Valor Mercado (P/E Ratio)": -18.3,
-            "RSI 14D": "28.3 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 85.5,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Sentimiento_Reddit": 75,
-            "Contexto_Reddit": [
-                { "titulo": "[r/JobyAviation]: Big dip today, buying more!", "url": "https://reddit.com" }
-            ]
-        },
-        {
-            "Ticker": "NTLA",
-            "Nombre": "Intellia Therapeutics, Inc.",
-            "Precio Actual": 14.26,
-            "Drawdown 52W %": -25.2,
-            "Cambio 5D %": 4.1,
-            "Valor Mercado (P/E Ratio)": -4.8,
-            "RSI 14D": "59.6 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 62.1,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
->>>>>>> developer
-            "Tendencias": "Sana/Normal",
-            "Sentimiento_Reddit": 55,
-            "Contexto_Reddit": [
-<<<<<<< HEAD
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "SOFI",
-            "Nombre": "SoFi Technologies, Inc.",
-            "Precio Actual": 17.91,
-            "Drawdown 52W %": -45.28,
-            "Cambio 5D %": 11.17,
-            "Valor Mercado (P/E Ratio)": 45.923077,
-            "RSI 14D": "60.7 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 70.9,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Sweet Spot",
-=======
-                { "titulo": "[r/biotech]: NTLA news arriving soon", "url": "https://reddit.com" }
-            ]
-        },
-        {
-            "Ticker": "NVDA",
-            "Nombre": "NVIDIA Corporation",
-            "Precio Actual": 145.2,
-            "Drawdown 52W %": -4.2,
-            "Cambio 5D %": 8.5,
-            "Valor Mercado (P/E Ratio)": 65.2,
-            "RSI 14D": "72.0 - 🔥 Caro",
-            "Monto Sugerido (SmartDCA)": "$0 USD",
-            "Score_Total": 15.0,
-            "Tipo_Dip": "Rising/ATH",
-            "Categoria": "Momentum",
->>>>>>> developer
-            "Tendencias": "Sana/Normal",
-            "Sentimiento_Reddit": 90,
-            "Contexto_Reddit": [
-<<<<<<< HEAD
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "NOW",
-            "Nombre": "ServiceNow, Inc.",
-            "Precio Actual": 87.79,
-            "Drawdown 52W %": -58.49,
-            "Cambio 5D %": -12.69,
-            "Valor Mercado (P/E Ratio)": 52.568863,
-            "RSI 14D": "30.0 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 70.2,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "ENPH",
-            "Nombre": "Enphase Energy, Inc.",
-            "Precio Actual": 32.0,
-            "Drawdown 52W %": -42.25,
-            "Cambio 5D %": -0.12,
-            "Valor Mercado (P/E Ratio)": 24.806202,
-            "RSI 14D": "27.6 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 68.1,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "ZS",
-            "Nombre": "Zscaler, Inc.",
-            "Precio Actual": 122.68,
-            "Drawdown 52W %": -63.6,
-            "Cambio 5D %": -13.66,
-            "Valor Mercado (P/E Ratio)": 26.745731,
-            "RSI 14D": "34.9 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 67.8,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "RUN",
             "Nombre": "Sunrun Inc.",
-            "Precio Actual": 12.45,
-            "Drawdown 52W %": -44.52,
-            "Cambio 5D %": -5.82,
-            "Valor Mercado (P/E Ratio)": 7.2807016,
-            "RSI 14D": "47.7 - Neutral",
+            "Precio Actual": 12.1,
+            "Drawdown 52W %": -46.08,
+            "Cambio 5D %": -12.76,
+            "Valor Mercado (P/E Ratio)": 7.289157,
+            "RSI 14D": "42.9 - Neutral",
             "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 67.8,
+            "Score_Total": 79.9,
             "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
+            "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
             "Contexto_Reddit": [
                 {
@@ -215,20 +24,21 @@
                     "url": "#"
                 }
             ],
+            "Sentimiento_Reddit": 50,
             "Polymarket": [
                 "N/A"
             ]
         },
         {
-            "Ticker": "PLTR",
-            "Nombre": "Palantir Technologies Inc.",
-            "Precio Actual": 135.7,
-            "Drawdown 52W %": -34.61,
-            "Cambio 5D %": -9.58,
-            "Valor Mercado (P/E Ratio)": 218.87096,
-            "RSI 14D": "34.3 - 🚨 Sobrevendido",
+            "Ticker": "SEDG",
+            "Nombre": "SolarEdge Technologies, Inc.",
+            "Precio Actual": 37.83,
+            "Drawdown 52W %": -29.62,
+            "Cambio 5D %": -13.07,
+            "Valor Mercado (P/E Ratio)": 20.440474,
+            "RSI 14D": "26.3 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.1,
+            "Score_Total": 76.7,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -238,112 +48,21 @@
                     "url": "#"
                 }
             ],
+            "Sentimiento_Reddit": 50,
             "Polymarket": [
                 "N/A"
             ]
         },
         {
-            "Ticker": "XOM",
-            "Nombre": "Exxon Mobil Corporation",
-            "Precio Actual": 149.24,
-            "Drawdown 52W %": -15.4,
-            "Cambio 5D %": -8.95,
-            "Valor Mercado (P/E Ratio)": 22.274628,
-            "RSI 14D": "29.4 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 65.7,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "TSLA",
-            "Nombre": "Tesla, Inc.",
-            "Precio Actual": 364.2,
-            "Drawdown 52W %": -26.99,
-            "Cambio 5D %": 5.06,
-            "Valor Mercado (P/E Ratio)": 334.12845,
-            "RSI 14D": "42.1 - Neutral",
+            "Ticker": "NKE",
+            "Nombre": "Nike, Inc.",
+            "Precio Actual": 45.44,
+            "Drawdown 52W %": -42.28,
+            "Cambio 5D %": 5.36,
+            "Valor Mercado (P/E Ratio)": 29.128206,
+            "RSI 14D": "30.1 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 65.0,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "NET",
-            "Nombre": "Cloudflare, Inc.",
-            "Precio Actual": 178.65,
-            "Drawdown 52W %": -31.29,
-            "Cambio 5D %": -17.4,
-            "Valor Mercado (P/E Ratio)": 123.912766,
-            "RSI 14D": "36.0 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 64.4,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "CVX",
-            "Nombre": "Chevron Corporation",
-            "Precio Actual": 187.02,
-            "Drawdown 52W %": -12.9,
-            "Cambio 5D %": -7.2,
-            "Valor Mercado (P/E Ratio)": 28.165665,
-            "RSI 14D": "28.8 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 64.4,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "MSTR",
-            "Nombre": "Strategy Inc",
-            "Precio Actual": 137.41,
-            "Drawdown 52W %": -69.95,
-            "Cambio 5D %": 11.07,
-            "Valor Mercado (P/E Ratio)": 3.7766085,
-            "RSI 14D": "51.1 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 64.2,
+            "Score_Total": 74.1,
             "Tipo_Dip": "Alto",
             "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
@@ -353,6 +72,103 @@
                     "url": "#"
                 }
             ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "SUZ",
+            "Nombre": "Suzano S.A.",
+            "Precio Actual": 9.53,
+            "Drawdown 52W %": -17.38,
+            "Cambio 5D %": 3.14,
+            "Valor Mercado (P/E Ratio)": 4.412037,
+            "RSI 14D": "44.5 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 72.8,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "JOBY",
+            "Nombre": "Joby Aviation, Inc.",
+            "Precio Actual": 9.13,
+            "Drawdown 52W %": -56.42,
+            "Cambio 5D %": 5.79,
+            "Valor Mercado (P/E Ratio)": -19.634409,
+            "RSI 14D": "52.2 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$120 USD",
+            "Score_Total": 72.6,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "EC",
+            "Nombre": "Ecopetrol S.A.",
+            "Precio Actual": 13.17,
+            "Drawdown 52W %": -15.69,
+            "Cambio 5D %": -6.66,
+            "Valor Mercado (P/E Ratio)": 11.067226,
+            "RSI 14D": "27.8 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 72.5,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "TGS",
+            "Nombre": "Transportadora de Gas del Sur S",
+            "Precio Actual": 31.0,
+            "Drawdown 52W %": -14.72,
+            "Cambio 5D %": -8.34,
+            "Valor Mercado (P/E Ratio)": 15.048544,
+            "RSI 14D": "29.1 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 70.8,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
             "Polymarket": [
                 "N/A"
             ]
@@ -360,13 +176,13 @@
         {
             "Ticker": "BABA",
             "Nombre": "Alibaba Group Holding Limited",
-            "Precio Actual": 131.35,
-            "Drawdown 52W %": -31.83,
-            "Cambio 5D %": 9.71,
-            "Valor Mercado (P/E Ratio)": 23.165785,
-            "RSI 14D": "58.5 - Neutral",
+            "Precio Actual": 133.28,
+            "Drawdown 52W %": -30.82,
+            "Cambio 5D %": 6.35,
+            "Valor Mercado (P/E Ratio)": 23.138887,
+            "RSI 14D": "55.3 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 64.2,
+            "Score_Total": 70.6,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -376,6 +192,103 @@
                     "url": "#"
                 }
             ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "DAPP",
+            "Nombre": "VanEck Digital Transformation E",
+            "Precio Actual": 18.46,
+            "Drawdown 52W %": -32.85,
+            "Cambio 5D %": 11.95,
+            "Valor Mercado (P/E Ratio)": 12.739194,
+            "RSI 14D": "64.4 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 69.1,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "ENPH",
+            "Nombre": "Enphase Energy, Inc.",
+            "Precio Actual": 32.18,
+            "Drawdown 52W %": -41.92,
+            "Cambio 5D %": -1.17,
+            "Valor Mercado (P/E Ratio)": 24.945738,
+            "RSI 14D": "22.3 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 69.1,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "MSTR",
+            "Nombre": "Strategy Inc",
+            "Precio Actual": 143.54,
+            "Drawdown 52W %": -68.61,
+            "Cambio 5D %": 11.88,
+            "Valor Mercado (P/E Ratio)": 3.9450865,
+            "RSI 14D": "53.8 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 68.9,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "XOM",
+            "Nombre": "Exxon Mobil Corporation",
+            "Precio Actual": 149.01,
+            "Drawdown 52W %": -15.53,
+            "Cambio 5D %": -4.62,
+            "Valor Mercado (P/E Ratio)": 22.207153,
+            "RSI 14D": "30.9 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 68.9,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
             "Polymarket": [
                 "N/A"
             ]
@@ -383,13 +296,13 @@
         {
             "Ticker": "VDE",
             "Nombre": "Vanguard Energy ETF",
-            "Precio Actual": 158.69,
-            "Drawdown 52W %": -11.51,
-            "Cambio 5D %": -6.95,
-            "Valor Mercado (P/E Ratio)": 20.779615,
-            "RSI 14D": "29.6 - 🚨 Sobrevendido",
+            "Precio Actual": 158.45,
+            "Drawdown 52W %": -11.65,
+            "Cambio 5D %": -3.84,
+            "Valor Mercado (P/E Ratio)": 20.748188,
+            "RSI 14D": "30.0 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 63.8,
+            "Score_Total": 68.7,
             "Tipo_Dip": "Leve",
             "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
@@ -399,29 +312,7 @@
                     "url": "#"
                 }
             ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "COIN",
-            "Nombre": "Coinbase Global, Inc.",
-            "Precio Actual": 184.41,
-            "Drawdown 52W %": -58.53,
-            "Cambio 5D %": 5.27,
-            "Valor Mercado (P/E Ratio)": 41.533783,
-            "RSI 14D": "52.6 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 63.5,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
+            "Sentimiento_Reddit": 50,
             "Polymarket": [
                 "N/A"
             ]
@@ -429,13 +320,13 @@
         {
             "Ticker": "FSLR",
             "Nombre": "First Solar, Inc.",
-            "Precio Actual": 200.61,
-            "Drawdown 52W %": -29.85,
-            "Cambio 5D %": 4.32,
-            "Valor Mercado (P/E Ratio)": 14.127465,
-            "RSI 14D": "56.2 - Neutral",
+            "Precio Actual": 195.2,
+            "Drawdown 52W %": -31.75,
+            "Cambio 5D %": -2.78,
+            "Valor Mercado (P/E Ratio)": 14.124457,
+            "RSI 14D": "51.3 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 63.2,
+            "Score_Total": 68.6,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -445,43 +336,21 @@
                     "url": "#"
                 }
             ],
+            "Sentimiento_Reddit": 50,
             "Polymarket": [
                 "N/A"
             ]
         },
         {
-            "Ticker": "SMR",
-            "Nombre": "NuScale Power Corporation",
-            "Precio Actual": 10.25,
-            "Drawdown 52W %": -82.15,
-            "Cambio 5D %": 11.9,
-            "Valor Mercado (P/E Ratio)": -24.13582,
-            "RSI 14D": "40.8 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 61.5,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "OXY",
-            "Nombre": "Occidental Petroleum Corporatio",
-            "Precio Actual": 55.38,
-            "Drawdown 52W %": -17.89,
-            "Cambio 5D %": -12.01,
-            "Valor Mercado (P/E Ratio)": 41.02222,
-            "RSI 14D": "33.2 - 🚨 Sobrevendido",
+            "Ticker": "CVX",
+            "Nombre": "Chevron Corporation",
+            "Precio Actual": 184.91,
+            "Drawdown 52W %": -13.88,
+            "Cambio 5D %": -4.14,
+            "Valor Mercado (P/E Ratio)": 27.847893,
+            "RSI 14D": "28.6 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 60.7,
+            "Score_Total": 67.4,
             "Tipo_Dip": "Leve",
             "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
@@ -491,112 +360,21 @@
                     "url": "#"
                 }
             ],
+            "Sentimiento_Reddit": 50,
             "Polymarket": [
                 "N/A"
             ]
         },
         {
-            "Ticker": "SNOW",
-            "Nombre": "Snowflake Inc.",
-            "Precio Actual": 135.47,
-            "Drawdown 52W %": -51.73,
-            "Cambio 5D %": -9.23,
-            "Valor Mercado (P/E Ratio)": 55.790066,
-            "RSI 14D": "30.4 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 60.6,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "PACB",
-            "Nombre": "Pacific Biosciences of Californ",
-            "Precio Actual": 1.57,
-            "Drawdown 52W %": -42.49,
-            "Cambio 5D %": 9.03,
-            "Valor Mercado (P/E Ratio)": -3.8041239,
-            "RSI 14D": "62.5 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 60.5,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "UMC",
-            "Nombre": "United Microelectronics Corpora",
-            "Precio Actual": 9.59,
-            "Drawdown 52W %": -24.37,
-            "Cambio 5D %": 3.01,
-            "Valor Mercado (P/E Ratio)": 18.442308,
-            "RSI 14D": "59.4 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 60.4,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "UUUU",
-            "Nombre": "Energy Fuels Inc",
-            "Precio Actual": 19.54,
-            "Drawdown 52W %": -29.96,
-            "Cambio 5D %": 12.04,
-            "Valor Mercado (P/E Ratio)": 67.37932,
-            "RSI 14D": "59.3 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 60.2,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Contexto_Reddit": [
-                {
-                    "titulo": "Sin foros",
-                    "url": "#"
-                }
-            ],
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "TAN",
-            "Nombre": "Invesco Solar ETF",
-            "Precio Actual": 55.23,
-            "Drawdown 52W %": -9.5,
-            "Cambio 5D %": 3.29,
-            "Valor Mercado (P/E Ratio)": 21.133743,
-            "RSI 14D": "49.4 - Neutral",
+            "Ticker": "COP",
+            "Nombre": "ConocoPhillips",
+            "Precio Actual": 118.92,
+            "Drawdown 52W %": -12.48,
+            "Cambio 5D %": -5.03,
+            "Valor Mercado (P/E Ratio)": 18.727558,
+            "RSI 14D": "32.7 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 59.3,
+            "Score_Total": 66.9,
             "Tipo_Dip": "Leve",
             "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
@@ -606,6 +384,55 @@
                     "url": "#"
                 }
             ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "PLTR",
+            "Nombre": "Palantir Technologies Inc.",
+            "Precio Actual": 142.15,
+            "Drawdown 52W %": -31.5,
+            "Cambio 5D %": 0.99,
+            "Valor Mercado (P/E Ratio)": 218.6923,
+            "RSI 14D": "40.5 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 65.2,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "PAM",
+            "Nombre": "Pampa Energia S.A.",
+            "Precio Actual": 82.09,
+            "Drawdown 52W %": -13.13,
+            "Cambio 5D %": -6.45,
+            "Valor Mercado (P/E Ratio)": 11.727142,
+            "RSI 14D": "39.8 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 64.9,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
             "Polymarket": [
                 "N/A"
             ]
@@ -613,13 +440,13 @@
         {
             "Ticker": "CPA",
             "Nombre": "Copa Holdings, S.A.",
-            "Precio Actual": 120.9,
-            "Drawdown 52W %": -21.8,
-            "Cambio 5D %": 8.37,
-            "Valor Mercado (P/E Ratio)": 7.421731,
-            "RSI 14D": "59.6 - Neutral",
+            "Precio Actual": 120.68,
+            "Drawdown 52W %": -21.94,
+            "Cambio 5D %": 1.27,
+            "Valor Mercado (P/E Ratio)": 7.412776,
+            "RSI 14D": "57.8 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 59.1,
+            "Score_Total": 64.8,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -629,11 +456,153 @@
                     "url": "#"
                 }
             ],
+            "Sentimiento_Reddit": 50,
             "Polymarket": [
                 "N/A"
-=======
-                { "titulo": "[r/nvda_stock]: To the moon!", "url": "https://reddit.com" }
->>>>>>> developer
+            ]
+        },
+        {
+            "Ticker": "UAL",
+            "Nombre": "United Airlines Holdings, Inc.",
+            "Precio Actual": 94.27,
+            "Drawdown 52W %": -20.92,
+            "Cambio 5D %": -2.11,
+            "Valor Mercado (P/E Ratio)": 9.242157,
+            "RSI 14D": "51.7 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 64.8,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "UMC",
+            "Nombre": "United Microelectronics Corpora",
+            "Precio Actual": 9.95,
+            "Drawdown 52W %": -21.53,
+            "Cambio 5D %": 5.07,
+            "Valor Mercado (P/E Ratio)": 19.134615,
+            "RSI 14D": "60.8 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 63.8,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "NTLA",
+            "Nombre": "Intellia Therapeutics, Inc.",
+            "Precio Actual": 14.94,
+            "Drawdown 52W %": -47.12,
+            "Cambio 5D %": 7.71,
+            "Valor Mercado (P/E Ratio)": -5.1146517,
+            "RSI 14D": "64.1 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$120 USD",
+            "Score_Total": 63.7,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "OXY",
+            "Nombre": "Occidental Petroleum Corporatio",
+            "Precio Actual": 55.83,
+            "Drawdown 52W %": -17.23,
+            "Cambio 5D %": -6.59,
+            "Valor Mercado (P/E Ratio)": 41.355556,
+            "RSI 14D": "32.7 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 62.5,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "NOC",
+            "Nombre": "Northrop Grumman Corporation",
+            "Precio Actual": 678.59,
+            "Drawdown 52W %": -12.33,
+            "Cambio 5D %": -1.29,
+            "Valor Mercado (P/E Ratio)": 23.367424,
+            "RSI 14D": "43.5 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 62.4,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "SOFI",
+            "Nombre": "SoFi Technologies, Inc.",
+            "Precio Actual": 18.79,
+            "Drawdown 52W %": -42.59,
+            "Cambio 5D %": 13.95,
+            "Valor Mercado (P/E Ratio)": 45.82927,
+            "RSI 14D": "67.4 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$120 USD",
+            "Score_Total": 62.2,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Contexto_Reddit": [
+                {
+                    "titulo": "Sin foros",
+                    "url": "#"
+                }
+            ],
+            "Sentimiento_Reddit": 50,
+            "Polymarket": [
+                "N/A"
             ]
         }
     ]
