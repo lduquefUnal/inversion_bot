@@ -136,6 +136,7 @@ def catch_all(path):
             cambio_5d_str = f"+{cambio_5d}%" if cambio_5d >= 0 else f"{cambio_5d}%"
             cambio_color = "#10b981" if cambio_5d >= 0 else "#ef4444"
             reddit_news = item_json.get("Contexto_Reddit", [])
+            fcf_val = item_json.get("FCF", "N/A")
             
             noticias_html = ""
             if reddit_news:
@@ -203,6 +204,7 @@ def catch_all(path):
                         <span style="font-size:0.85rem; background:rgba(30,41,59,0.8); padding:4px 10px; border-radius:12px; color:{dip_color}; border:1px solid {dip_color};">Dip {tipo_dip}</span>
                         <span style="font-size:0.85rem; background:rgba(30,41,59,0.8); padding:4px 10px; border-radius:12px; color:{cambio_color};">5D: {cambio_5d_str}</span>
                         <span class="badge" style="background:rgba(234,179,8,0.2); color:#eab308; border:1px solid #eab308;">🛒 {monto_dca}</span>
+                        <span class="badge" style="background:rgba(16,185,129,0.1); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-size:0.8rem;">💵 FCF: {fcf_val}</span>
                     </div>
                     <ul style="list-style:none; padding:0; line-height: 1.6; color:#cbd5e1;">
                         {detalles_html}

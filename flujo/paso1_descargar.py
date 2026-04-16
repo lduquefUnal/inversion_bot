@@ -180,18 +180,19 @@ def main():
                 monto_dca = 120 if not tendencia_bajista else 100
 
             # --- CATEGORÍA VISUAL ---
+            # Cazador de Dips: drawdown agresivo (>40%) + RSI sobrevendido (<35) — zona de pánico extremo
             if tipo_dip == "Rising/ATH":
                 categoria = "Momentum"
+            elif tipo_dip == "Alto" and rsi_actual < 35:
+                # Dip agresivo + RSI en zona de compra extrema → Cazador de Dips
+                categoria = "Cazador de Dips"
             elif not tendencia_bajista and drawdown_abs > 7:
-                # ¡Capturamos con tu idea! Tiene drawdown alto pero está en tendencia alcista (rompiendo SMA200)
                 if tipo_dip == "Leve":
                     categoria = "Recuperacion Rapida"
                 else:
                     categoria = "Sweet Spot"
             elif tendencia_bajista and tipo_dip == "Alto":
                 categoria = "Cuchillo Cayendo"
-            elif tipo_dip == "Alto" and score_rsi >= 60:
-                categoria = "Cazador de Dips"
             else:
                 categoria = "Sweet Spot"
                 
@@ -202,6 +203,7 @@ def main():
                 "Drawdown 52W %": round(drawdown_52w_pct, 2),
                 "Cambio 5D %": round(cambio_5d, 2),
                 "Valor Mercado (P/E Ratio)": pe_ratio,
+                "FCF": fcf_str,
                 "RSI 14D": f"{round(rsi_actual, 1)} - {rsi_estado}" if not pd.isna(rsi_actual) else "N/A",
                 "Monto Sugerido (SmartDCA)": f"${monto_dca} USD",
                 "Score_Total": score_total,
@@ -263,41 +265,50 @@ def main():
             
         import urllib.request
         import urllib.parse
-        
-        # Búsqueda en Reddit más específica
+
+        # --- RECOMENDACIONES DE ANALISTAS (Wall Street Consensus) ---
+        try:
+            recs = stock.recommendations_summary
+            if recs is not None and not recs.empty:
+                latest = recs.iloc[0]
+                sb  = int(latest.get('strongBuy',  0))
+                b   = int(latest.get('buy',         0))
+                h   = int(latest.get('hold',        0))
+                s   = int(latest.get('sell',        0))
+                ss  = int(latest.get('strongSell',  0))
+                total_analistas = sb + b + h + s + ss
+                if total_analistas > 0:
+                    compra_pct  = round((sb + b) / total_analistas * 100)
+                    hold_pct    = round(h        / total_analistas * 100)
+                    vender_pct  = 100 - compra_pct - hold_pct
+                    candidato["Recomendacion_Analistas"] = {
+                        "compra": compra_pct,
+                        "hold":   hold_pct,
+                        "vender": vender_pct,
+                        "total":  total_analistas
+                    }
+                else:
+                    candidato["Recomendacion_Analistas"] = None
+            else:
+                candidato["Recomendacion_Analistas"] = None
+        except:
+            candidato["Recomendacion_Analistas"] = None
+
+        # --- BÚSQUEDA EN REDDIT (fuentes para contrastar) ---
         try:
             termino_busqueda = ticker if len(ticker) > 2 else f"{nombre}+stock"
             req = urllib.request.Request(f"https://www.reddit.com/search.json?q={termino_busqueda}&sort=new&limit=8", headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req) as r:
                 posts = json.loads(r.read().decode()).get("data",{}).get("children",[])
                 noticias = []
-                sentiment_points = 0
-                
-                palabras_bull = ['bull', 'buy', 'call', 'moon', 'long', 'undervalued', 'gem', 'growth', 'opportunity', 'squeeze', 'up', 'ath']
-                palabras_bear = ['bear', 'sell', 'put', 'short', 'drop', 'crash', 'overvalued', 'dip', 'down', 'dump', 'scam', 'bagholder']
-                
                 for h in posts:
-                    titulo = h['data']['title']
+                    titulo   = h['data']['title']
                     subreddit = h['data']['subreddit_name_prefixed']
                     noticias.append({"titulo": f"[{subreddit}]: {titulo}", "url": f"https://reddit.com{h['data']['permalink']}"})
-                    
-                    # Heurística simple de sentimiento
-                    t_lower = titulo.lower()
-                    for w in palabras_bull:
-                        if w in t_lower: sentiment_points += 15
-                    for w in palabras_bear:
-                        if w in t_lower: sentiment_points -= 20
-                
-                # Normalizar sentimiento (0 a 100, 50 es neutral)
-                score_sent = 50 + sentiment_points
-                score_sent = max(5, min(95, score_sent))
-                
-                candidato["Contexto_Reddit"] = noticias
-                candidato["Sentimiento_Reddit"] = score_sent
-        except: 
-            candidato["Contexto_Reddit"] = [{"titulo": "Sin foros", "url": "#"}]
-            candidato["Sentimiento_Reddit"] = 50
-             
+                candidato["Contexto_Reddit"] = noticias if noticias else None
+        except:
+            candidato["Contexto_Reddit"] = None
+
         try:
              req_p = urllib.request.Request(f"https://gamma-api.polymarket.com/events?title={urllib.parse.quote(ticker)}&active=true&limit=2", headers={'User-Agent': 'Mozilla/5.0'})
              with urllib.request.urlopen(req_p, timeout=5) as resp:

@@ -1,6 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
+
+// Tooltip inline para métricas del dashboard
+const Tip = ({ text, children }) => {
+  const [v, setV] = useState(false);
+  return (
+    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: '3px', cursor: 'help' }}
+      onMouseEnter={() => setV(true)} onMouseLeave={() => setV(false)}>
+      {children}
+      <span style={{ fontSize: '0.65rem', opacity: 0.4, background: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '12px', height: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', flexShrink: 0 }}>?</span>
+      {v && (
+        <span style={{ position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)', background: '#1e293b', border: '1px solid rgba(100,116,139,0.5)', borderRadius: '8px', padding: '7px 10px', fontSize: '0.75rem', color: '#cbd5e1', whiteSpace: 'nowrap', zIndex: 999, lineHeight: '1.5', boxShadow: '0 8px 25px rgba(0,0,0,0.6)', pointerEvents: 'none' }}>{text}</span>
+      )}
+    </span>
+  );
+};
 
 const CAT_CONFIG = {
   "Recuperacion Rapida": { emoji: "⚡", label: "Recup. Rápida", bg: "rgba(16,185,129,0.2)", color: "#10b981", border: "#10b981" },
@@ -41,8 +56,18 @@ const AssetCard = ({ item, index }) => {
   const cambio_5d_str = (typeof cambio === 'number') ? (cambio >= 0 ? `+${cambio}%` : `${cambio}%`) : cambio;
   const cambio_color = (typeof cambio === 'number' && cambio < 0) ? "#ef4444" : "#10b981";
   
-  // URL of local image while prototyping
-  const imgUrl = `/${encodeURIComponent('top_' + (index + 1) + '_' + Ticker + '.png')}`;
+  // Ruta primaria: /imagen/ (Flask en prod/dev). Fallback: /top_N_TICKER.png (Vite public)
+  const imgPrimary = `/imagen/top_${index + 1}_${Ticker}.png`;
+  const imgFallback = `/top_${index + 1}_${Ticker}.png`;
+  const fcf = item.FCF;
+
+  const handleImgError = (e) => {
+    if (e.currentTarget.src.includes('/imagen/')) {
+      e.currentTarget.src = imgFallback;
+    } else {
+      e.currentTarget.style.display = 'none';
+    }
+  };
 
   let aiHtml = AI_Details || "";
   if (aiHtml) {
@@ -93,6 +118,22 @@ const AssetCard = ({ item, index }) => {
           <span style={{ fontSize: '0.85rem', background: 'rgba(15,23,42,0.8)', padding: '4px 10px', borderRadius: '12px', color: cambio_color }}>5D: {cambio_5d_str}</span>
         </div>
 
+        {/* Chips de métricas clave con tooltip */}
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '15px' }}>
+          <Tip text="RSI < 35 = sobrevendido (buena zona de entrada). RSI > 70 = caro.">
+            <span style={{ fontSize: '0.78rem', background: 'rgba(30,41,59,0.8)', padding: '3px 9px', borderRadius: '10px', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.08)' }}>RSI: {RSI_Str?.split(' ')[0] || 'N/A'}</span>
+          </Tip>
+          <Tip text="Caída desde el máximo de 52 semanas. > 40% = zona de dip agresivo."><span style={{ fontSize: '0.78rem', background: 'rgba(30,41,59,0.8)', padding: '3px 9px', borderRadius: '10px', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}>DD: {Drawdown}%</span>
+          </Tip>
+          {fcf && fcf !== 'N/A' && (
+            <Tip text="Flujo de Caja Libre. Positivo = empresa genera caja real. Negativo puede ser normal en growth.">
+              <span style={{ fontSize: '0.78rem', background: fcf.startsWith('$-') || fcf.startsWith('-') ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)', padding: '3px 9px', borderRadius: '10px', color: fcf.startsWith('$-') || fcf.startsWith('-') ? '#ef4444' : '#10b981', border: `1px solid ${fcf.startsWith('$-') || fcf.startsWith('-') ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}` }}>💵 FCF: {fcf}</span>
+            </Tip>
+          )}
+          <Tip text="Tendencia de la SMA 200. Sana/Normal = precio sobre media de largo plazo (alcista)."><span style={{ fontSize: '0.78rem', background: 'rgba(30,41,59,0.8)', padding: '3px 9px', borderRadius: '10px', color: SMA200_Tendencia?.includes('Cuchillo') ? '#f59e0b' : '#10b981', border: '1px solid rgba(255,255,255,0.08)' }}>{SMA200_Tendencia?.includes('Cuchillo') ? '⚠️ Bajista' : '✅ Alcista'}</span>
+          </Tip>
+        </div>
+
         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 15px', color: '#cbd5e1', fontSize: '0.9rem', lineHeight: '1.7' }}>
           {aiHtml ? (
             <div dangerouslySetInnerHTML={{ __html: aiHtml }} />
@@ -111,15 +152,15 @@ const AssetCard = ({ item, index }) => {
         style={{ flex: '1 1 45%', background: '#0b1120', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '20px', alignSelf: 'stretch' }}
       >
          <img 
-          src={imgUrl} 
+          src={imgPrimary} 
           alt={`Gráfica ${Ticker}`} 
           style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'zoom-in', marginBottom: '20px', background: '#fff' }} 
           onClick={(e) => { 
             e.preventDefault(); 
             e.stopPropagation(); 
-            setZoomedImage(imgUrl); 
+            setZoomedImage(imgPrimary); 
           }}
-          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          onError={handleImgError}
         />
 
         {reddit_news && reddit_news.length > 0 && reddit_news[0] !== "Sin foros" && reddit_news[0]?.titulo !== "Sin foros" && (
