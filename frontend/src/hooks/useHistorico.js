@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 
 const fetchHistorico = async (ticker, period) => {
   // Cuando se mueva a producción, esto será '/api/historico'
-  // Por ahora lo forzamos al servidor de flask de desarrollo local
-  const url = `http://localhost:5000/api/historico?ticker=${ticker}&period=${period}`;
+  // Por ahora Vite proxy se encargará de local
+  const url = `/api/historico?ticker=${ticker}&period=${period}`;
   
   const response = await fetch(url);
   if (!response.ok) {
