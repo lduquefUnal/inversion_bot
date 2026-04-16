@@ -1,17 +1,18 @@
 {
-    "fecha_generacion": "2026-04-16 03:05 UTC",
+    "fecha_generacion": "2026-04-16 11:54 UTC",
     "MACRO": {
-        "VIX": 18.17,
-        "USD/COP": 3609.39
+        "VIX": 18.23,
+        "USD/COP": 3608.15
     },
     "TOP_25_DIPS": [
         {
             "Ticker": "RUN",
             "Nombre": "Sunrun Inc.",
+            "Descripcion": "Solar (Technology)",
             "Precio Actual": 12.1,
             "Drawdown 52W %": -46.08,
             "Cambio 5D %": -12.76,
-            "Valor Mercado (P/E Ratio)": 7.289157,
+            "Valor Mercado (P/E Ratio)": 7.0760236,
             "FCF": "$-2.65B",
             "RSI 14D": "42.9 - Neutral",
             "Monto Sugerido (SmartDCA)": "$120 USD",
@@ -28,6 +29,7 @@
         {
             "Ticker": "SEDG",
             "Nombre": "SolarEdge Technologies, Inc.",
+            "Descripcion": "Solar (Technology)",
             "Precio Actual": 37.83,
             "Drawdown 52W %": -29.62,
             "Cambio 5D %": -13.07,
@@ -48,14 +50,15 @@
         {
             "Ticker": "NKE",
             "Nombre": "Nike, Inc.",
+            "Descripcion": "Footwear & Accessories (Consumer Cyclical)",
             "Precio Actual": 45.44,
             "Drawdown 52W %": -42.28,
             "Cambio 5D %": 5.36,
-            "Valor Mercado (P/E Ratio)": 29.128206,
+            "Valor Mercado (P/E Ratio)": 29.894737,
             "FCF": "$1.31B",
             "RSI 14D": "30.1 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 74.1,
+            "Score_Total": 73.8,
             "Tipo_Dip": "Alto",
             "Categoria": "Cazador de Dips",
             "Tendencias": "Bajista (Cuchillo)",
@@ -68,6 +71,7 @@
         {
             "Ticker": "SUZ",
             "Nombre": "Suzano S.A.",
+            "Descripcion": "Paper & Paper Products (Basic Materials)",
             "Precio Actual": 9.53,
             "Drawdown 52W %": -17.38,
             "Cambio 5D %": 3.14,
@@ -88,6 +92,7 @@
         {
             "Ticker": "JOBY",
             "Nombre": "Joby Aviation, Inc.",
+            "Descripcion": "Airports & Air Services (Industrials)",
             "Precio Actual": 9.13,
             "Drawdown 52W %": -56.42,
             "Cambio 5D %": 5.79,
@@ -108,14 +113,15 @@
         {
             "Ticker": "EC",
             "Nombre": "Ecopetrol S.A.",
+            "Descripcion": "Oil & Gas Integrated (Energy)",
             "Precio Actual": 13.17,
             "Drawdown 52W %": -15.69,
             "Cambio 5D %": -6.66,
-            "Valor Mercado (P/E Ratio)": 11.067226,
+            "Valor Mercado (P/E Ratio)": 10.974999,
             "FCF": "$7896.75B",
             "RSI 14D": "27.8 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 72.5,
+            "Score_Total": 72.6,
             "Tipo_Dip": "Leve",
             "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
@@ -128,6 +134,7 @@
         {
             "Ticker": "TGS",
             "Nombre": "Transportadora de Gas del Sur S",
+            "Descripcion": "Oil & Gas Integrated (Energy)",
             "Precio Actual": 31.0,
             "Drawdown 52W %": -14.72,
             "Cambio 5D %": -8.34,
@@ -148,14 +155,15 @@
         {
             "Ticker": "BABA",
             "Nombre": "Alibaba Group Holding Limited",
+            "Descripcion": "Internet Retail (Consumer Cyclical)",
             "Precio Actual": 133.28,
             "Drawdown 52W %": -30.82,
             "Cambio 5D %": 6.35,
-            "Valor Mercado (P/E Ratio)": 23.138887,
+            "Valor Mercado (P/E Ratio)": 23.547703,
             "FCF": "$-26.12B",
             "RSI 14D": "55.3 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 70.6,
+            "Score_Total": 70.5,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -168,6 +176,7 @@
         {
             "Ticker": "DAPP",
             "Nombre": "VanEck Digital Transformation E",
+            "Descripcion": "Fondo Cotizado (ETF)",
             "Precio Actual": 18.46,
             "Drawdown 52W %": -32.85,
             "Cambio 5D %": 11.95,
@@ -188,6 +197,7 @@
         {
             "Ticker": "ENPH",
             "Nombre": "Enphase Energy, Inc.",
+            "Descripcion": "Solar (Technology)",
             "Precio Actual": 32.18,
             "Drawdown 52W %": -41.92,
             "Cambio 5D %": -1.17,
@@ -208,6 +218,7 @@
         {
             "Ticker": "MSTR",
             "Nombre": "Strategy Inc",
+            "Descripcion": "Software - Application (Technology)",
             "Precio Actual": 143.54,
             "Drawdown 52W %": -68.61,
             "Cambio 5D %": 11.88,
@@ -228,6 +239,7 @@
         {
             "Ticker": "XOM",
             "Nombre": "Exxon Mobil Corporation",
+            "Descripcion": "Oil & Gas Integrated (Energy)",
             "Precio Actual": 149.01,
             "Drawdown 52W %": -15.53,
             "Cambio 5D %": -4.62,
@@ -246,8 +258,30 @@
             ]
         },
         {
+            "Ticker": "FSLR",
+            "Nombre": "First Solar, Inc.",
+            "Descripcion": "Solar (Technology)",
+            "Precio Actual": 195.2,
+            "Drawdown 52W %": -31.75,
+            "Cambio 5D %": -2.78,
+            "Valor Mercado (P/E Ratio)": 13.736805,
+            "FCF": "$963.92M",
+            "RSI 14D": "51.3 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 68.7,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "VDE",
             "Nombre": "Vanguard Energy ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
             "Precio Actual": 158.45,
             "Drawdown 52W %": -11.65,
             "Cambio 5D %": -3.84,
@@ -266,28 +300,9 @@
             ]
         },
         {
-            "Ticker": "FSLR",
-            "Nombre": "First Solar, Inc.",
-            "Precio Actual": 195.2,
-            "Drawdown 52W %": -31.75,
-            "Cambio 5D %": -2.78,
-            "Valor Mercado (P/E Ratio)": 14.124457,
-            "FCF": "$963.92M",
-            "RSI 14D": "51.3 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 68.6,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "CVX",
             "Nombre": "Chevron Corporation",
+            "Descripcion": "Oil & Gas Integrated (Energy)",
             "Precio Actual": 184.91,
             "Drawdown 52W %": -13.88,
             "Cambio 5D %": -4.14,
@@ -308,6 +323,7 @@
         {
             "Ticker": "COP",
             "Nombre": "ConocoPhillips",
+            "Descripcion": "Oil & Gas E&P (Energy)",
             "Precio Actual": 118.92,
             "Drawdown 52W %": -12.48,
             "Cambio 5D %": -5.03,
@@ -328,10 +344,11 @@
         {
             "Ticker": "PLTR",
             "Nombre": "Palantir Technologies Inc.",
+            "Descripcion": "Software - Infrastructure (Technology)",
             "Precio Actual": 142.15,
             "Drawdown 52W %": -31.5,
             "Cambio 5D %": 0.99,
-            "Valor Mercado (P/E Ratio)": 218.6923,
+            "Valor Mercado (P/E Ratio)": 225.63492,
             "FCF": "$1.26B",
             "RSI 14D": "40.5 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -348,6 +365,7 @@
         {
             "Ticker": "PAM",
             "Nombre": "Pampa Energia S.A.",
+            "Descripcion": "Conglomerates (Industrials)",
             "Precio Actual": 82.09,
             "Drawdown 52W %": -13.13,
             "Cambio 5D %": -6.45,
@@ -368,6 +386,7 @@
         {
             "Ticker": "CPA",
             "Nombre": "Copa Holdings, S.A.",
+            "Descripcion": "Airlines (Industrials)",
             "Precio Actual": 120.68,
             "Drawdown 52W %": -21.94,
             "Cambio 5D %": 1.27,
@@ -388,6 +407,7 @@
         {
             "Ticker": "UAL",
             "Nombre": "United Airlines Holdings, Inc.",
+            "Descripcion": "Airlines (Industrials)",
             "Precio Actual": 94.27,
             "Drawdown 52W %": -20.92,
             "Cambio 5D %": -2.11,
@@ -408,6 +428,7 @@
         {
             "Ticker": "UMC",
             "Nombre": "United Microelectronics Corpora",
+            "Descripcion": "Semiconductors (Technology)",
             "Precio Actual": 9.95,
             "Drawdown 52W %": -21.53,
             "Cambio 5D %": 5.07,
@@ -428,6 +449,7 @@
         {
             "Ticker": "NTLA",
             "Nombre": "Intellia Therapeutics, Inc.",
+            "Descripcion": "Biotechnology (Healthcare)",
             "Precio Actual": 14.94,
             "Drawdown 52W %": -47.12,
             "Cambio 5D %": 7.71,
@@ -448,6 +470,7 @@
         {
             "Ticker": "OXY",
             "Nombre": "Occidental Petroleum Corporatio",
+            "Descripcion": "Oil & Gas E&P (Energy)",
             "Precio Actual": 55.83,
             "Drawdown 52W %": -17.23,
             "Cambio 5D %": -6.59,
@@ -468,10 +491,11 @@
         {
             "Ticker": "NOC",
             "Nombre": "Northrop Grumman Corporation",
+            "Descripcion": "Aerospace & Defense (Industrials)",
             "Precio Actual": 678.59,
             "Drawdown 52W %": -12.33,
             "Cambio 5D %": -1.29,
-            "Valor Mercado (P/E Ratio)": 23.367424,
+            "Valor Mercado (P/E Ratio)": 23.311234,
             "FCF": "$2.90B",
             "RSI 14D": "43.5 - Neutral",
             "Monto Sugerido (SmartDCA)": "$80 USD",
@@ -486,18 +510,19 @@
             ]
         },
         {
-            "Ticker": "SOFI",
-            "Nombre": "SoFi Technologies, Inc.",
-            "Precio Actual": 18.79,
-            "Drawdown 52W %": -42.59,
-            "Cambio 5D %": 13.95,
-            "Valor Mercado (P/E Ratio)": 45.82927,
+            "Ticker": "TAN",
+            "Nombre": "Invesco Solar ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 55.32,
+            "Drawdown 52W %": -9.36,
+            "Cambio 5D %": -0.29,
+            "Valor Mercado (P/E Ratio)": 21.168182,
             "FCF": "N/A",
-            "RSI 14D": "67.4 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
+            "RSI 14D": "44.2 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
             "Score_Total": 62.2,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Sweet Spot",
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
             "Recomendacion_Analistas": null,
             "Contexto_Reddit": null,
