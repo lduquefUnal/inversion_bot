@@ -3,6 +3,7 @@ import { useAppStore } from '../../store/useAppStore';
 
 const CATEGORIES = [
   { id: 'all', label: '🔭 Todos', type: 'all' },
+  { id: 'veredicto', label: '✅ Aprobadas', type: 'veredicto' },
   { id: 'Recuperacion Rapida', label: '⚡ Recup. Rápida', type: 'verde' },
   { id: 'Sweet Spot', label: '🎯 Sweet Spot', type: 'yellow' },
   { id: 'Cazador de Dips', label: '🔥 Cazador Dips', type: 'red' },
@@ -14,6 +15,7 @@ const FilterBar = () => {
 
   const getColorConfig = (type) => {
     switch(type) {
+      case 'veredicto': return { bg: 'rgba(34,197,94,0.2)', color: '#22c55e', border: '#22c55e' };
       case 'verde': return { bg: 'rgba(16,185,129,0.2)', color: '#10b981', border: '#10b981' };
       case 'yellow': return { bg: 'rgba(234,179,8,0.2)', color: '#eab308', border: '#eab308' };
       case 'red': return { bg: 'rgba(239,68,68,0.2)', color: '#ef4444', border: '#ef4444' };

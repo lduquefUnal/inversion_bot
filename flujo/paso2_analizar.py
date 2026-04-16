@@ -52,11 +52,12 @@ Ejecuta el protocolo estructurado estrictamente en este orden para tu Markdown:
 *(ATENCIÓN: Nuestra estrategia es "SmartDCA Valiente". NO rechaces una acción con ❌ solo porque su precio está debajo de las SMA 50 y 200. ¡Eso es lo que buscamos (Dips)! Otorga ✅ con valentía si aprecias sobreventa extrema (RSI bajo), si la caída parece exagerada, o si tiene un P/E sólido que justifique comprar la caída).*
 
 **1. TICKER (Nombre de la Empresa)**
+* **Veredicto Técnico:** ❌ / ✅ (Justifica tu decisión 1 línea).
 * **Tesis de Inversión:** (Argumenta integrando análisis social y financiero en 3 a 5 líneas máximo. NO repitas precio, RSI ni Drawdown).
 * **Caso Bull:** (Escenario positivo 1 o 2 líneas).
 * **Caso Bear:** (Riesgo principal 1 o 2 líneas).
 
-*(Aplica esta ESTRUCTURA para las 25 acciones de la lista exactas, sin agregar métricas redundantes).*
+*(Aplica esta ESTRUCTURA para las 50 acciones de la lista exactas, sin agregar métricas redundantes).*
 
 # 4. Conclusiones
 *(Cierra con un dictamen general).*

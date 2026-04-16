@@ -55,9 +55,21 @@ const Dashboard = () => {
         key={activeStrategy}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ textAlign: 'center', marginBottom: '30px', color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic' }}
+        style={{ 
+          background: 'rgba(30, 41, 59, 0.4)', padding: '20px', borderRadius: '15px', 
+          border: '1px solid rgba(255,255,255,0.05)', marginBottom: '30px', color: 'var(--text-secondary)' 
+        }}
       >
-        🎯 Estrategia <strong>{activeStrategy.charAt(0).toUpperCase() + activeStrategy.slice(1)}</strong>: {STRATEGIES[activeStrategy]?.description || ''}
+        <h3 style={{ margin: '0 0 10px 0', color: '#f8fafc', fontSize: '1.2rem' }}>
+          🤖 ¿Qué hace este bot?
+        </h3>
+        <p style={{ margin: '0 0 15px 0', lineHeight: '1.6', fontSize: '0.95rem' }}>
+          InversionBot escanea diariamente más de <strong>100 activos</strong> (Acciones de EE.UU., LATAM, Asia, Mercados Emergentes, ETFs, Criptomonedas y Energía Nuclear) buscando oportunidades de mercado. 
+          Nuestra estrategia automatizada analiza indicadores técnicos (RSI, Drawdown, SMA 200) y fundamentales (FCF, P/E) en combinación con sentimiento social (Reddit) y el consenso de Wall Street.
+        </p>
+        <p style={{ margin: '0', fontSize: '0.95rem' }}>
+          🎯 <strong>Estrategia Valiente (Smart DCA):</strong> {STRATEGIES[activeStrategy]?.description || 'Buscamos cazar Dips agresivos (>40%) en empresas con potencial. Nos gustan los "Cuchillos Cayendo" siempre y cuando tengan buenos fundamentales.'}
+        </p>
       </motion.div>
 
       <FilterBar />

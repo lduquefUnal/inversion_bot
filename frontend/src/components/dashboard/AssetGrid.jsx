@@ -15,10 +15,14 @@ const AssetGrid = ({ data }) => {
   let filteredData = data.TOP_25_DIPS;
   
   if (activeCategory !== 'all') {
-    filteredData = filteredData.filter(item => {
-      const cat = item.Categoria || "Sweet Spot";
-      return cat === activeCategory;
-    });
+    if (activeCategory === 'veredicto') {
+       filteredData = filteredData.filter(item => item.AI_Details && item.AI_Details.includes('✅'));
+    } else {
+       filteredData = filteredData.filter(item => {
+         const cat = item.Categoria || "Sweet Spot";
+         return cat === activeCategory;
+       });
+    }
   }
 
   // Filter by search term

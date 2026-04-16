@@ -38,22 +38,22 @@ def main():
         except: pass
 
     universe = [
-        # --- CRIPTOMONEDAS Y MINEROS ---
+        # --- CRIPTOMONEDAS Y BLOCKCHAIN ---
         "BTC-USD", "ETH-USD", "SOL-USD", "COIN", "MARA", "RIOT", "MSTR",
         # --- MATERIAS PRIMAS, ORO, URANIO, SOJA ---
-        "GLD", "URNJ", "TLT", "EMB", "LIT", "REMX", "COPX", "SILJ", "CCJ", "NXE", "UUUU", "URA", "FCX", "SCCO", "BHP", "RIO",
+        "GLD", "URNJ", "TLT", "EMB", "LIT", "REMX", "COPX", "SILJ", "CCJ", "NXE", "UUUU", "URA", "FCX", "SCCO", "BHP", "RIO", "NLR", "CEG",
         # --- TECNOLOGÍA PURA E INTELIGENCIA ARTIFICIAL ---
-        "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "AMD", "INTC", "MU", "SMCI",
+        "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "AMD", "INTC", "MU", "SMCI", "TSM", "ASML", "ARM", "PLTR",
         # --- CIBERSEGURIDAD, NUBE Y SAAS ---
-        "PLTR", "CRWD", "PANW", "FTNT", "ZS", "NET", "SNOW", "NOW",
+        "CRWD", "PANW", "FTNT", "ZS", "NET", "SNOW", "NOW",
         # --- FINTECH Y PAGOS ---
-        "V", "MA", "PYPL", "SQ", "SOFI", "AFRM", "HOOD", 
+        "V", "MA", "PYPL", "SOFI", "AFRM", "HOOD", 
         # --- INNOVACIÓN ARKK Y ESPACIO ---
         "ARKK", "BOTZ", "ROBO", "SOXQ", "MOON", "UFO", "ARKG", "BLOK", "DAPP", "RKLB", "ASTS", "JOBY", "SMR", "OKLO",
         # --- LATAM Y MERCADOS EMERGENTES ---
         "MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH", "EWW", "BBD", "CX", "BMA", "PAM", "TGS", "CIB", "EC", "TGLS", "AVAL", "SQM", "ARCO", "CPA", "BSBR", "SUZ", "EWZS",
         # --- ASIA Y CHINA EXTENDIDO ---
-        "TSM", "BABA", "ASML", "MCHI", "INDA", "SMIN", "EWY", "EWT", "VNM", "JD", "PDD", "SE", "GRAB", "UMC", "ASX", "INFY", "WIT", "SONY", "HDB", "TCEHY",
+        "BABA", "JD", "PDD", "BIDU", "NIO", "BYDDY", "TCEHY", "SEA", "MCHI", "INDA", "SMIN", "EWY", "EWT", "VNM", "SE", "GRAB", "UMC", "ASX", "INFY", "WIT", "SONY", "HDB",
         # --- ENERGÍA LIMPIA Y SOLAR ---
         "FSLR", "ENPH", "RUN", "SEDG", "BEP", "NEE", "ICLN", "TAN", "FAN", "CWEN",
         # --- DEFENSA Y AEROSPACIAL ---
@@ -63,7 +63,7 @@ def main():
         # --- BIENES RAÍCES (REITs) ---
         "O", "PLD", "AMT", "CCI", "EQIX", "SPG",
         # --- CONSUMO, TURISMO Y BANCA TRADICIONAL ---
-        "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP", "WMT", "SBUX", "GS", "MS", "AXP", "BLK", "DAL", "UAL", "JPM", "BAC", "WFC", "C", "NKE", "DIS", "V", "MA",
+        "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP", "WMT", "SBUX", "GS", "MS", "AXP", "BLK", "DAL", "UAL", "JPM", "BAC", "WFC", "C", "NKE", "DIS",
         # --- ENERGÍA FÓSIL Y PETRÓLEO ---
         "XOM", "CVX", "COP", "SLB", "OXY",
         # --- BONOS (EMERGENTES, EEUU, High Yield) ---
@@ -235,13 +235,13 @@ def main():
             
     # RANKING por Score Total Ponderado V2 (mayor score = mejor oportunidad)
     datos_completos = sorted(datos_completos, key=lambda x: x["Score_Total"], reverse=True)
-    top_25_candidatas = datos_completos[:25]
+    top_50_candidatas = datos_completos[:50]
     
     # Re-ordenar para consolidar (ya está ordenado correctamente)
-    top_25_candidatas = sorted(top_25_candidatas, key=lambda x: x["Score_Total"], reverse=True)
+    top_50_candidatas = sorted(top_50_candidatas, key=lambda x: x["Score_Total"], reverse=True)
     
-    print("Pre-procesando Top 25 Estricto y graficando velas japonesas...")
-    for i, candidato in enumerate(top_25_candidatas):
+    print("Pre-procesando Top 50 Estricto y graficando velas japonesas...")
+    for i, candidato in enumerate(top_50_candidatas):
         ticker = candidato['Ticker']
         nombre = candidato.get('Nombre', ticker)
         try:
@@ -282,6 +282,27 @@ def main():
             
         import urllib.request
         import urllib.parse
+        import datetime
+
+        # --- NOTICIAS REALES DE YAHOO FINANCE ---
+        try:
+            yf_news = stock.news
+            noticias_yf = []
+            if yf_news:
+                for n in yf_news[:4]:  # Tomar las últimas 4 noticias reales
+                    try:
+                        pub_time = datetime.datetime.fromtimestamp(n.get('providerPublishTime', 0)).strftime('%b %d, %Y')
+                    except:
+                        pub_time = 'Reciente'
+                    noticias_yf.append({
+                        "titulo": n.get('title', ''),
+                        "url": n.get('link', ''),
+                        "publisher": n.get('publisher', 'Yahoo Finance'),
+                        "time": pub_time
+                    })
+            candidato["Noticias_YF"] = noticias_yf if noticias_yf else None
+        except:
+            candidato["Noticias_YF"] = None
 
         # --- RECOMENDACIONES DE ANALISTAS (Wall Street Consensus) ---
         try:
@@ -342,14 +363,14 @@ def main():
         except: candidato["Polymarket"] = ["N/A"]
              
     # Cleanup pre-json
-    for item in top_25_candidatas:
+    for item in top_50_candidatas:
         if "Historia_Precios" in item:
             del item["Historia_Precios"]
         
     # Guardar timestamp dentro del JSON para que Vercel pueda leerlo correctamente
     # (os.path.getmtime en Vercel retorna la fecha de build del servidor, no la real)
     fecha_ahora = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
-    resultado_final = {"fecha_generacion": fecha_ahora, "MACRO": macro_data, "TOP_25_DIPS": top_25_candidatas}
+    resultado_final = {"fecha_generacion": fecha_ahora, "MACRO": macro_data, "TOP_50_DIPS": top_50_candidatas}
     with open("flujo_datos/mercado.json", "w", encoding='utf-8') as f:
         json.dump(resultado_final, f, indent=4, ensure_ascii=False)
         
