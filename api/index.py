@@ -382,3 +382,5 @@ def enviar_mensaje(chat_id, texto):
     try: urllib.request.urlopen(req)
     except: pass
 
+if __name__ == '__main__':
+    app.run(port=5000, debug=True, host='0.0.0.0')

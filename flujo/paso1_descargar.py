@@ -100,7 +100,8 @@ def main():
             max_price_52w = float(hist_52w['High'].max())
             drawdown_52w_pct = ((current_price - max_price_52w) / max_price_52w * 100) if max_price_52w > 0 else 0
             drawdown_abs = abs(drawdown_52w_pct)
-            score_drawdown = min(drawdown_abs / 60.0, 1.0) * 100
+            # Escalamos el puntaje linealmente hasta un 50% de drawdown (donde obtiene 100/100)
+            score_drawdown = min((drawdown_abs / 50.0) * 100, 100.0)
 
             # --- FACTOR 2: Tendencia SMA200 ---
             hist['SMA200'] = hist['Close'].rolling(window=200).mean()
@@ -110,44 +111,55 @@ def main():
             if not pd.isna(sma_200_actual) and not pd.isna(sma_200_pasada):
                 if sma_200_actual < sma_200_pasada:
                     tendencia_bajista = True
-            score_sma200 = 30.0 if tendencia_bajista else 100.0
+            
+            # Penalizamos tendencia bajista, pero recompensamos las altas
+            score_sma200 = 35.0 if tendencia_bajista else 100.0
 
             # --- FACTOR 3: RSI ---
             rsi_actual = calcular_rsi(hist)
             rsi_estado = "Desconocido" if pd.isna(rsi_actual) else "🔥 Caro" if rsi_actual > 70 else "🚨 Sobrevendido" if rsi_actual < 35 else "Neutral"
             if pd.isna(rsi_actual):
-                score_rsi = 40.0
-            elif rsi_actual < 30:  score_rsi = 100.0
-            elif rsi_actual < 40:  score_rsi = 75.0
-            elif rsi_actual < 50:  score_rsi = 50.0
-            elif rsi_actual < 65:  score_rsi = 25.0
-            else:                  score_rsi = 0.0
+                score_rsi = 50.0
+            else:
+                # Fórmula lineal inversa: RSI 30 -> 100 pts | RSI 70 -> 0 pts
+                score_rsi = max(0.0, min(100.0, ((70.0 - rsi_actual) / 40.0) * 100.0))
 
-            # --- FACTOR 4: Calidad Fundamental (P/E) ---
+            # --- FACTOR 4: Calidad Fundamental (P/E y FCF) ---
             try: info = stock.info
             except: info = {}
-            pe_ratio = info.get('trailingPE', info.get('forwardPE', "N/A (Crecimiento/Pérdida/ETF)"))
+            pe_ratio = info.get('trailingPE', info.get('forwardPE', "N/A"))
+            fcf = info.get('freeCashflow', "N/A")
+            
             nombre_corto = info.get('shortName', t)
-            if pe_ratio is None or str(pe_ratio).startswith("N/A"):
-                score_calidad = 60.0  # ETF o sin datos: neutro
+            
+            if pe_ratio == "N/A" or pe_ratio is None:
+                score_calidad = 50.0  # ETF o sin datos: neutro
             elif isinstance(pe_ratio, (int, float)) and pe_ratio > 0:
-                score_calidad = 80.0 if pe_ratio < 50 else 60.0
+                # P/E ideal muy bajo (ej 10 da ~100). Burbujas > 60 dan 0.
+                score_calidad = max(0.0, min(100.0, ((60.0 - pe_ratio) / 50.0) * 100.0))
             else:
-                score_calidad = 20.0  # empresa con pérdidas
+                score_calidad = 10.0  # empresa con pérdidas
+                
+            # Formateo visual del FCF para el JSON (Billiones o Millones)
+            if isinstance(fcf, (int, float)):
+                if fcf >= 1e9 or fcf <= -1e9:
+                    fcf_str = f"${fcf / 1e9:.2f}B"
+                else:
+                    fcf_str = f"${fcf / 1e6:.2f}M"
+            else:
+                fcf_str = "N/A"
 
             # --- FACTOR 5: Momentum de Recuperación (5 días) ---
             precio_hace_5d = float(hist['Close'].iloc[-6]) if len(hist) >= 6 else current_price
             cambio_5d = ((current_price - precio_hace_5d) / precio_hace_5d * 100) if precio_hace_5d > 0 else 0
-            if cambio_5d > 3:    score_momentum = 100.0
-            elif cambio_5d > 0:  score_momentum = 70.0
-            elif cambio_5d > -2: score_momentum = 40.0
-            else:                score_momentum = 10.0
+            # Normalizamos un rebote de -5% a +5% en una escala continua de 0 a 100
+            score_momentum = max(0.0, min(100.0, ((cambio_5d + 5.0) / 10.0) * 100.0))
 
             # --- SCORE TOTAL PONDERADO ---
             score_total = round(
-                score_drawdown  * 0.30 +
+                score_drawdown  * 0.25 +
                 score_rsi       * 0.25 +
-                score_sma200    * 0.20 +
+                score_sma200    * 0.25 +
                 score_calidad   * 0.15 +
                 score_momentum  * 0.10,
                 1
@@ -159,24 +171,26 @@ def main():
                 monto_dca = 0  # No compramos en ATH
             elif drawdown_abs <= 20:
                 tipo_dip = "Leve"
-                monto_dca = 80
+                monto_dca = 80 if not tendencia_bajista else 60
             elif drawdown_abs <= 40:
                 tipo_dip = "Medio"
-                monto_dca = 100
+                monto_dca = 100 if not tendencia_bajista else 80
             else:
                 tipo_dip = "Alto"
-                monto_dca = 120
+                monto_dca = 120 if not tendencia_bajista else 100
 
             # --- CATEGORÍA VISUAL ---
             if tipo_dip == "Rising/ATH":
                 categoria = "Momentum"
-            elif tendencia_bajista:
+            elif not tendencia_bajista and drawdown_abs > 7:
+                # ¡Capturamos con tu idea! Tiene drawdown alto pero está en tendencia alcista (rompiendo SMA200)
+                if tipo_dip == "Leve":
+                    categoria = "Recuperacion Rapida"
+                else:
+                    categoria = "Sweet Spot"
+            elif tendencia_bajista and tipo_dip == "Alto":
                 categoria = "Cuchillo Cayendo"
-            elif tipo_dip == "Leve" and score_calidad >= 60 and not tendencia_bajista:
-                categoria = "Recuperacion Rapida"
-            elif tipo_dip == "Medio" and score_rsi >= 40:
-                categoria = "Sweet Spot"
-            elif tipo_dip == "Alto" and score_rsi >= 50:
+            elif tipo_dip == "Alto" and score_rsi >= 60:
                 categoria = "Cazador de Dips"
             else:
                 categoria = "Sweet Spot"
@@ -306,7 +320,7 @@ def main():
         
     # Guardar timestamp dentro del JSON para que Vercel pueda leerlo correctamente
     # (os.path.getmtime en Vercel retorna la fecha de build del servidor, no la real)
-    fecha_ahora = datetime.datetime.now(datetime.timezone.UTC).strftime('%Y-%m-%d %H:%M UTC')
+    fecha_ahora = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
     resultado_final = {"fecha_generacion": fecha_ahora, "MACRO": macro_data, "TOP_25_DIPS": top_25_candidatas}
     with open("flujo_datos/mercado.json", "w", encoding='utf-8') as f:
         json.dump(resultado_final, f, indent=4, ensure_ascii=False)
