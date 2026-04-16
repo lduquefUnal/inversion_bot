@@ -6,6 +6,7 @@
     },
     "TOP_25_DIPS": [
         {
+<<<<<<< HEAD
             "Ticker": "NKE",
             "Nombre": "Nike, Inc.",
             "Precio Actual": 44.2,
@@ -40,8 +41,41 @@
             "Score_Total": 74.5,
             "Tipo_Dip": "Alto",
             "Categoria": "Cazador de Dips",
-            "Tendencias": "Sana/Normal",
+=======
+            "Ticker": "JOBY",
+            "Nombre": "Joby Aviation, Inc.",
+            "Precio Actual": 8.52,
+            "Drawdown 52W %": -59.33,
+            "Cambio 5D %": -12.5,
+            "Valor Mercado (P/E Ratio)": -18.3,
+            "RSI 14D": "28.3 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$120 USD",
+            "Score_Total": 85.5,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cazador de Dips",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Sentimiento_Reddit": 75,
             "Contexto_Reddit": [
+                { "titulo": "[r/JobyAviation]: Big dip today, buying more!", "url": "https://reddit.com" }
+            ]
+        },
+        {
+            "Ticker": "NTLA",
+            "Nombre": "Intellia Therapeutics, Inc.",
+            "Precio Actual": 14.26,
+            "Drawdown 52W %": -25.2,
+            "Cambio 5D %": 4.1,
+            "Valor Mercado (P/E Ratio)": -4.8,
+            "RSI 14D": "59.6 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 62.1,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+>>>>>>> developer
+            "Tendencias": "Sana/Normal",
+            "Sentimiento_Reddit": 55,
+            "Contexto_Reddit": [
+<<<<<<< HEAD
                 {
                     "titulo": "Sin foros",
                     "url": "#"
@@ -63,8 +97,27 @@
             "Score_Total": 70.9,
             "Tipo_Dip": "Alto",
             "Categoria": "Sweet Spot",
+=======
+                { "titulo": "[r/biotech]: NTLA news arriving soon", "url": "https://reddit.com" }
+            ]
+        },
+        {
+            "Ticker": "NVDA",
+            "Nombre": "NVIDIA Corporation",
+            "Precio Actual": 145.2,
+            "Drawdown 52W %": -4.2,
+            "Cambio 5D %": 8.5,
+            "Valor Mercado (P/E Ratio)": 65.2,
+            "RSI 14D": "72.0 - 🔥 Caro",
+            "Monto Sugerido (SmartDCA)": "$0 USD",
+            "Score_Total": 15.0,
+            "Tipo_Dip": "Rising/ATH",
+            "Categoria": "Momentum",
+>>>>>>> developer
             "Tendencias": "Sana/Normal",
+            "Sentimiento_Reddit": 90,
             "Contexto_Reddit": [
+<<<<<<< HEAD
                 {
                     "titulo": "Sin foros",
                     "url": "#"
@@ -578,6 +631,9 @@
             ],
             "Polymarket": [
                 "N/A"
+=======
+                { "titulo": "[r/nvda_stock]: To the moon!", "url": "https://reddit.com" }
+>>>>>>> developer
             ]
         }
     ]

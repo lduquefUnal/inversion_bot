@@ -100,7 +100,8 @@ def main():
             max_price_52w = float(hist_52w['High'].max())
             drawdown_52w_pct = ((current_price - max_price_52w) / max_price_52w * 100) if max_price_52w > 0 else 0
             drawdown_abs = abs(drawdown_52w_pct)
-            score_drawdown = min(drawdown_abs / 60.0, 1.0) * 100
+            # Escalamos el puntaje linealmente hasta un 50% de drawdown (donde obtiene 100/100)
+            score_drawdown = min((drawdown_abs / 50.0) * 100, 100.0)
 
             # --- FACTOR 2: Tendencia SMA200 ---
             hist['SMA200'] = hist['Close'].rolling(window=200).mean()
@@ -110,66 +111,86 @@ def main():
             if not pd.isna(sma_200_actual) and not pd.isna(sma_200_pasada):
                 if sma_200_actual < sma_200_pasada:
                     tendencia_bajista = True
-            score_sma200 = 30.0 if tendencia_bajista else 100.0
+            
+            # Penalizamos tendencia bajista, pero recompensamos las altas
+            score_sma200 = 35.0 if tendencia_bajista else 100.0
 
             # --- FACTOR 3: RSI ---
             rsi_actual = calcular_rsi(hist)
             rsi_estado = "Desconocido" if pd.isna(rsi_actual) else "🔥 Caro" if rsi_actual > 70 else "🚨 Sobrevendido" if rsi_actual < 35 else "Neutral"
             if pd.isna(rsi_actual):
-                score_rsi = 40.0
-            elif rsi_actual < 30:  score_rsi = 100.0
-            elif rsi_actual < 40:  score_rsi = 75.0
-            elif rsi_actual < 50:  score_rsi = 50.0
-            elif rsi_actual < 65:  score_rsi = 25.0
-            else:                  score_rsi = 0.0
+                score_rsi = 50.0
+            else:
+                # Fórmula lineal inversa: RSI 30 -> 100 pts | RSI 70 -> 0 pts
+                score_rsi = max(0.0, min(100.0, ((70.0 - rsi_actual) / 40.0) * 100.0))
 
-            # --- FACTOR 4: Calidad Fundamental (P/E) ---
+            # --- FACTOR 4: Calidad Fundamental (P/E y FCF) ---
             try: info = stock.info
             except: info = {}
-            pe_ratio = info.get('trailingPE', info.get('forwardPE', "N/A (Crecimiento/Pérdida/ETF)"))
+            pe_ratio = info.get('trailingPE', info.get('forwardPE', "N/A"))
+            fcf = info.get('freeCashflow', "N/A")
+            
             nombre_corto = info.get('shortName', t)
-            if pe_ratio is None or str(pe_ratio).startswith("N/A"):
-                score_calidad = 60.0  # ETF o sin datos: neutro
+            
+            if pe_ratio == "N/A" or pe_ratio is None:
+                score_calidad = 50.0  # ETF o sin datos: neutro
             elif isinstance(pe_ratio, (int, float)) and pe_ratio > 0:
-                score_calidad = 80.0 if pe_ratio < 50 else 60.0
+                # P/E ideal muy bajo (ej 10 da ~100). Burbujas > 60 dan 0.
+                score_calidad = max(0.0, min(100.0, ((60.0 - pe_ratio) / 50.0) * 100.0))
             else:
-                score_calidad = 20.0  # empresa con pérdidas
+                score_calidad = 10.0  # empresa con pérdidas
+                
+            # Formateo visual del FCF para el JSON (Billiones o Millones)
+            if isinstance(fcf, (int, float)):
+                if fcf >= 1e9 or fcf <= -1e9:
+                    fcf_str = f"${fcf / 1e9:.2f}B"
+                else:
+                    fcf_str = f"${fcf / 1e6:.2f}M"
+            else:
+                fcf_str = "N/A"
 
             # --- FACTOR 5: Momentum de Recuperación (5 días) ---
             precio_hace_5d = float(hist['Close'].iloc[-6]) if len(hist) >= 6 else current_price
             cambio_5d = ((current_price - precio_hace_5d) / precio_hace_5d * 100) if precio_hace_5d > 0 else 0
-            if cambio_5d > 3:    score_momentum = 100.0
-            elif cambio_5d > 0:  score_momentum = 70.0
-            elif cambio_5d > -2: score_momentum = 40.0
-            else:                score_momentum = 10.0
+            # Normalizamos un rebote de -5% a +5% en una escala continua de 0 a 100
+            score_momentum = max(0.0, min(100.0, ((cambio_5d + 5.0) / 10.0) * 100.0))
 
             # --- SCORE TOTAL PONDERADO ---
             score_total = round(
-                score_drawdown  * 0.30 +
+                score_drawdown  * 0.25 +
                 score_rsi       * 0.25 +
-                score_sma200    * 0.20 +
+                score_sma200    * 0.25 +
                 score_calidad   * 0.15 +
                 score_momentum  * 0.10,
                 1
             )
 
             # --- TIPO DE DIP (3 niveles) ---
-            if drawdown_abs <= 20:
+            if drawdown_abs < 7:
+                tipo_dip = "Rising/ATH"
+                monto_dca = 0  # No compramos en ATH
+            elif drawdown_abs <= 20:
                 tipo_dip = "Leve"
-                monto_dca = 80
+                monto_dca = 80 if not tendencia_bajista else 60
             elif drawdown_abs <= 40:
                 tipo_dip = "Medio"
-                monto_dca = 100
+                monto_dca = 100 if not tendencia_bajista else 80
             else:
                 tipo_dip = "Alto"
-                monto_dca = 120
+                monto_dca = 120 if not tendencia_bajista else 100
 
             # --- CATEGORÍA VISUAL ---
-            if tendencia_bajista:
+            if tipo_dip == "Rising/ATH":
+                categoria = "Momentum"
+            elif not tendencia_bajista and drawdown_abs > 7:
+                # ¡Capturamos con tu idea! Tiene drawdown alto pero está en tendencia alcista (rompiendo SMA200)
+                if tipo_dip == "Leve":
+                    categoria = "Recuperacion Rapida"
+                else:
+                    categoria = "Sweet Spot"
+            elif tendencia_bajista and tipo_dip == "Alto":
                 categoria = "Cuchillo Cayendo"
-            elif tipo_dip == "Leve" and score_calidad >= 60 and not tendencia_bajista:
-                categoria = "Recuperacion Rapida"
-            elif tipo_dip == "Alto" and score_rsi >= 50:
+            elif tipo_dip == "Alto" and score_rsi >= 60:
                 categoria = "Cazador de Dips"
             else:
                 categoria = "Sweet Spot"
@@ -216,6 +237,7 @@ def main():
             
             # Pre calcular SMA
             df['SMA50'] = df['Close'].rolling(window=50).mean()
+            df['SMA100'] = df['Close'].rolling(window=100).mean()
             df['SMA200'] = df['Close'].rolling(window=200).mean()
             
             # Visualizar mas dias (200 dias de mercado en pantalla)
@@ -225,13 +247,14 @@ def main():
             s  = mpf.make_mpf_style(marketcolors=mc, gridstyle='--', gridaxis='both')
             
             my_addplots = [
-                mpf.make_addplot(df_plot['SMA50'], color='orange', width=1.4),
+                mpf.make_addplot(df_plot['SMA50'], color='orange', width=1.1),
+                mpf.make_addplot(df_plot['SMA100'], color='green', width=1.1),
                 mpf.make_addplot(df_plot['SMA200'], color='purple', width=2.0),
                 mpf.make_addplot(df_plot['RSI'], panel=2, color='blue', ylabel='RSI')
             ]
             
-            # Título y Leyenda explícita
-            plot_title = f"{nombre} ({ticker})\n[Leyenda] Línea Amarilla: SMA 50 | Línea Morada: SMA 200"
+            # Título y Leyenda explicática
+            plot_title = f"{nombre} ({ticker})\nSMA 50(Amar.) | SMA 100(Verd.) | SMA 200(Mor.)"
             mpf.plot(df_plot, type='candle', style=s, volume=True, addplot=my_addplots,
                      title=plot_title, ylabel="Precio (USD)", 
                      savefig=f"flujo_datos/top_{i+1}_{ticker}.png", tight_layout=True)
@@ -240,24 +263,50 @@ def main():
             
         import urllib.request
         import urllib.parse
-        q = urllib.parse.quote(ticker + " stock")
+        
+        # Búsqueda en Reddit más específica
         try:
-            req = urllib.request.Request(f"https://www.reddit.com/search.json?q={candidato['Nombre'].replace(' ', '+')}&sort=new&limit=4", headers={'User-Agent': 'Mozilla/5.0'})
+            termino_busqueda = ticker if len(ticker) > 2 else f"{nombre}+stock"
+            req = urllib.request.Request(f"https://www.reddit.com/search.json?q={termino_busqueda}&sort=new&limit=8", headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req) as r:
-                candidato["Contexto_Reddit"] = [{"titulo": f"[{h['data']['subreddit_name_prefixed']}]: {h['data']['title']}", "url": f"https://reddit.com{h['data']['permalink']}"} for h in json.loads(r.read().decode()).get("data",{}).get("children",[])]
-        except: candidato["Contexto_Reddit"] = [{"titulo": "Sin foros", "url": "#"}]
+                posts = json.loads(r.read().decode()).get("data",{}).get("children",[])
+                noticias = []
+                sentiment_points = 0
+                
+                palabras_bull = ['bull', 'buy', 'call', 'moon', 'long', 'undervalued', 'gem', 'growth', 'opportunity', 'squeeze', 'up', 'ath']
+                palabras_bear = ['bear', 'sell', 'put', 'short', 'drop', 'crash', 'overvalued', 'dip', 'down', 'dump', 'scam', 'bagholder']
+                
+                for h in posts:
+                    titulo = h['data']['title']
+                    subreddit = h['data']['subreddit_name_prefixed']
+                    noticias.append({"titulo": f"[{subreddit}]: {titulo}", "url": f"https://reddit.com{h['data']['permalink']}"})
+                    
+                    # Heurística simple de sentimiento
+                    t_lower = titulo.lower()
+                    for w in palabras_bull:
+                        if w in t_lower: sentiment_points += 15
+                    for w in palabras_bear:
+                        if w in t_lower: sentiment_points -= 20
+                
+                # Normalizar sentimiento (0 a 100, 50 es neutral)
+                score_sent = 50 + sentiment_points
+                score_sent = max(5, min(95, score_sent))
+                
+                candidato["Contexto_Reddit"] = noticias
+                candidato["Sentimiento_Reddit"] = score_sent
+        except: 
+            candidato["Contexto_Reddit"] = [{"titulo": "Sin foros", "url": "#"}]
+            candidato["Sentimiento_Reddit"] = 50
              
         try:
-             req_p = urllib.request.Request(f"https://gamma-api.polymarket.com/events?title={q}&active=true&limit=2", headers={'User-Agent': 'Mozilla/5.0'})
+             req_p = urllib.request.Request(f"https://gamma-api.polymarket.com/events?title={urllib.parse.quote(ticker)}&active=true&limit=2", headers={'User-Agent': 'Mozilla/5.0'})
              with urllib.request.urlopen(req_p, timeout=5) as resp:
                  p_res = []
-                 # Palabras clave deportivas a excluir (Polymarket mezcla deportes con finanzas)
                  deportes_excluir = ['nba', 'nfl', 'nhl', 'mlb', 'mls', 'fifa', 'ufc', 'soccer', 'football', 'basketball', 'baseball', 'matchup', 'beat the', 'points in']
                  for ev in json.loads(resp.read().decode()):
                     for m in ev.get('markets', []):
                        try:
                            pregunta = m.get('question', '').lower()
-                           # Solo incluir si NO es un evento deportivo
                            if not any(d in pregunta for d in deportes_excluir):
                                p_res.append(f"{m.get('question', '')} -> YES: {float(json.loads(m.get('outcomePrices', '[]'))[0])*100:.1f}%")
                        except: pass
@@ -271,10 +320,16 @@ def main():
         
     # Guardar timestamp dentro del JSON para que Vercel pueda leerlo correctamente
     # (os.path.getmtime en Vercel retorna la fecha de build del servidor, no la real)
-    fecha_ahora = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
+    fecha_ahora = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
     resultado_final = {"fecha_generacion": fecha_ahora, "MACRO": macro_data, "TOP_25_DIPS": top_25_candidatas}
     with open("flujo_datos/mercado.json", "w", encoding='utf-8') as f:
         json.dump(resultado_final, f, indent=4, ensure_ascii=False)
+        
+    # Copia para desarrollo local en Vite (public folder)
+    try:
+        with open("frontend/public/mercado.json", "w", encoding='utf-8') as f:
+            json.dump(resultado_final, f, indent=4, ensure_ascii=False)
+    except: pass
         
     if bot:
         try: bot.send_message(CHAT_ID, "✅ *40%* - `Data Procesada`: Macro, RSI, Reddit, Polymarket y Gráficas de Velas listas. Nutriendo IA...", parse_mode="Markdown")
