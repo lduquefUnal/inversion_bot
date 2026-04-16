@@ -2,21 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
 
-// Tooltip inline para métricas del dashboard
-const Tip = ({ text, children }) => {
-  const [v, setV] = useState(false);
-  return (
-    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: '3px', cursor: 'help' }}
-      onMouseEnter={() => setV(true)} onMouseLeave={() => setV(false)}>
-      {children}
-      <span style={{ fontSize: '0.65rem', opacity: 0.4, background: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '12px', height: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', flexShrink: 0 }}>?</span>
-      {v && (
-        <span style={{ position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)', background: '#1e293b', border: '1px solid rgba(100,116,139,0.5)', borderRadius: '8px', padding: '7px 10px', fontSize: '0.75rem', color: '#cbd5e1', whiteSpace: 'nowrap', zIndex: 999, lineHeight: '1.5', boxShadow: '0 8px 25px rgba(0,0,0,0.6)', pointerEvents: 'none' }}>{text}</span>
-      )}
-    </span>
-  );
-};
-
 const CAT_CONFIG = {
   "Recuperacion Rapida": { emoji: "⚡", label: "Recup. Rápida", bg: "rgba(16,185,129,0.2)", color: "#10b981", border: "#10b981" },
   "Sweet Spot":          { emoji: "🎯", label: "Sweet Spot",    bg: "rgba(234,179,8,0.2)",  color: "#eab308", border: "#eab308" },
@@ -35,7 +20,7 @@ const AssetCard = ({ item, index }) => {
   const { setZoomedImage } = useAppStore();
   
   const {
-    Ticker, Nombre, "Drawdown 52W %": Drawdown, "RSI 14D": RSI_Str, "Tendencias": SMA200_Tendencia, 
+    Ticker, Nombre, Descripcion, "Drawdown 52W %": Drawdown, "RSI 14D": RSI_Str, "Tendencias": SMA200_Tendencia, 
     "Score_Ranking": score_ranking, "Score_Total": score_total_val, "Categoria": categoria_raw, 
     "Tipo_Dip": tipo_dip_raw, "Cambio 5D %": cambio_5d,
     "Monto Sugerido (SmartDCA)": monto_dca,
@@ -98,9 +83,15 @@ const AssetCard = ({ item, index }) => {
         style={{ padding: '30px', flex: '1 1 50%', minWidth: '300px', cursor: 'pointer' }}
         onClick={() => navigate(`/activo/${Ticker}`)}
       >
-        <h2 style={{ margin: '0 0 10px 0', fontSize: '1.8rem', color: '#f8fafc' }}>
+        <h2 style={{ margin: '0 0 5px 0', fontSize: '1.8rem', color: '#f8fafc' }}>
           {Ticker} <span style={{ fontWeight: 300, fontSize: '1.2rem', color: 'var(--text-secondary)' }}>({Nombre})</span>
         </h2>
+        
+        {Descripcion && (
+           <p style={{ margin: '0 0 15px 0', fontSize: '0.85rem', color: '#94a3b8', fontStyle: 'italic' }}>
+              ℹ️ {Descripcion}
+           </p>
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '15px' }}>
           <span style={{ padding: '4px 10px', borderRadius: '20px', background: '#2dd4bf', color: '#0f172a', fontWeight: 'bold', fontSize: '0.9rem' }}>#{index + 1}</span>
@@ -118,23 +109,19 @@ const AssetCard = ({ item, index }) => {
           <span style={{ fontSize: '0.85rem', background: 'rgba(15,23,42,0.8)', padding: '4px 10px', borderRadius: '12px', color: cambio_color }}>5D: {cambio_5d_str}</span>
         </div>
 
-        {/* Chips de métricas clave con tooltip */}
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '15px' }}>
-          <Tip text="RSI < 35 = sobrevendido (buena zona de entrada). RSI > 70 = caro.">
-            <span style={{ fontSize: '0.78rem', background: 'rgba(30,41,59,0.8)', padding: '3px 9px', borderRadius: '10px', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.08)' }}>RSI: {RSI_Str?.split(' ')[0] || 'N/A'}</span>
-          </Tip>
-          <Tip text="Caída desde el máximo de 52 semanas. > 40% = zona de dip agresivo."><span style={{ fontSize: '0.78rem', background: 'rgba(30,41,59,0.8)', padding: '3px 9px', borderRadius: '10px', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}>DD: {Drawdown}%</span>
-          </Tip>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '15px 0' }}>
+          <span title="RSI < 35 = sobrevendido (buena zona de entrada). RSI > 70 = caro." style={{ cursor: 'help', fontSize: '0.85rem', background: 'rgba(30,41,59,0.8)', padding: '5px 12px', borderRadius: '10px', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.08)' }}>RSI: {RSI_Str?.split(' ')[0] || 'N/A'}</span>
+          
+          <span title="Caída desde el máximo de 52 semanas. > 40% = zona de dip agresivo." style={{ cursor: 'help', fontSize: '0.85rem', background: 'rgba(30,41,59,0.8)', padding: '5px 12px', borderRadius: '10px', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}>DD: {Drawdown}%</span>
+          
           {fcf && fcf !== 'N/A' && (
-            <Tip text="Flujo de Caja Libre. Positivo = empresa genera caja real. Negativo puede ser normal en growth.">
-              <span style={{ fontSize: '0.78rem', background: fcf.startsWith('$-') || fcf.startsWith('-') ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)', padding: '3px 9px', borderRadius: '10px', color: fcf.startsWith('$-') || fcf.startsWith('-') ? '#ef4444' : '#10b981', border: `1px solid ${fcf.startsWith('$-') || fcf.startsWith('-') ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}` }}>💵 FCF: {fcf}</span>
-            </Tip>
+            <span title="Flujo de Caja Libre. Positivo = empresa genera dinero real y es resiliente. Negativo = quema caja aceleradamente (normal en ciertas techs, peligroso en utilities)." style={{ cursor: 'help', fontSize: '0.85rem', background: fcf.startsWith('$-') || fcf.startsWith('-') ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)', padding: '5px 12px', borderRadius: '10px', color: fcf.startsWith('$-') || fcf.startsWith('-') ? '#ef4444' : '#10b981', border: `1px solid ${fcf.startsWith('$-') || fcf.startsWith('-') ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}` }}>💵 FCF: {fcf}</span>
           )}
-          <Tip text="Tendencia de la SMA 200. Sana/Normal = precio sobre media de largo plazo (alcista)."><span style={{ fontSize: '0.78rem', background: 'rgba(30,41,59,0.8)', padding: '3px 9px', borderRadius: '10px', color: SMA200_Tendencia?.includes('Cuchillo') ? '#f59e0b' : '#10b981', border: '1px solid rgba(255,255,255,0.08)' }}>{SMA200_Tendencia?.includes('Cuchillo') ? '⚠️ Bajista' : '✅ Alcista'}</span>
-          </Tip>
+
+          <span title="Tendencia de la SMA 200. Alcista = precio > su media de largo plazo." style={{ cursor: 'help', fontSize: '0.85rem', background: 'rgba(30,41,59,0.8)', padding: '5px 12px', borderRadius: '10px', color: SMA200_Tendencia?.includes('Cuchillo') ? '#f59e0b' : '#10b981', border: '1px solid rgba(255,255,255,0.08)' }}>{SMA200_Tendencia?.includes('Cuchillo') ? '⚠️ Bajista' : '✅ Alcista'}</span>
         </div>
 
-        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 15px', color: '#cbd5e1', fontSize: '0.9rem', lineHeight: '1.7' }}>
+        <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 15px', color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.8' }}>
           {aiHtml ? (
             <div dangerouslySetInnerHTML={{ __html: aiHtml }} />
           ) : (

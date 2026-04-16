@@ -148,6 +148,22 @@ def main():
                     fcf_str = f"${fcf / 1e6:.2f}M"
             else:
                 fcf_str = "N/A"
+                
+            # --- DESCRIPCIÓN DEL SECTOR / INDUSTRIA ---
+            tipo_activo = info.get('quoteType', '')
+            sector = info.get('sector', '')
+            industria = info.get('industry', '')
+            
+            if tipo_activo == "CRYPTOCURRENCY":
+                desc = "Criptomoneda Fuerte"
+            elif tipo_activo == "ETF":
+                desc = "Fondo Cotizado (ETF)"
+            elif sector and industria:
+                desc = f"{industria} ({sector})"
+            elif sector:
+                desc = f"Sector: {sector}"
+            else:
+                desc = "Activo Financiero"
 
             # --- FACTOR 5: Momentum de Recuperación (5 días) ---
             precio_hace_5d = float(hist['Close'].iloc[-6]) if len(hist) >= 6 else current_price
@@ -199,6 +215,7 @@ def main():
             datos_completos.append({
                 "Ticker": t,
                 "Nombre": nombre_corto,
+                "Descripcion": desc,
                 "Precio Actual": round(current_price, 2),
                 "Drawdown 52W %": round(drawdown_52w_pct, 2),
                 "Cambio 5D %": round(cambio_5d, 2),
