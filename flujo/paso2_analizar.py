@@ -47,9 +47,9 @@ Ejecuta el protocolo estructurado estrictamente en este orden para tu Markdown:
 # 2. Tesis Estratégica (Bull vs Bear)
 *(Trata de resumir si estamos en temporada de compras Dips o en retención de Cash).*
 
-# 3. Top 25 Dips Agresivos (Análisis Completo)
-*(Aplica esta ESTRUCTURA ESTRICTA de viñetas para las 25 empresas de las que te envié imagen).*
-*(ATENCIÓN: Nuestra estrategia es "SmartDCA Valiente". NO rechaces una acción con ❌ solo porque su precio está debajo de las SMA 50 y 200. ¡Eso es lo que buscamos (Dips)! Otorga ✅ con valentía si aprecias sobreventa extrema (RSI bajo), si la caída parece exagerada, o si tiene un P/E sólido que justifique comprar la caída).*
+# 3. Top 50 Dips Agresivos (Análisis Completo)
+*(Aplica esta ESTRUCTURA ESTRICTA de viñetas para las 50 empresas de las que te envié imagen).*
+*(ATENCIÓN: Nuestra estrategia es "SmartDCA Valiente" con HOLD a 1-3 años. NO rechaces una acción con ❌ solo porque su precio esté debajo de las SMAs, ¡buscamos Dips! Otorga ✅ con valentía ÚNICAMENTE si aprecias que la empresa no solo tiene un rebote inminente por sobreventa, sino un potencial de revalorización significativa y sólidos fundamentos macro/financieros a 3 años).*
 
 **1. TICKER (Nombre de la Empresa)**
 * **Veredicto Técnico:** ❌ / ✅ (Justifica tu decisión 1 línea).

@@ -64,7 +64,7 @@ const Dashboard = () => {
           🤖 ¿Qué hace este bot?
         </h3>
         <p style={{ margin: '0 0 15px 0', lineHeight: '1.6', fontSize: '0.95rem' }}>
-          InversionBot escanea diariamente más de <strong>100 activos</strong> (Acciones de EE.UU., LATAM, Asia, Mercados Emergentes, ETFs, Criptomonedas y Energía Nuclear) buscando oportunidades de mercado. 
+          InversionBot escanea diariamente más de <strong>200 activos</strong> (Acciones de EE.UU., LATAM, Asia, Mercados Emergentes, ETFs, Criptomonedas y Energía Nuclear) buscando oportunidades de mercado. 
           Nuestra estrategia automatizada analiza indicadores técnicos (RSI, Drawdown, SMA 200) y fundamentales (FCF, P/E) en combinación con sentimiento social (Reddit) y el consenso de Wall Street.
         </p>
         <p style={{ margin: '0', fontSize: '0.95rem' }}>

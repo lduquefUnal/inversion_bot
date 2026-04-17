@@ -11,6 +11,11 @@ const fetchMarketData = async () => {
     if (!response.ok) throw new Error('No se pudo cargar la data del mercado');
     const data = await response.json();
 
+    // Normalizar la llave generada por el bot (TOP_50 o TOP_25)
+    if (data.TOP_50_DIPS && !data.TOP_25_DIPS) {
+      data.TOP_25_DIPS = data.TOP_50_DIPS;
+    }
+
     // Intentamos cargar el reporte
     try {
       const repRes = await fetch(`${REPORT_URL}?t=${new Date().getTime()}`);
