@@ -221,6 +221,12 @@ const AssetDetail = () => {
       color: '#eab308',
       tip: 'Monto sugerido por la estrategia Smart DCA según el nivel de riesgo. $80 = conservador (dip leve) | $100 = moderado | $120 = agresivo (dip fuerte). Puramente educativo.'
     },
+    {
+      label: 'Beta (Volatilidad)',
+      value: assetInfo?.Beta ?? 'N/A',
+      color: '#a78bfa',
+      tip: 'Mide la volatilidad frente al mercado. >1.0 significa más agresivo (Valiente) que el S&P500, <1.0 es más conservador.'
+    }
   ];
 
   return (
