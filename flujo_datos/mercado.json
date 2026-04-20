@@ -1,7 +1,7 @@
 {
-    "fecha_generacion": "2026-04-19 11:30 UTC",
+    "fecha_generacion": "2026-04-20 12:01 UTC",
     "MACRO": {
-        "VIX": 17.48,
+        "VIX": 19.44,
         "USD/COP": 3581.25
     },
     "TOP_50_DIPS": [
@@ -636,7 +636,7 @@
             "Precio Actual": 134.68,
             "Drawdown 52W %": -60.03,
             "Cambio 5D %": 14.09,
-            "Valor Mercado (P/E Ratio)": 29.340065,
+            "Valor Mercado (P/E Ratio)": 29.356758,
             "FCF": "$1.02B",
             "RSI 14D": "51.3 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -1638,54 +1638,6 @@
             ]
         },
         {
-            "Ticker": "SOL-USD",
-            "Nombre": "Solana USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 85.35,
-            "Drawdown 52W %": -66.29,
-            "Cambio 5D %": 1.88,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "55.3 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 57.3,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "MRK",
             "Nombre": "Merck & Company, Inc.",
             "Descripcion": "Drug Manufacturers - General (Healthcare)",
@@ -2085,6 +2037,54 @@
             "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
             "Beta": 0.686,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "SOL-USD",
+            "Nombre": "Solana USD",
+            "Descripcion": "Criptomoneda Fuerte",
+            "Precio Actual": 85.11,
+            "Drawdown 52W %": -66.39,
+            "Cambio 5D %": 0.22,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "57.2 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 54.5,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
