@@ -1,90 +1,90 @@
 # 1. Resumen Macro y Contexto de Mercado
 
-El VIX se mantiene en niveles de cautela (18.64), lo que indica una moderada aversión al riesgo en el mercado, pero no un pánico generalizado. No estamos en un entorno de "miedo extremo" que paralice las decisiones de inversión, sino en uno de correcciones sectoriales e individuales. El USD/COP en 3556.45 beneficia a los inversionistas colombianos con capital en USD, haciendo más atractiva la compra de activos internacionales. La tendencia general de las empresas de la lista es mixta, con sectores como el energético (Oil & Gas) mostrando un buen impulso reciente y sectores como la tecnología y los servicios de defensa experimentando correcciones significativas. Este contexto presenta oportunidades tácticas para el SmartDCA, buscando activos que han sido penalizados más allá de sus fundamentos.
+El VIX en 18.71 indica que el mercado mantiene un nivel de volatilidad moderado, sin caer en pánico extremo (que superaría el 25-30). Sin embargo, la presencia de múltiples activos en la lista con RSI "Sobrevendido" (por debajo de 30) y "Dips Medios/Altos" sugiere que sectores específicos están experimentando correcciones significativas o rotaciones de capital. El USD/COP en 3553.97 es relativamente alto, lo que favorece a las empresas colombianas de exportación (como Ecopetrol) que reciben ingresos en dólares. El panorama general es propicio para una estrategia de "comprar el dip" en activos de calidad.
 
 # 2. Tesis Estratégica (Bull vs Bear)
 
-**Tesis Bull (DCA Valiente):** El mercado actual no está en pánico (VIX estable) pero ofrece abundantes "dips" y "sweet spots" en empresas con sólidos fundamentos a largo plazo. La estrategia "Valiente" se centra en acumular valor durante estas correcciones. Los sectores de defensa (Aerospace & Defense) y energía (Oil & Gas), que dominan la lista de dips, presentan fundamentos sólidos para una recuperación de 1-3 años, especialmente tras las recientes correcciones. El RSI sobrevendido en varios de estos activos (NOC, LMT, PAM) sugiere que un rebote técnico es inminente. Es un momento propicio para el SmartDCA.
+La tesis estratégica actual es "Bullish" con enfoque en Dips. La correlación entre un VIX estable y la sobreventa generalizada en sectores de alto potencial (como defensa, tecnología y energía) crea un entorno ideal para el SmartDCA Valiente. Los activos que muestran una tendencia alcista a largo plazo (SMA 200 ascendente) pero que han experimentado retrocesos a corto plazo (RSI < 30 y precios cerca o por debajo de la SMA 50) son los objetivos principales para acumulación. Se debe evitar a toda costa los "cuchillos cayendo" con SMAs en tendencia bajista.
 
 # 3. Top 50 Dips Agresivos (Análisis Completo)
 
 **1. RUN (Sunrun Inc.)**
-*   **Veredicto Técnico:** ✅
-*   **Tesis de Inversión:** Pese a la caída significativa (-42.25%), el RSI neutral y la reciente subida de 5 días sugieren que el mercado está reevaluando el precio tras la sobreventa. Es un "Sweet Spot" para un SmartDCA valiente.
-*   **Caso Bull:** El sector solar tiene potencial de crecimiento a largo plazo y la empresa podría rebotar fuertemente a sus niveles anteriores.
-*   **Caso Bear:** La beta alta (2.368) y el FCF negativo representan un riesgo considerable de volatilidad y de dilución a largo plazo.
+*   **Veredicto Técnico:** ✅ (El precio está en un nivel de soporte clave después de un gran retroceso, ideal para DCA con horizonte a largo plazo.)
+*   **Tesis de Inversión:** Alto drawdown en el sector solar, pero el RSI neutral sugiere que la presión de venta se está disipando. La SMA 200 (purple line) está subiendo, lo que indica una posible base para la recuperación a largo plazo.
+*   **Caso Bull:** Crecimiento acelerado en la adopción de energía solar residencial y reducción de costos de instalación.
+*   **Caso Bear:** Presión competitiva y dependencia de subsidios gubernamentales.
 
 **2. PAM (Pampa Energia S.A.)**
-*   **Veredicto Técnico:** ✅
-*   **Tesis de Inversión:** Con un RSI sobrevendido (26.5) y una clasificación de "Recuperación Rápida", el activo está en un punto de entrada ideal para un rebote técnico.
-*   **Caso Bull:** El soporte técnico en el RSI y la categorización sugieren un rebote inminente.
-*   **Caso Bear:** El FCF negativo y la volatilidad inherente a los conglomerados energéticos argentinos plantean riesgos.
+*   **Veredicto Técnico:** ✅ (RSI profundamente sobrevendido (23.7) y fuerte potencial de rebote en un activo con tendencia alcista subyacente.)
+*   **Tesis de Inversión:** El precio está cayendo hacia la SMA 200, pero el RSI indica una sobreventa extrema, lo que históricamente ha sido un punto de reversión.
+*   **Caso Bull:** Estabilidad política en Argentina e inversión en infraestructura energética.
+*   **Caso Bear:** Regulación gubernamental y volatilidad económica.
 
-**3. NOC (Northrop Grumman Corporation)**
-*   **Veredicto Técnico:** ✅
-*   **Tesis de Inversión:** El RSI extremadamente sobrevendido (7.8) tras una caída de 12.65% en 5 días indica una venta excesiva. La categoría "Sweet Spot" confirma que es una oportunidad.
-*   **Caso Bull:** La empresa tiene fundamentos sólidos en el sector de defensa, y el dip actual es una oportunidad de compra de valor.
-*   **Caso Bear:** La volatilidad reciente del sector podría prolongar el periodo de recuperación.
+**3. TGS (Transportadora de Gas del Sur)**
+*   **Veredicto Técnico:** ✅ (RSI extremadamente sobrevendido (17.7), un rebote técnico es altamente probable a corto plazo.)
+*   **Tesis de Inversión:** La caída reciente ha llevado a la sobreventa extrema, pero la tendencia de fondo sigue siendo alcista. La acumulación a estos niveles de pánico es atractiva.
+*   **Caso Bull:** Aumento de la demanda de gas natural y desarrollo de infraestructura.
+*   **Caso Bear:** Riesgos regulatorios y fluctuaciones en los precios del gas.
 
-**4. TGS (Transportadora de Gas del Sur S)**
-*   **Veredicto Técnico:** ✅
-*   **Tesis de Inversión:** El RSI sobrevendido (16.9) y la caída en el corto plazo la posicionan como un objetivo de "Recuperación Rápida" para el DCA.
-*   **Caso Bull:** El RSI sobrevendido sugiere una corrección inminente al alza.
-*   **Caso Bear:** El FCF negativo ($ -33.20B) y la exposición al riesgo país (Argentina) son factores de riesgo significativos.
+**4. XOM (Exxon Mobil Corporation)**
+*   **Veredicto Técnico:** ✅ (Sólido pullback en una tendencia alcista dominante, respaldado por un FCF robusto.)
+*   **Tesis de Inversión:** La corrección del precio ofrece una entrada en una empresa energética de primera línea que se beneficia de los precios altos del petróleo y un FCF positivo.
+*   **Caso Bull:** Fuerte generación de flujo de caja libre y dividendos crecientes.
+*   **Caso Bear:** Volatilidad del precio del petróleo y transición energética a largo plazo.
 
-**5. FSLR (First Solar, Inc.)**
-*   **Veredicto Técnico:** ✅
-*   **Tesis de Inversión:** La acción ha corregido significativamente desde sus máximos, pero se mantiene en una tendencia sana ("Sweet Spot") para el largo plazo.
-*   **Caso Bull:** La tendencia a largo plazo es positiva y la reciente corrección ofrece un buen punto de entrada.
-*   **Caso Bear:** La volatilidad del sector solar y la beta alta (1.607) pueden generar fluctuaciones a corto plazo.
+**5. NOC (Northrop Grumman Corporation)**
+*   **Veredicto Técnico:** ✅ (RSI extremadamente sobrevendido (7.5) en un sector fundamentalmente sólido, lo que indica una sobre-reacción del mercado.)
+*   **Tesis de Inversión:** La reciente caída brusca es una oportunidad para comprar una acción defensiva líder en la industria con perspectivas a largo plazo sólidas, impulsadas por tensiones geopolíticas.
+*   **Caso Bull:** Aumento del gasto en defensa global.
+*   **Caso Bear:** Recortes presupuestarios en defensa o retrasos en contratos clave.
 
 
 
 ### 💎 Otras 10 Alternativas (Resumen Rápido)
-- **#6 SUZ**: ❌
-- **#7 LMT**: ✅
-- **#8 EC**: ❌
-- **#9 XOM**: ✅
-- **#10 GD**: ✅
-- **#11 PFE**: ✅
-- **#12 JNJ**: ✅
+- **#6 FSLR**: ✅
+- **#7 COP**: ✅
+- **#8 LMT**: ✅
+- **#9 EC**: ✅
+- **#10 OXY**: ✅
+- **#11 VDE**: ✅
+- **#12 SUZ**: ❌
 - **#13 CVX**: ✅
-- **#14 COP**: ❌
-- **#15 BMA**: ✅
-- **#16 TMO**: ✅
-- **#17 CPA**: ✅
-- **#18 MRK**: ❌
-- **#19 OXY**: ✅
-- **#20 VDE**: ❌
-- **#21 ASTS**: ✅
-- **#22 RTX**: ✅
-- **#23 UAL**: ✅
-- **#24 INFY**: ❌
-- **#25 TGLS**: ❌
-- **#26 SEDG**: ✅
-- **#27 WFC**: ❌
-- **#28 DAPP**: ❌
-- **#29 LLY**: ❌
-- **#30 ZS**: ❌
-- **#31 SILJ**: ✅
-- **#32 PLTR**: ✅
-- **#33 CIB**: ❌
-- **#34 MCD**: ❌
-- **#35 SOL-USD**: ❌
-- **#36 BMY**: ❌
-- **#37 AVAL**: ❌
-- **#38 SEA**: ❌
-- **#39 NET**: ✅
-- **#40 BSBR**: ❌
-- **#41 KO**: ❌
-- **#42 MSTR**: ❌
-- **#43 NTLA**: ✅
-- **#44 ETH-USD**: ❌
-- **#45 NOW**: ❌
-- **#46 WIT**: ❌
-- **#47 XLV**: ❌
-- **#48 PEP**: ❌
-- **#49 DAL**: ❌
-- **#50 SONY**: ✅
+- **#14 ASTS**: ❌
+- **#15 GD**: ✅
+- **#16 WFC**: ✅
+- **#17 RTX**: ✅
+- **#18 JNJ**: ✅
+- **#19 BMA**: ✅
+- **#20 INFY**: ❌
+- **#21 MRK**: ✅
+- **#22 TMO**: ✅
+- **#23 TGLS**: ❌
+- **#24 CIB**: ❌
+- **#25 SEDG**: ✅
+- **#26 ZS**: ❌
+- **#27 MCD**: ✅
+- **#28 NTLA**: ✅
+- **#29 LLY**: ✅
+- **#30 PFE**: ❌
+- **#31 PBR**: ✅
+- **#32 UAL**: ❌
+- **#33 CPA**: ❌
+- **#34 SEA**: ❌
+- **#35 WIT**: ❌
+- **#36 KO**: ❌
+- **#37 SILJ**: ✅
+- **#38 XLV**: ✅
+- **#39 DAPP**: ❌
+- **#40 CRSP**: ❌
+- **#41 SOL-USD**: ❌
+- **#42 PLTR**: ✅
+- **#43 PEP**: ✅
+- **#44 BSBR**: ✅
+- **#45 BMY**: ✅
+- **#46 ETH-USD**: ❌
+- **#47 NET**: ✅
+- **#48 NU**: ❌
+- **#49 MSTR**: ❌
+- **#50 GXG**: ✅
 
 *(Lee la tesis completa de estas 10 + gráficas en el Dashboard Web de Vercel)*
