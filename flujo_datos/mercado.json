@@ -1,5 +1,5 @@
 {
-    "fecha_generacion": "2026-04-25 11:34 UTC",
+    "fecha_generacion": "2026-04-26 11:34 UTC",
     "MACRO": {
         "VIX": 18.71,
         "USD/COP": 3553.97
@@ -1926,54 +1926,6 @@
             ]
         },
         {
-            "Ticker": "SOL-USD",
-            "Nombre": "Solana USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 86.38,
-            "Drawdown 52W %": -65.89,
-            "Cambio 5D %": 1.23,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "52.7 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 58.3,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "PLTR",
             "Nombre": "Palantir Technologies Inc.",
             "Descripcion": "Software - Infrastructure (Technology)",
@@ -2166,54 +2118,6 @@
             ]
         },
         {
-            "Ticker": "ETH-USD",
-            "Nombre": "Ethereum USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 2315.6,
-            "Drawdown 52W %": -53.26,
-            "Cambio 5D %": 0.02,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "52.0 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 57.5,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "NET",
             "Nombre": "Cloudflare, Inc.",
             "Descripcion": "Software - Infrastructure (Technology)",
@@ -2373,6 +2277,102 @@
             "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
             "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "AVAL",
+            "Nombre": "Grupo Aval Acciones y Valores S",
+            "Descripcion": "Banks - Regional (Financial Services)",
+            "Precio Actual": 4.62,
+            "Drawdown 52W %": -11.97,
+            "Cambio 5D %": -3.14,
+            "Valor Mercado (P/E Ratio)": 11.846154,
+            "FCF": "N/A",
+            "RSI 14D": "56.4 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 55.8,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": 0.432,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "SONY",
+            "Nombre": "Sony Group Corporation",
+            "Descripcion": "Consumer Electronics (Technology)",
+            "Precio Actual": 20.28,
+            "Drawdown 52W %": -33.16,
+            "Cambio 5D %": -6.54,
+            "Valor Mercado (P/E Ratio)": 15.720931,
+            "FCF": "$-79.85B",
+            "RSI 14D": "42.6 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 55.7,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": 0.751,
             "Noticias_YF": [
                 {
                     "titulo": "",
