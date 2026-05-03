@@ -1,5 +1,5 @@
 {
-    "fecha_generacion": "2026-05-02 11:39 UTC",
+    "fecha_generacion": "2026-05-03 11:37 UTC",
     "MACRO": {
         "VIX": 16.99,
         "USD/COP": 3654.64
@@ -253,7 +253,7 @@
             "Drawdown 52W %": -24.49,
             "Cambio 5D %": -4.29,
             "Valor Mercado (P/E Ratio)": 4.7336955,
-            "FCF": "$-1.77B",
+            "FCF": "$-1.82B",
             "RSI 14D": "24.0 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
             "Score_Total": 78.0,
@@ -1020,7 +1020,7 @@
             "Precio Actual": 51.63,
             "Drawdown 52W %": -34.21,
             "Cambio 5D %": 5.83,
-            "Valor Mercado (P/E Ratio)": -12.711207,
+            "Valor Mercado (P/E Ratio)": -12.859726,
             "FCF": "$-205.62M",
             "RSI 14D": "43.2 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -1644,7 +1644,7 @@
             "Precio Actual": 2.9,
             "Drawdown 52W %": -36.08,
             "Cambio 5D %": -0.34,
-            "Valor Mercado (P/E Ratio)": -3.3606045,
+            "Valor Mercado (P/E Ratio)": -3.2972157,
             "FCF": "$-71.48M",
             "RSI 14D": "42.0 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -2022,54 +2022,6 @@
             ]
         },
         {
-            "Ticker": "SOL-USD",
-            "Nombre": "Solana USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 83.58,
-            "Drawdown 52W %": -66.99,
-            "Cambio 5D %": -1.46,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "39.5 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 63.8,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "VALE",
             "Nombre": "VALE S.A.",
             "Descripcion": "Other Industrial Metals & Mining (Basic Materials)",
@@ -2373,6 +2325,54 @@
             "Categoria": "Momentum",
             "Tendencias": "Sana/Normal",
             "Beta": 0.018,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "XOM",
+            "Nombre": "Exxon Mobil Corporation",
+            "Descripcion": "Oil & Gas Integrated (Energy)",
+            "Precio Actual": 152.75,
+            "Drawdown 52W %": -13.41,
+            "Cambio 5D %": 2.58,
+            "Valor Mercado (P/E Ratio)": 25.715488,
+            "FCF": "$11.63B",
+            "RSI 14D": "50.2 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 61.9,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": 0.288,
             "Noticias_YF": [
                 {
                     "titulo": "",
