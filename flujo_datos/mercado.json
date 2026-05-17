@@ -1,5 +1,5 @@
 {
-    "fecha_generacion": "2026-05-16 11:45 UTC",
+    "fecha_generacion": "2026-05-17 11:56 UTC",
     "MACRO": {
         "VIX": 18.43,
         "USD/COP": 3791.48
@@ -156,7 +156,7 @@
             "Precio Actual": 1.12,
             "Drawdown 52W %": -58.97,
             "Cambio 5D %": -20.57,
-            "Valor Mercado (P/E Ratio)": -2.7279148,
+            "Valor Mercado (P/E Ratio)": -2.7837844,
             "FCF": "$-48.24M",
             "RSI 14D": "27.6 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$120 USD",
@@ -1830,6 +1830,54 @@
             ]
         },
         {
+            "Ticker": "ETH-USD",
+            "Nombre": "Ethereum USD",
+            "Descripcion": "Criptomoneda Fuerte",
+            "Precio Actual": 2191.15,
+            "Drawdown 52W %": -54.0,
+            "Cambio 5D %": -3.67,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "35.0 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 64.5,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "HYG",
             "Nombre": "iShares iBoxx $ High Yield Corp",
             "Descripcion": "Fondo Cotizado (ETF)",
@@ -2022,54 +2070,6 @@
             ]
         },
         {
-            "Ticker": "ETH-USD",
-            "Nombre": "Ethereum USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 2178.75,
-            "Drawdown 52W %": -54.26,
-            "Cambio 5D %": -6.87,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "34.0 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 63.7,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "BMY",
             "Nombre": "Bristol-Myers Squibb Company",
             "Descripcion": "Drug Manufacturers - General (Healthcare)",
@@ -2220,7 +2220,7 @@
             "Precio Actual": 13.67,
             "Drawdown 52W %": -51.61,
             "Cambio 5D %": -2.98,
-            "Valor Mercado (P/E Ratio)": -7.2330337,
+            "Valor Mercado (P/E Ratio)": -7.1501427,
             "FCF": "$-235.23M",
             "RSI 14D": "54.4 - Neutral",
             "Monto Sugerido (SmartDCA)": "$120 USD",
