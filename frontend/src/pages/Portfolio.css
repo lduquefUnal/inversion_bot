@@ -1,0 +1,178 @@
+.portfolio-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.portfolio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.header-info h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.header-info .subtitle {
+    color: #888;
+}
+
+.total-value-card {
+    background: rgba(0, 255, 136, 0.05);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    padding: 1.5rem;
+    border-radius: 16px;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+}
+
+.total-value-card .label {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.total-value-card .value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #00ff88;
+}
+
+.profit-summary.positive {
+    color: #00ff88;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.portfolio-actions {
+    margin-bottom: 2rem;
+}
+
+.add-asset-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.add-asset-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.portfolio-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.portfolio-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1.5rem;
+}
+
+.ticker-info h2 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.ticker-info .amount {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.total-profit-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.total-profit-badge.positive {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+}
+
+.mini-chart-mock {
+    height: 60px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 1rem;
+}
+
+.chart-label {
+    font-size: 0.7rem;
+    color: #444;
+}
+
+.trend-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00ff88, transparent);
+    width: 100%;
+    margin-top: 5px;
+}
+
+.card-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric .label {
+    font-size: 0.75rem;
+    color: #555;
+}
+
+.metric .val {
+    font-weight: bold;
+}
+
+.metric .val.pos { color: #00ff88; }
+.metric .val.neg { color: #ff4444; }
+
+.sell-oracle-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    justify-content: center;
+}
+
+.sell-oracle-badge.hold {
+    background: rgba(0, 150, 255, 0.1);
+    color: #0096ff;
+    border: 1px solid rgba(0, 150, 255, 0.2);
+}

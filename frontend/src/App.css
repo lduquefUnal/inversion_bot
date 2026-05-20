@@ -11,3 +11,13 @@
   margin: 0 auto;
   width: 100%;
 }
+
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  font-size: 1.2rem;
+  color: #00ff88;
+  font-weight: bold;
+}

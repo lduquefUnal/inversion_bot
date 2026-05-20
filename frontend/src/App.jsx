@@ -1,10 +1,26 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Dashboard from './pages/Dashboard';
 import AssetDetail from './pages/AssetDetail';
+import Login from './pages/Login';
+import Portfolio from './pages/Portfolio';
 import { useAppStore } from './store/useAppStore';
+import { useAuth } from './store/AuthContext';
 import './App.css';
+
+const PrivateRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) return <div className="loading-screen">Cargando...</div>;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
 
 function App() {
   const { zoomedImage, setZoomedImage } = useAppStore();
@@ -15,6 +31,15 @@ function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/portfolio" 
+            element={
+              <PrivateRoute>
+                <Portfolio />
+              </PrivateRoute>
+            } 
+          />
           <Route path="/activo/:ticker" element={<AssetDetail />} />
         </Routes>
       </main>
