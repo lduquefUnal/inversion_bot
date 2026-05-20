@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { usePortfolioStore, calcularResumenPosicion } from '../store/usePortfolioStore';
 import { useMarketData } from '../hooks/useMarketData';
 import { useLivePrice } from '../hooks/useLivePrice';
@@ -214,7 +215,7 @@ const PositionCard = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
       {/* Cabecera */}
       <div className="card-top">
         <div className="ticker-info">
-          <h2>{position.ticker}</h2>
+          <h2><Link to={`/activo/${position.ticker}`} className="ticker-link">{position.ticker}</Link></h2>
           <span className="amount">{position.nombre} · {cantidadTotal.toFixed(6).replace(/\.?0+$/, '')} u.</span>
         </div>
         <div className="card-controls">
