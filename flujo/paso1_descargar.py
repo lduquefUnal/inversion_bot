@@ -285,12 +285,22 @@ def main():
             
     # RANKING por Score Total Ponderado V2 (mayor score = mejor oportunidad)
     datos_completos = sorted(datos_completos, key=lambda x: x["Score_Total"], reverse=True)
-    top_50_candidatas = datos_completos[:50]
     
-    # Re-ordenar para consolidar (ya está ordenado correctamente)
-    top_50_candidatas = sorted(top_50_candidatas, key=lambda x: x["Score_Total"], reverse=True)
+    # Tomamos los verdaderos Top 50 del mercado
+    top_50_mercado = datos_completos[:50]
     
-    print("Pre-procesando Top 50 Estricto y graficando velas japonesas...")
+    # Asegurar que mis activos se agreguen ADICIONALMENTE si no entraron en el Top 50
+    mis_tickers = ["PLTR", "MSFT", "TGLS", "MELI", "TSLA", "URNJ", "ETH-USD", "BTC-USD", "GLD"]
+    tickers_en_top = [d["Ticker"] for d in top_50_mercado]
+    activos_faltantes = [d for d in datos_completos if d["Ticker"] in mis_tickers and d["Ticker"] not in tickers_en_top]
+    
+    # Lista final: Los 50 mejores + los de mi portafolio que quedaron por fuera
+    lista_final = top_50_mercado + activos_faltantes
+    
+    # Re-ordenar para consolidar
+    top_50_candidatas = sorted(lista_final, key=lambda x: x["Score_Total"], reverse=True)
+    
+    print(f"Pre-procesando {len(top_50_candidatas)} activos y graficando velas japonesas...")
     for i, candidato in enumerate(top_50_candidatas):
         ticker = candidato['Ticker']
         nombre = candidato.get('Nombre', ticker)
