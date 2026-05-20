@@ -40,36 +40,85 @@ def main():
     universe = [
         # --- CRIPTOMONEDAS Y BLOCKCHAIN ---
         "BTC-USD", "ETH-USD", "SOL-USD", "COIN", "MARA", "RIOT", "MSTR",
-        # --- MATERIAS PRIMAS, ORO, URANIO, SOJA ---
-        "GLD", "URNJ", "TLT", "EMB", "LIT", "REMX", "COPX", "SILJ", "CCJ", "NXE", "UUUU", "URA", "FCX", "SCCO", "BHP", "RIO", "NLR", "CEG",
-        # --- TECNOLOGÍA PURA E INTELIGENCIA ARTIFICIAL ---
-        "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "AMD", "INTC", "MU", "SMCI", "TSM", "ASML", "ARM", "PLTR",
+        # ETFs cripto spot (aprobados 2024)
+        "IBIT", "FBTC", "BITB", "ARKB",
+
+        # --- MATERIAS PRIMAS, ORO, URANIO ---
+        "GLD", "URNJ", "TLT", "EMB", "LIT", "REMX", "COPX", "SILJ",
+        "CCJ", "NXE", "UUUU", "URA", "FCX", "SCCO", "BHP", "RIO", "NLR", "CEG",
+        # Commodities agrícolas (gap cubierto)
+        "DBA", "CORN", "WEAT", "SOYB",
+        # Agua e infraestructura (gap cubierto)
+        "PHO", "FIW", "PAVE", "IFRA",
+
+        # --- TECNOLOGÍA PURA E IA ---
+        "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "AMD",
+        "INTC", "MU", "SMCI", "TSM", "ASML", "ARM", "PLTR",
+        # Tech faltante relevante
+        "DELL", "ORCL", "CRM", "ADBE", "QCOM", "AVGO",
+
         # --- CIBERSEGURIDAD, NUBE Y SAAS ---
         "CRWD", "PANW", "FTNT", "ZS", "NET", "SNOW", "NOW",
+        "OKTA", "DDOG", "S", "HUBS",
+
         # --- FINTECH Y PAGOS ---
-        "V", "MA", "PYPL", "SOFI", "AFRM", "HOOD", 
-        # --- INNOVACIÓN ARKK Y ESPACIO ---
-        "ARKK", "BOTZ", "ROBO", "SOXQ", "MOON", "UFO", "ARKG", "BLOK", "DAPP", "RKLB", "ASTS", "JOBY", "SMR", "OKLO",
+        "V", "MA", "PYPL", "SOFI", "AFRM", "HOOD", "SQ",
+
+        # --- INNOVACIÓN, ESPACIO Y ROBÓTICA ---
+        "ARKK", "BOTZ", "ROBO", "SOXQ", "MOON", "UFO", "ARKG",
+        "BLOK", "DAPP", "RKLB", "ASTS", "JOBY", "SMR", "OKLO",
+        "LUNR", "RDDT", "AI", "PATH",
+
         # --- LATAM Y MERCADOS EMERGENTES ---
-        "MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH", "EWW", "BBD", "CX", "BMA", "PAM", "TGS", "CIB", "EC", "TGLS", "AVAL", "SQM", "ARCO", "CPA", "BSBR", "SUZ", "EWZS",
-        # --- ASIA Y CHINA EXTENDIDO ---
-        "BABA", "JD", "PDD", "BIDU", "NIO", "BYDDY", "TCEHY", "SEA", "MCHI", "INDA", "SMIN", "EWY", "EWT", "VNM", "SE", "GRAB", "UMC", "ASX", "INFY", "WIT", "SONY", "HDB",
+        "MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH",
+        "EWW", "BBD", "CX", "BMA", "PAM", "TGS", "CIB", "EC",
+        "TGLS", "AVAL", "SQM", "ARCO", "CPA", "BSBR", "SUZ", "EWZS",
+
+        # --- ASIA Y CHINA ---
+        "BABA", "JD", "PDD", "BIDU", "NIO", "BYDDY", "TCEHY", "SEA",
+        "MCHI", "INDA", "SMIN", "EWY", "EWT", "VNM", "SE", "GRAB",
+        "UMC", "ASX", "INFY", "WIT", "SONY", "HDB",
+        "KWEB", "CQQQ",
+
         # --- ENERGÍA LIMPIA Y SOLAR ---
         "FSLR", "ENPH", "RUN", "SEDG", "BEP", "NEE", "ICLN", "TAN", "FAN", "CWEN",
-        # --- DEFENSA Y AEROSPACIAL ---
+        "PLUG", "BLNK", "CHPT",
+
+        # --- DEFENSA Y AEROESPACIAL (ampliado) ---
         "LMT", "RTX", "GD", "NOC",
+        "HII", "BA", "AXON", "CACI", "HEI",
+
         # --- BIOTECNOLOGÍA Y SALUD ---
-        "XBI", "CRSP", "EDIT", "NTLA", "PACB", "LLY", "ABBV", "PFE", "MRK", "JNJ", "BMY", "UNH", "CVS", "ISRG", "TMO", "DHR",
+        "XBI", "CRSP", "EDIT", "NTLA", "PACB", "LLY", "ABBV", "PFE",
+        "MRK", "JNJ", "BMY", "UNH", "CVS", "ISRG", "TMO", "DHR",
+        "MRNA", "REGN", "GILD", "VRTX", "BIIB",
+
         # --- BIENES RAÍCES (REITs) ---
         "O", "PLD", "AMT", "CCI", "EQIX", "SPG",
-        # --- CONSUMO, TURISMO Y BANCA TRADICIONAL ---
-        "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP", "WMT", "SBUX", "GS", "MS", "AXP", "BLK", "DAL", "UAL", "JPM", "BAC", "WFC", "C", "NKE", "DIS",
-        # --- ENERGÍA FÓSIL Y PETRÓLEO ---
+        "VICI", "IRM", "PSA", "DLR",
+
+        # --- CONSUMO, TURISMO Y BANCA ---
+        "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP",
+        "WMT", "SBUX", "GS", "MS", "AXP", "BLK", "DAL", "UAL",
+        "JPM", "BAC", "WFC", "C", "NKE", "DIS",
+        "RACE", "LVS", "MAR", "HLT",
+
+        # --- ENERGÍA FÓSIL ---
         "XOM", "CVX", "COP", "SLB", "OXY",
-        # --- BONOS (EMERGENTES, EEUU, High Yield) ---
-        "EMB", "VWOB", "EMLC", "PCY", "BND", "AGG", "LQD", "HYG", "JNK", 
-        # --- ETFs DIVIDENDOS Y GENERALES ---
-        "SPY", "QQQ", "QQQM", "VTI", "VEA", "VWO", "SCHD", "JEPI", "^TNX", "VDE", "XLV", "XLF", "XLC", "XLY", "XLP", "XLI", "XLB", "XLRE", "XLU"
+        "MPC", "VLO", "PSX",
+
+        # --- VOLATILIDAD Y HEDGE (gap cubierto) ---
+        "UVXY", "VIXY", "SQQQ", "PSQ",
+
+        # --- BONOS ---
+        "EMB", "VWOB", "EMLC", "PCY", "BND", "AGG", "LQD", "HYG", "JNK",
+        "TIPS", "SHY", "IEF",
+
+        # --- ETFs GENERALES Y DIVIDENDOS ---
+        "SPY", "QQQ", "QQQM", "VTI", "VEA", "VWO", "SCHD", "JEPI",
+        "^TNX", "VDE", "XLV", "XLF", "XLC", "XLY", "XLP", "XLI",
+        "XLB", "XLRE", "XLU",
+        "NOBL", "HDV", "VIG", "DGRO"
     ]
     
     macro_data = {}
@@ -236,12 +285,22 @@ def main():
             
     # RANKING por Score Total Ponderado V2 (mayor score = mejor oportunidad)
     datos_completos = sorted(datos_completos, key=lambda x: x["Score_Total"], reverse=True)
-    top_50_candidatas = datos_completos[:50]
     
-    # Re-ordenar para consolidar (ya está ordenado correctamente)
-    top_50_candidatas = sorted(top_50_candidatas, key=lambda x: x["Score_Total"], reverse=True)
+    # Tomamos los verdaderos Top 50 del mercado
+    top_50_mercado = datos_completos[:50]
     
-    print("Pre-procesando Top 50 Estricto y graficando velas japonesas...")
+    # Asegurar que mis activos se agreguen ADICIONALMENTE si no entraron en el Top 50
+    mis_tickers = ["PLTR", "MSFT", "TGLS", "MELI", "TSLA", "URNJ", "ETH-USD", "BTC-USD", "GLD"]
+    tickers_en_top = [d["Ticker"] for d in top_50_mercado]
+    activos_faltantes = [d for d in datos_completos if d["Ticker"] in mis_tickers and d["Ticker"] not in tickers_en_top]
+    
+    # Lista final: Los 50 mejores + los de mi portafolio que quedaron por fuera
+    lista_final = top_50_mercado + activos_faltantes
+    
+    # Re-ordenar para consolidar
+    top_50_candidatas = sorted(lista_final, key=lambda x: x["Score_Total"], reverse=True)
+    
+    print(f"Pre-procesando {len(top_50_candidatas)} activos y graficando velas japonesas...")
     for i, candidato in enumerate(top_50_candidatas):
         ticker = candidato['Ticker']
         nombre = candidato.get('Nombre', ticker)
