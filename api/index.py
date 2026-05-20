@@ -16,7 +16,42 @@ def serve_image(filename):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return send_from_directory(os.path.join(base_dir, 'flujo_datos'), filename)
 
+@app.route('/api/precio', methods=['GET'])
+def get_precios():
+    """Retorna precios actuales para uno o más tickers. Ej: /api/precio?tickers=BTC-USD,ETH-USD,PLTR"""
+    tickers_raw = request.args.get('tickers', '')
+    if not tickers_raw:
+        return jsonify({"error": "Parámetro 'tickers' requerido"}), 400
+    
+    tickers = [t.strip() for t in tickers_raw.split(',') if t.strip()]
+    resultado = {}
+    
+    try:
+        import yfinance as yf
+        data = yf.download(tickers, period='1d', interval='1m', progress=False, auto_adjust=True)
+        
+        if len(tickers) == 1:
+            # yfinance retorna estructura diferente para un solo ticker
+            t = tickers[0]
+            try:
+                precio = float(data['Close'].dropna().iloc[-1])
+                resultado[t] = round(precio, 6)
+            except Exception:
+                resultado[t] = None
+        else:
+            for t in tickers:
+                try:
+                    precio = float(data['Close'][t].dropna().iloc[-1])
+                    resultado[t] = round(precio, 6)
+                except Exception:
+                    resultado[t] = None
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    return jsonify(resultado)
+
 @app.route('/api/historico', methods=['GET'])
+
 def get_historico():
     ticker = request.args.get('ticker')
     period = request.args.get('period', '5y')
