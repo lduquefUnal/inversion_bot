@@ -312,11 +312,13 @@ const PositionCard = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
 
 // ─── Página Principal ───────────────────────────────────────────────────────
 const Portfolio = () => {
-  const { entries, addPosition, removePosition, addLote, updateLote, removeLote, resetPortafolio, limpiarPortafolio } = usePortfolioStore();
+  const { entries, addPosition, removePosition, addLote, updateLote, removeLote, resetPortafolio, limpiarPortafolio, exportToJson, importFromJson } = usePortfolioStore();
   const { data: marketData, isLoading: mdLoading } = useMarketData();
   const [nuevoModal, setNuevoModal] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [confirmReset, setConfirmReset] = useState(null); // null | 'reset' | 'clean'
+  const [importError, setImportError] = useState('');
+
 
   const activos = marketData?.TOP_25_DIPS || marketData?.TOP_50_DIPS || [];
   const tickersList = activos.map(a => a.Ticker);
@@ -377,7 +379,31 @@ const Portfolio = () => {
     // auto-abrir form de primer lote después de crear
   };
 
+  const handleExport = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(exportToJson());
+    const el = document.createElement('a');
+    el.setAttribute("href", dataStr);
+    el.setAttribute("download", `oraculo_backup_${new Date().toISOString().split('T')[0]}.json`);
+    document.body.appendChild(el);
+    el.click();
+    el.remove();
+  };
+
+  const handleImport = (e) => {
+    setImportError('');
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const success = importFromJson(event.target.result);
+      if (!success) setImportError('Archivo JSON inválido o corrupto.');
+      else setShowConfig(false); // Cierra el modal en éxito
+    };
+    reader.readAsText(file);
+  };
+
   return (
+
     <div className="portfolio-container">
 
       {/* Header */}
@@ -479,13 +505,20 @@ const Portfolio = () => {
             </div>
 
             <div className="config-section">
-              <h4>💾 Persistencia</h4>
+              <h4>💾 Persistencia y Backups</h4>
               <p className="config-note">
-                Todos los cambios que hagas desde la UI (añadir posiciones, editar lotes, borrar) 
-                <strong> se guardan automáticamente</strong> en el navegador (localStorage).
-                Se mantienen aunque cierres la pestaña o el navegador. Solo se pierden si limpias los datos del sitio.
+                Tus posiciones se guardan en este navegador. Para usarlas en otro dispositivo o asegurar tus datos, usa estas herramientas:
               </p>
+              <div className="backup-actions">
+                <button className="btn-save" onClick={handleExport}>⬇️ Exportar Backup</button>
+                <div className="import-wrapper">
+                  <label htmlFor="import-json" className="btn-cancel" style={{cursor: 'pointer', display: 'inline-block'}}>⬆️ Importar Backup</label>
+                  <input id="import-json" type="file" accept=".json" onChange={handleImport} style={{display: 'none'}} />
+                </div>
+              </div>
+              {importError && <p className="error-text" style={{color: '#f87171', fontSize: '0.8rem', marginTop: '0.5rem'}}>{importError}</p>}
             </div>
+
 
             <div className="config-section">
               <h4>📡 Fuente de Precios por Activo</h4>

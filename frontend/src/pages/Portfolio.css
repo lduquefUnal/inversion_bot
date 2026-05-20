@@ -31,6 +31,10 @@
 .source-badge.live    { background: rgba(239,68,68,0.15);  color: #f87171; }
 .source-badge.offline { background: rgba(100,100,100,0.1); color: #6b7280; }
 
+.backup-actions { display: flex; gap: 0.8rem; margin-top: 0.8rem; flex-wrap: wrap; }
+.backup-actions .btn-save, .backup-actions .btn-cancel { padding: 0.5rem 1rem; font-size: 0.85rem; margin: 0; }
+.import-wrapper { display: flex; align-items: center; }
+
 .danger-zone { background: rgba(255,68,68,0.03); }
 .config-btns { display: flex; gap: 0.7rem; flex-wrap: wrap; }
 .btn-reset {

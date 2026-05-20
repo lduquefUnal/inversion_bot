@@ -18,40 +18,46 @@ export const calcularResumenPosicion = (lotes) => {
 // Para resetear y recargar el seed: usar usePortfolioStore.getState().resetPortafolio()
 const buildSeed = () => [
   {
-    position: { id: uuidv4(), ticker: 'BTC-USD', nombre: 'Bitcoin'         },
-    lotes: [{ id: uuidv4(), precioCompra: 76000,  cantidad: 0.00131,  fechaCompra: '2024-11-01', nota: 'compra inicial' }],
+    position: { id: uuidv4(), ticker: 'PLTR', nombre: 'Palantir' },
+    lotes: [{ id: uuidv4(), precioCompra: 135.70, cantidad: 0.399042, fechaCompra: '2026-04-14', nota: 'Trii' }],
   },
   {
-    position: { id: uuidv4(), ticker: 'ETH-USD', nombre: 'Ethereum'        },
-    lotes: [{ id: uuidv4(), precioCompra: 2100,   cantidad: 0.0266,   fechaCompra: '2024-11-01', nota: '' }],
+    position: { id: uuidv4(), ticker: 'MSFT', nombre: 'Microsoft' },
+    lotes: [{ id: uuidv4(), precioCompra: 393.11, cantidad: 0.102134, fechaCompra: '2026-04-14', nota: 'Trii' }],
   },
   {
-    position: { id: uuidv4(), ticker: 'PLTR',    nombre: 'Palantir'        },
-    lotes: [{ id: uuidv4(), precioCompra: 135,    cantidad: 0.4,      fechaCompra: '2025-01-10', nota: 'primera entrada' }],
+    position: { id: uuidv4(), ticker: 'TGLS', nombre: 'Tecnoglass' },
+    lotes: [{ id: uuidv4(), precioCompra: 45.71, cantidad: 1.097134, fechaCompra: '2026-04-14', nota: 'Trii' }],
   },
   {
-    position: { id: uuidv4(), ticker: 'MSFT',    nombre: 'Microsoft'       },
-    lotes: [{ id: uuidv4(), precioCompra: 415,    cantidad: 0.1023,   fechaCompra: '2025-02-15', nota: '' }],
+    position: { id: uuidv4(), ticker: 'MELI', nombre: 'MercadoLibre' },
+    lotes: [{ id: uuidv4(), precioCompra: 1840.66, cantidad: 0.016375, fechaCompra: '2026-04-14', nota: 'Trii' }],
   },
   {
-    position: { id: uuidv4(), ticker: 'TGLS',    nombre: 'Tecnoglass'      },
-    lotes: [{ id: uuidv4(), precioCompra: 50,     cantidad: 1.088,    fechaCompra: '2024-10-20', nota: '' }],
+    position: { id: uuidv4(), ticker: 'TSLA', nombre: 'Tesla' },
+    lotes: [{ id: uuidv4(), precioCompra: 364.20, cantidad: 0.082784, fechaCompra: '2026-04-14', nota: 'Trii' }],
   },
   {
-    position: { id: uuidv4(), ticker: 'GLD',     nombre: 'SPDR Gold Shares'},
-    lotes: [{ id: uuidv4(), precioCompra: 390,    cantidad: 0.0959,   fechaCompra: '2025-03-01', nota: '' }],
+    position: { id: uuidv4(), ticker: 'URNJ', nombre: 'Uranium Junior' },
+    lotes: [{ id: uuidv4(), precioCompra: 28.32, cantidad: 1.382415, fechaCompra: '2026-04-07', nota: 'Trii' }],
   },
   {
-    position: { id: uuidv4(), ticker: 'URNJ',    nombre: 'Uranium Junior'  },
-    lotes: [{ id: uuidv4(), precioCompra: 28,     cantidad: 1.388,    fechaCompra: '2024-12-05', nota: '' }],
+    position: { id: uuidv4(), ticker: 'ETH-USD', nombre: 'Ethereum' },
+    lotes: [
+      { id: uuidv4(), precioCompra: 2056.85, cantidad: 0.017186, fechaCompra: '2026-04-02', nota: 'Trii' },
+      { id: uuidv4(), precioCompra: 2056.85, cantidad: 0.009821, fechaCompra: '2026-04-02', nota: 'Trii' }
+    ],
   },
   {
-    position: { id: uuidv4(), ticker: 'TSLA',    nombre: 'Tesla'           },
-    lotes: [{ id: uuidv4(), precioCompra: 380,    cantidad: 0.0825,   fechaCompra: '2025-01-20', nota: '' }],
+    position: { id: uuidv4(), ticker: 'BTC-USD', nombre: 'Bitcoin' },
+    lotes: [
+      { id: uuidv4(), precioCompra: 68791.62, cantidad: 0.000881, fechaCompra: '2026-03-26', nota: 'Trii' },
+      { id: uuidv4(), precioCompra: 66888.57, cantidad: 0.000453, fechaCompra: '2026-04-02', nota: 'Trii' }
+    ],
   },
   {
-    position: { id: uuidv4(), ticker: 'MELI',    nombre: 'MercadoLibre'    },
-    lotes: [{ id: uuidv4(), precioCompra: 1850,   cantidad: 0.01631,  fechaCompra: '2025-04-01', nota: '' }],
+    position: { id: uuidv4(), ticker: 'GLD', nombre: 'SPDR Gold Shares' },
+    lotes: [{ id: uuidv4(), precioCompra: 400.64, cantidad: 0.098343, fechaCompra: '2026-03-26', nota: 'Trii' }],
   },
 ];
 
@@ -138,4 +144,27 @@ export const usePortfolioStore = create((set, get) => ({
     localStorage.removeItem(STORAGE_KEY);
     set({ entries: [] });
   },
+
+  /** Exporta el portafolio como string JSON */
+  exportToJson: () => {
+    const data = get().entries;
+    return JSON.stringify(data, null, 2);
+  },
+
+  /** Importa un portafolio desde un string JSON (reemplaza todo) */
+  importFromJson: (jsonString) => {
+    try {
+      const parsed = JSON.parse(jsonString);
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.position) {
+        save(parsed);
+        set({ entries: parsed });
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error("Error importando JSON", e);
+      return false;
+    }
+  },
 }));
+
