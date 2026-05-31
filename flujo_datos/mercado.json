@@ -1,5 +1,5 @@
 {
-    "fecha_generacion": "2026-05-30 12:03 UTC",
+    "fecha_generacion": "2026-05-31 12:08 UTC",
     "MACRO": {
         "VIX": 15.32,
         "USD/COP": 3665.72
@@ -582,6 +582,54 @@
             ]
         },
         {
+            "Ticker": "NLR",
+            "Nombre": "VanEck Uranium and Nuclear ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 133.3,
+            "Drawdown 52W %": -19.31,
+            "Cambio 5D %": 2.58,
+            "Valor Mercado (P/E Ratio)": 25.501295,
+            "FCF": "N/A",
+            "RSI 14D": "40.0 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 71.4,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "BIDU",
             "Nombre": "Baidu, Inc.",
             "Descripcion": "Internet Content & Information (Communication Services)",
@@ -1062,54 +1110,6 @@
             ]
         },
         {
-            "Ticker": "NLR",
-            "Nombre": "NLR",
-            "Descripcion": "Activo Financiero",
-            "Precio Actual": 133.3,
-            "Drawdown 52W %": -19.31,
-            "Cambio 5D %": 2.58,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "40.0 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 68.5,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "PDD",
             "Nombre": "PDD Holdings Inc.",
             "Descripcion": "Internet Retail (Consumer Cyclical)",
@@ -1254,19 +1254,19 @@
             ]
         },
         {
-            "Ticker": "KWEB",
-            "Nombre": "KraneShares CSI China Internet ",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 26.73,
-            "Drawdown 52W %": -34.61,
-            "Cambio 5D %": -3.26,
-            "Valor Mercado (P/E Ratio)": 13.298591,
+            "Ticker": "ETH-USD",
+            "Nombre": "Ethereum USD",
+            "Descripcion": "Criptomoneda Fuerte",
+            "Precio Actual": 2017.85,
+            "Drawdown 52W %": -57.57,
+            "Cambio 5D %": -2.56,
+            "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "30.0 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 66.8,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
+            "RSI 14D": "32.2 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 67.3,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cazador de Dips",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": "N/A",
             "Noticias_YF": [
@@ -1302,19 +1302,19 @@
             ]
         },
         {
-            "Ticker": "ETH-USD",
-            "Nombre": "Ethereum USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 2014.7,
-            "Drawdown 52W %": -57.63,
-            "Cambio 5D %": -4.58,
-            "Valor Mercado (P/E Ratio)": "N/A",
+            "Ticker": "KWEB",
+            "Nombre": "KraneShares CSI China Internet ",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 26.73,
+            "Drawdown 52W %": -34.61,
+            "Cambio 5D %": -3.26,
+            "Valor Mercado (P/E Ratio)": 13.298591,
             "FCF": "N/A",
-            "RSI 14D": "26.6 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.7,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
+            "RSI 14D": "30.0 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 66.8,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": "N/A",
             "Noticias_YF": [
@@ -1596,7 +1596,7 @@
             "Precio Actual": 5.6,
             "Drawdown 52W %": -30.17,
             "Cambio 5D %": 0.0,
-            "Valor Mercado (P/E Ratio)": 41.24973,
+            "Valor Mercado (P/E Ratio)": 41.16767,
             "FCF": "N/A",
             "RSI 14D": "45.6 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -1701,54 +1701,6 @@
             "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": 0.753,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "SOL-USD",
-            "Nombre": "Solana USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 82.22,
-            "Drawdown 52W %": -66.0,
-            "Cambio 5D %": -3.28,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "34.3 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 65.3,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2262,6 +2214,54 @@
             ]
         },
         {
+            "Ticker": "SOL-USD",
+            "Nombre": "Solana USD",
+            "Descripcion": "Criptomoneda Fuerte",
+            "Precio Actual": 82.52,
+            "Drawdown 52W %": -65.23,
+            "Cambio 5D %": -1.28,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "39.6 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 64.0,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "TIPS",
             "Nombre": "Tianrong Internet Products and ",
             "Descripcion": "Specialty Industrial Machinery (Industrials)",
@@ -2358,21 +2358,21 @@
             ]
         },
         {
-            "Ticker": "BYDDY",
-            "Nombre": "BYD Co., Ltd.",
-            "Descripcion": "Auto Manufacturers (Consumer Cyclical)",
-            "Precio Actual": 11.59,
-            "Drawdown 52W %": -36.76,
-            "Cambio 5D %": 0.43,
-            "Valor Mercado (P/E Ratio)": 39.96552,
-            "FCF": "$-117.09B",
-            "RSI 14D": "27.3 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Ticker": "BTC-USD",
+            "Nombre": "Bitcoin USD",
+            "Descripcion": "Criptomoneda Fuerte",
+            "Precio Actual": 73787.35,
+            "Drawdown 52W %": -41.53,
+            "Cambio 5D %": -2.69,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "31.1 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
             "Score_Total": 63.6,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cazador de Dips",
             "Tendencias": "Bajista (Cuchillo)",
-            "Beta": 0.297,
+            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2421,54 +2421,6 @@
             "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": 1.418,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "BTC-USD",
-            "Nombre": "Bitcoin USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 73499.56,
-            "Drawdown 52W %": -41.76,
-            "Cambio 5D %": -4.89,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "26.9 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 62.2,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2551,20 +2503,20 @@
         },
         {
             "Ticker": "MELI",
-            "Nombre": "MELI",
-            "Descripcion": "Activo Financiero",
+            "Nombre": "MercadoLibre, Inc.",
+            "Descripcion": "Internet Retail (Consumer Cyclical)",
             "Precio Actual": 1695.65,
             "Drawdown 52W %": -35.9,
             "Cambio 5D %": 1.06,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
+            "Valor Mercado (P/E Ratio)": 44.8466,
+            "FCF": "$-4.10B",
             "RSI 14D": "57.4 - Neutral",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 48.2,
+            "Score_Total": 45.2,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
+            "Beta": 1.406,
             "Noticias_YF": [
                 {
                     "titulo": "",
