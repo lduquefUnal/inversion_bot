@@ -1,8 +1,8 @@
 {
-    "fecha_generacion": "2026-06-19 14:01 UTC",
+    "fecha_generacion": "2026-06-20 12:27 UTC",
     "MACRO": {
-        "VIX": 16.87,
-        "USD/COP": 3427.49
+        "VIX": 16.78,
+        "USD/COP": 3436.08
     },
     "TOP_50_DIPS": [
         {
@@ -252,7 +252,7 @@
             "Precio Actual": 285.43,
             "Drawdown 52W %": -37.68,
             "Cambio 5D %": -5.16,
-            "Valor Mercado (P/E Ratio)": 18.534416,
+            "Valor Mercado (P/E Ratio)": 18.558517,
             "FCF": "$634.12M",
             "RSI 14D": "34.8 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -396,7 +396,7 @@
             "Precio Actual": 16.75,
             "Drawdown 52W %": -24.11,
             "Cambio 5D %": -8.17,
-            "Valor Mercado (P/E Ratio)": 5.2180686,
+            "Valor Mercado (P/E Ratio)": 5.2672954,
             "FCF": "$82.93B",
             "RSI 14D": "21.7 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -732,7 +732,7 @@
             "Precio Actual": 5.02,
             "Drawdown 52W %": -37.41,
             "Cambio 5D %": -4.02,
-            "Valor Mercado (P/E Ratio)": 33.709774,
+            "Valor Mercado (P/E Ratio)": 33.739216,
             "FCF": "N/A",
             "RSI 14D": "33.5 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -1020,7 +1020,7 @@
             "Precio Actual": 195.16,
             "Drawdown 52W %": -50.29,
             "Cambio 5D %": -10.8,
-            "Valor Mercado (P/E Ratio)": 11.164761,
+            "Valor Mercado (P/E Ratio)": 11.158377,
             "FCF": "$9.22B",
             "RSI 14D": "19.4 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -1836,7 +1836,7 @@
             "Precio Actual": 609.94,
             "Drawdown 52W %": -25.52,
             "Cambio 5D %": -0.25,
-            "Valor Mercado (P/E Ratio)": 14.898389,
+            "Valor Mercado (P/E Ratio)": 14.880214,
             "FCF": "$3.27B",
             "RSI 14D": "47.9 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -2124,7 +2124,7 @@
             "Precio Actual": 184.29,
             "Drawdown 52W %": -46.27,
             "Cambio 5D %": 0.1,
-            "Valor Mercado (P/E Ratio)": 31.556505,
+            "Valor Mercado (P/E Ratio)": 31.664946,
             "FCF": "$-20.34B",
             "RSI 14D": "32.2 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -2172,7 +2172,7 @@
             "Precio Actual": 79.56,
             "Drawdown 52W %": -42.93,
             "Cambio 5D %": -2.14,
-            "Valor Mercado (P/E Ratio)": 8.357142,
+            "Valor Mercado (P/E Ratio)": 8.33089,
             "FCF": "$71.64B",
             "RSI 14D": "36.3 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -2268,7 +2268,7 @@
             "Precio Actual": 107.1,
             "Drawdown 52W %": -43.9,
             "Cambio 5D %": -4.96,
-            "Valor Mercado (P/E Ratio)": 16.502312,
+            "Valor Mercado (P/E Ratio)": 16.451612,
             "FCF": "$-44.07B",
             "RSI 14D": "22.7 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -2406,65 +2406,17 @@
             ]
         },
         {
-            "Ticker": "ETH-USD",
-            "Nombre": "Ethereum USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 1702.84,
-            "Drawdown 52W %": -61.26,
-            "Cambio 5D %": 1.35,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "45.0 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 63.2,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "MSFT",
             "Nombre": "Microsoft Corporation",
             "Descripcion": "Software - Infrastructure (Technology)",
             "Precio Actual": 379.4,
             "Drawdown 52W %": -31.15,
             "Cambio 5D %": -2.8,
-            "Valor Mercado (P/E Ratio)": 22.610249,
+            "Valor Mercado (P/E Ratio)": 22.569899,
             "FCF": "$37.01B",
             "RSI 14D": "18.6 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 62.7,
+            "Score_Total": 62.8,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
@@ -2508,7 +2460,7 @@
             "Precio Actual": 400.49,
             "Drawdown 52W %": -19.71,
             "Cambio 5D %": 0.34,
-            "Valor Mercado (P/E Ratio)": 367.422,
+            "Valor Mercado (P/E Ratio)": 370.82404,
             "FCF": "$5.25B",
             "RSI 14D": "38.6 - Neutral",
             "Monto Sugerido (SmartDCA)": "$80 USD",
@@ -2565,54 +2517,6 @@
             "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": 1.429,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "BTC-USD",
-            "Nombre": "Bitcoin USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 63175.01,
-            "Drawdown 52W %": -48.43,
-            "Cambio 5D %": -1.93,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "48.0 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 57.3,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2709,6 +2613,102 @@
             "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": 1.515,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "ETH-USD",
+            "Nombre": "Ethereum USD",
+            "Descripcion": "Criptomoneda Fuerte",
+            "Precio Actual": 1726.01,
+            "Drawdown 52W %": -59.79,
+            "Cambio 5D %": 0.08,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "64.7 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 49.7,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "BTC-USD",
+            "Nombre": "Bitcoin USD",
+            "Descripcion": "Criptomoneda Fuerte",
+            "Precio Actual": 63653.86,
+            "Drawdown 52W %": -45.25,
+            "Cambio 5D %": -3.13,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "60.3 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 46.8,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
