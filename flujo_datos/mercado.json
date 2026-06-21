@@ -1,5 +1,5 @@
 {
-    "fecha_generacion": "2026-06-20 12:27 UTC",
+    "fecha_generacion": "2026-06-21 13:04 UTC",
     "MACRO": {
         "VIX": 16.78,
         "USD/COP": 3436.08
@@ -108,7 +108,7 @@
             "Precio Actual": 111.76,
             "Drawdown 52W %": -32.39,
             "Cambio 5D %": -3.75,
-            "Valor Mercado (P/E Ratio)": 12.2195015,
+            "Valor Mercado (P/E Ratio)": 12.23125,
             "FCF": "$7.96B",
             "RSI 14D": "22.4 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -732,7 +732,7 @@
             "Precio Actual": 5.02,
             "Drawdown 52W %": -37.41,
             "Cambio 5D %": -4.02,
-            "Valor Mercado (P/E Ratio)": 33.739216,
+            "Valor Mercado (P/E Ratio)": 33.742184,
             "FCF": "N/A",
             "RSI 14D": "33.5 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
@@ -1638,54 +1638,6 @@
             ]
         },
         {
-            "Ticker": "AMZN",
-            "Nombre": "Amazon.com, Inc.",
-            "Descripcion": "Internet Retail (Consumer Cyclical)",
-            "Precio Actual": 244.39,
-            "Drawdown 52W %": -12.27,
-            "Cambio 5D %": 1.19,
-            "Valor Mercado (P/E Ratio)": 31.453024,
-            "FCF": "$9.81B",
-            "RSI 14D": "31.1 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 70.2,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": 1.444,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "IBIT",
             "Nombre": "iShares Bitcoin Trust ETF",
             "Descripcion": "Fondo Cotizado (ETF)",
@@ -1749,6 +1701,54 @@
             "Categoria": "Cazador de Dips",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "AMZN",
+            "Nombre": "Amazon.com, Inc.",
+            "Descripcion": "Internet Retail (Consumer Cyclical)",
+            "Precio Actual": 244.39,
+            "Drawdown 52W %": -12.27,
+            "Cambio 5D %": 1.19,
+            "Valor Mercado (P/E Ratio)": 31.656736,
+            "FCF": "$9.81B",
+            "RSI 14D": "31.1 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 70.1,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.444,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2556,7 +2556,7 @@
             "Precio Actual": 1635.15,
             "Drawdown 52W %": -38.18,
             "Cambio 5D %": 1.56,
-            "Valor Mercado (P/E Ratio)": 43.22363,
+            "Valor Mercado (P/E Ratio)": 43.098316,
             "FCF": "$-4.10B",
             "RSI 14D": "42.7 - Neutral",
             "Monto Sugerido (SmartDCA)": "$80 USD",
@@ -2649,14 +2649,14 @@
             "Ticker": "ETH-USD",
             "Nombre": "Ethereum USD",
             "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 1726.01,
-            "Drawdown 52W %": -59.79,
-            "Cambio 5D %": 0.08,
+            "Precio Actual": 1722.9,
+            "Drawdown 52W %": -59.87,
+            "Cambio 5D %": -3.77,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "64.7 - Neutral",
+            "RSI 14D": "54.6 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 49.7,
+            "Score_Total": 52.1,
             "Tipo_Dip": "Alto",
             "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
@@ -2697,14 +2697,14 @@
             "Ticker": "BTC-USD",
             "Nombre": "Bitcoin USD",
             "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 63653.86,
-            "Drawdown 52W %": -45.25,
-            "Cambio 5D %": -3.13,
+            "Precio Actual": 64091.26,
+            "Drawdown 52W %": -44.88,
+            "Cambio 5D %": -2.3,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "60.3 - Neutral",
+            "RSI 14D": "53.7 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 46.8,
+            "Score_Total": 51.6,
             "Tipo_Dip": "Alto",
             "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
