@@ -1,8 +1,8 @@
 {
-    "fecha_generacion": "2026-07-12 11:53 UTC",
+    "fecha_generacion": "2026-07-13 13:14 UTC",
     "MACRO": {
-        "VIX": 15.03,
-        "USD/COP": 3239.68
+        "VIX": 16.39,
+        "USD/COP": 3239.63
     },
     "TOP_50_DIPS": [
         {
@@ -1116,7 +1116,7 @@
             "Precio Actual": 81.04,
             "Drawdown 52W %": -46.33,
             "Cambio 5D %": -19.33,
-            "Valor Mercado (P/E Ratio)": 2431.443,
+            "Valor Mercado (P/E Ratio)": 2701.3335,
             "FCF": "$-215.00M",
             "RSI 14D": "31.0 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$120 USD",
@@ -1413,6 +1413,54 @@
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
             "Beta": 0.248,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "LIT",
+            "Nombre": "Global X Lithium & Battery Tech",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 72.32,
+            "Drawdown 52W %": -21.04,
+            "Cambio 5D %": -5.5,
+            "Valor Mercado (P/E Ratio)": 24.24658,
+            "FCF": "N/A",
+            "RSI 14D": "23.7 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 71.2,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2070,54 +2118,6 @@
             ]
         },
         {
-            "Ticker": "LIT",
-            "Nombre": "LIT",
-            "Descripcion": "Activo Financiero",
-            "Precio Actual": 72.32,
-            "Drawdown 52W %": -21.04,
-            "Cambio 5D %": -5.5,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "23.7 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 68.0,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "BHP",
             "Nombre": "BHP Group Limited",
             "Descripcion": "Other Industrial Metals & Mining (Basic Materials)",
@@ -2550,17 +2550,65 @@
             ]
         },
         {
+            "Ticker": "BTC-USD",
+            "Nombre": "Bitcoin USD",
+            "Descripcion": "Criptomoneda Fuerte",
+            "Precio Actual": 62459.49,
+            "Drawdown 52W %": -41.86,
+            "Cambio 5D %": 0.32,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "59.4 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 49.1,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "ETH-USD",
             "Nombre": "Ethereum USD",
             "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 1804.09,
-            "Drawdown 52W %": -53.89,
-            "Cambio 5D %": 2.01,
+            "Precio Actual": 1768.03,
+            "Drawdown 52W %": -51.64,
+            "Cambio 5D %": 1.45,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "76.6 - 🔥 Caro",
+            "RSI 14D": "68.0 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 48.3,
+            "Score_Total": 49.0,
             "Tipo_Dip": "Alto",
             "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
@@ -2613,54 +2661,6 @@
             "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": 1.562,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "BTC-USD",
-            "Nombre": "Bitcoin USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 63972.13,
-            "Drawdown 52W %": -42.25,
-            "Cambio 5D %": 1.07,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "68.9 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 44.1,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
