@@ -1,7 +1,7 @@
 {
-    "fecha_generacion": "2026-07-19 11:50 UTC",
+    "fecha_generacion": "2026-07-20 13:06 UTC",
     "MACRO": {
-        "VIX": 18.77,
+        "VIX": 18.17,
         "USD/COP": 3251.13
     },
     "TOP_50_DIPS": [
@@ -151,7 +151,7 @@
         },
         {
             "Ticker": "HII",
-            "Nombre": "HII",
+            "Nombre": "Huntington Ingalls Industries, ",
             "Descripcion": "Aerospace & Defense (Industrials)",
             "Precio Actual": 269.13,
             "Drawdown 52W %": -41.24,
@@ -247,7 +247,7 @@
         },
         {
             "Ticker": "MU",
-            "Nombre": "MU",
+            "Nombre": "Micron Technology, Inc.",
             "Descripcion": "Semiconductors (Technology)",
             "Precio Actual": 848.95,
             "Drawdown 52W %": -32.34,
@@ -261,54 +261,6 @@
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
             "Beta": 2.142,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "URA",
-            "Nombre": "URA",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 38.73,
-            "Drawdown 52W %": -37.81,
-            "Cambio 5D %": -9.87,
-            "Valor Mercado (P/E Ratio)": 32.94671,
-            "FCF": "N/A",
-            "RSI 14D": "28.3 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 77.0,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -486,17 +438,17 @@
             ]
         },
         {
-            "Ticker": "EWY",
-            "Nombre": "EWY",
+            "Ticker": "URA",
+            "Nombre": "Global X Uranium ETF",
             "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 162.54,
-            "Drawdown 52W %": -26.42,
-            "Cambio 5D %": -11.43,
-            "Valor Mercado (P/E Ratio)": 16.066614,
+            "Precio Actual": 38.73,
+            "Drawdown 52W %": -37.81,
+            "Cambio 5D %": -9.87,
+            "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "30.3 - 🚨 Sobrevendido",
+            "RSI 14D": "28.3 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 76.2,
+            "Score_Total": 76.4,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -837,54 +789,6 @@
             "Categoria": "Cazador de Dips",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": 2.323,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "TAN",
-            "Nombre": "TAN",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 53.9,
-            "Drawdown 52W %": -28.7,
-            "Cambio 5D %": -1.93,
-            "Valor Mercado (P/E Ratio)": 20.69595,
-            "FCF": "N/A",
-            "RSI 14D": "41.3 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 72.1,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -1303,7 +1207,7 @@
         },
         {
             "Ticker": "DAL",
-            "Nombre": "DAL",
+            "Nombre": "Delta Air Lines, Inc.",
             "Descripcion": "Airlines (Industrials)",
             "Precio Actual": 84.17,
             "Drawdown 52W %": -11.81,
@@ -1365,6 +1269,54 @@
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
             "Beta": 2.289,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "EWY",
+            "Nombre": "iShares MSCI South Korea ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 162.54,
+            "Drawdown 52W %": -26.42,
+            "Cambio 5D %": -11.43,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "30.3 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 70.5,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -1542,6 +1494,54 @@
             ]
         },
         {
+            "Ticker": "SOL-USD",
+            "Nombre": "Solana USD",
+            "Descripcion": "Criptomoneda Fuerte",
+            "Precio Actual": 76.72,
+            "Drawdown 52W %": -55.29,
+            "Cambio 5D %": -0.7,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "32.8 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 68.8,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cazador de Dips",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "UVXY",
             "Nombre": "ProShares Ultra VIX Short Term ",
             "Descripcion": "Fondo Cotizado (ETF)",
@@ -1639,7 +1639,7 @@
         },
         {
             "Ticker": "CCJ",
-            "Nombre": "CCJ",
+            "Nombre": "Cameco Corporation",
             "Descripcion": "Uranium (Energy)",
             "Precio Actual": 85.62,
             "Drawdown 52W %": -36.69,
@@ -1782,20 +1782,20 @@
             ]
         },
         {
-            "Ticker": "SOL-USD",
-            "Nombre": "Solana USD",
-            "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 76.12,
-            "Drawdown 52W %": -55.64,
-            "Cambio 5D %": -2.11,
+            "Ticker": "TAN",
+            "Nombre": "Invesco Solar ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 53.9,
+            "Drawdown 52W %": -28.7,
+            "Cambio 5D %": -1.93,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "32.3 - 🚨 Sobrevendido",
+            "RSI 14D": "41.3 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 67.7,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-            "Tendencias": "Bajista (Cuchillo)",
+            "Score_Total": 67.8,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
             "Beta": "N/A",
             "Noticias_YF": [
                 {
@@ -2502,19 +2502,19 @@
             ]
         },
         {
-            "Ticker": "ETH-USD",
-            "Nombre": "Ethereum USD",
+            "Ticker": "BTC-USD",
+            "Nombre": "Bitcoin USD",
             "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 1873.58,
-            "Drawdown 52W %": -48.76,
-            "Cambio 5D %": -0.84,
+            "Precio Actual": 64599.72,
+            "Drawdown 52W %": -39.87,
+            "Cambio 5D %": -0.17,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "60.5 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 50.7,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
+            "RSI 14D": "52.9 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 51.7,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": "N/A",
             "Noticias_YF": [
@@ -2550,19 +2550,19 @@
             ]
         },
         {
-            "Ticker": "BTC-USD",
-            "Nombre": "Bitcoin USD",
+            "Ticker": "ETH-USD",
+            "Nombre": "Ethereum USD",
             "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 64471.15,
-            "Drawdown 52W %": -39.99,
-            "Cambio 5D %": -0.75,
+            "Precio Actual": 1871.84,
+            "Drawdown 52W %": -48.64,
+            "Cambio 5D %": -2.35,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "54.1 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 50.4,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
+            "RSI 14D": "58.9 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 50.1,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": "N/A",
             "Noticias_YF": [
