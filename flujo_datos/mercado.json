@@ -1,310 +1,22 @@
 {
-    "fecha_generacion": "2026-07-23 12:21 UTC",
+    "fecha_generacion": "2026-07-24 12:14 UTC",
     "MACRO": {
-        "VIX": 18.15,
-        "USD/COP": 3204.41
+        "VIX": 18.89,
+        "USD/COP": 3196.95
     },
     "TOP_50_DIPS": [
-        {
-            "Ticker": "PLUG",
-            "Nombre": "Plug Power, Inc.",
-            "Descripcion": "Electrical Equipment & Parts (Industrials)",
-            "Precio Actual": 2.23,
-            "Drawdown 52W %": -51.31,
-            "Cambio 5D %": 0.9,
-            "Valor Mercado (P/E Ratio)": -13.9375,
-            "FCF": "$-407.41M",
-            "RSI 14D": "28.0 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 82.4,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-            "Tendencias": "Sana/Normal",
-            "Beta": 2.166,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "UFO",
-            "Nombre": "Procure Space ETF",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 43.75,
-            "Drawdown 52W %": -35.78,
-            "Cambio 5D %": -3.57,
-            "Valor Mercado (P/E Ratio)": 19.786993,
-            "FCF": "N/A",
-            "RSI 14D": "17.3 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 81.4,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "FSLR",
-            "Nombre": "First Solar, Inc.",
-            "Descripcion": "Solar (Technology)",
-            "Precio Actual": 208.86,
-            "Drawdown 52W %": -34.92,
-            "Cambio 5D %": -6.68,
-            "Valor Mercado (P/E Ratio)": 13.492249,
-            "FCF": "$1.15B",
-            "RSI 14D": "31.4 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 80.6,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": 1.73,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "ENPH",
-            "Nombre": "Enphase Energy, Inc.",
-            "Descripcion": "Solar (Technology)",
-            "Precio Actual": 39.58,
-            "Drawdown 52W %": -46.32,
-            "Cambio 5D %": -10.15,
-            "Valor Mercado (P/E Ratio)": 39.18812,
-            "FCF": "$91.61M",
-            "RSI 14D": "31.7 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 78.4,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-            "Tendencias": "Sana/Normal",
-            "Beta": 1.615,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "SILJ",
-            "Nombre": "Amplify Junior Silver Miners ET",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 25.8,
-            "Drawdown 52W %": -37.23,
-            "Cambio 5D %": 2.79,
-            "Valor Mercado (P/E Ratio)": 15.847324,
-            "FCF": "N/A",
-            "RSI 14D": "49.4 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 77.5,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "REMX",
-            "Nombre": "VanEck Rare Earth and Strategic",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 70.96,
-            "Drawdown 52W %": -36.39,
-            "Cambio 5D %": -7.42,
-            "Valor Mercado (P/E Ratio)": 32.283028,
-            "FCF": "N/A",
-            "RSI 14D": "19.5 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 76.5,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
         {
             "Ticker": "ASTS",
             "Nombre": "AST SpaceMobile, Inc.",
             "Descripcion": "Communication Equipment (Technology)",
-            "Precio Actual": 61.95,
-            "Drawdown 52W %": -53.72,
-            "Cambio 5D %": -6.58,
-            "Valor Mercado (P/E Ratio)": -238.08609,
+            "Precio Actual": 59.18,
+            "Drawdown 52W %": -55.79,
+            "Cambio 5D %": 7.58,
+            "Valor Mercado (P/E Ratio)": -227.44043,
             "FCF": "$-1.41B",
-            "RSI 14D": "23.5 - 🚨 Sobrevendido",
+            "RSI 14D": "22.6 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 76.5,
+            "Score_Total": 86.5,
             "Tipo_Dip": "Alto",
             "Categoria": "Cazador de Dips",
             "Tendencias": "Sana/Normal",
@@ -342,17 +54,161 @@
             ]
         },
         {
+            "Ticker": "SILJ",
+            "Nombre": "Amplify Junior Silver Miners ET",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 24.82,
+            "Drawdown 52W %": -39.61,
+            "Cambio 5D %": 4.2,
+            "Valor Mercado (P/E Ratio)": 15.245372,
+            "FCF": "N/A",
+            "RSI 14D": "40.1 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 86.1,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "UFO",
+            "Nombre": "Procure Space ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 43.72,
+            "Drawdown 52W %": -35.83,
+            "Cambio 5D %": 0.09,
+            "Valor Mercado (P/E Ratio)": 19.773426,
+            "FCF": "N/A",
+            "RSI 14D": "12.9 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 85.1,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "RKLB",
+            "Nombre": "Rocket Lab Corporation",
+            "Descripcion": "Aerospace & Defense (Industrials)",
+            "Precio Actual": 69.99,
+            "Drawdown 52W %": -53.65,
+            "Cambio 5D %": 3.92,
+            "Valor Mercado (P/E Ratio)": 2333.0,
+            "FCF": "$-215.00M",
+            "RSI 14D": "15.1 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$120 USD",
+            "Score_Total": 83.9,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cazador de Dips",
+            "Tendencias": "Sana/Normal",
+            "Beta": 2.553,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "LUNR",
             "Nombre": "Intuitive Machines, Inc.",
             "Descripcion": "Aerospace & Defense (Industrials)",
-            "Precio Actual": 14.09,
-            "Drawdown 52W %": -69.86,
-            "Cambio 5D %": -5.12,
-            "Valor Mercado (P/E Ratio)": -281.8,
+            "Precio Actual": 13.71,
+            "Drawdown 52W %": -70.67,
+            "Cambio 5D %": 2.01,
+            "Valor Mercado (P/E Ratio)": -274.19998,
             "FCF": "$-32.12M",
-            "RSI 14D": "14.1 - 🚨 Sobrevendido",
+            "RSI 14D": "14.5 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 76.5,
+            "Score_Total": 83.5,
             "Tipo_Dip": "Alto",
             "Categoria": "Cazador de Dips",
             "Tendencias": "Sana/Normal",
@@ -390,21 +246,69 @@
             ]
         },
         {
-            "Ticker": "PACB",
-            "Nombre": "Pacific Biosciences of Californ",
-            "Descripcion": "Medical Devices (Healthcare)",
-            "Precio Actual": 1.38,
-            "Drawdown 52W %": -49.45,
-            "Cambio 5D %": -9.8,
-            "Valor Mercado (P/E Ratio)": -3.4972124,
-            "FCF": "$-48.24M",
-            "RSI 14D": "25.7 - 🚨 Sobrevendido",
+            "Ticker": "PLUG",
+            "Nombre": "Plug Power, Inc.",
+            "Descripcion": "Electrical Equipment & Parts (Industrials)",
+            "Precio Actual": 2.19,
+            "Drawdown 52W %": -52.18,
+            "Cambio 5D %": 1.86,
+            "Valor Mercado (P/E Ratio)": -13.687501,
+            "FCF": "$-407.41M",
+            "RSI 14D": "26.8 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 76.2,
+            "Score_Total": 83.4,
             "Tipo_Dip": "Alto",
             "Categoria": "Cazador de Dips",
             "Tendencias": "Sana/Normal",
-            "Beta": 2.289,
+            "Beta": 2.166,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "FSLR",
+            "Nombre": "First Solar, Inc.",
+            "Descripcion": "Solar (Technology)",
+            "Precio Actual": 205.92,
+            "Drawdown 52W %": -35.84,
+            "Cambio 5D %": -2.84,
+            "Valor Mercado (P/E Ratio)": 13.293738,
+            "FCF": "$1.15B",
+            "RSI 14D": "33.8 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 81.7,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.73,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -441,14 +345,14 @@
             "Ticker": "HII",
             "Nombre": "Huntington Ingalls Industries, ",
             "Descripcion": "Aerospace & Defense (Industrials)",
-            "Precio Actual": 277.28,
-            "Drawdown 52W %": -39.46,
-            "Cambio 5D %": -0.18,
-            "Valor Mercado (P/E Ratio)": 18.016893,
+            "Precio Actual": 287.09,
+            "Drawdown 52W %": -37.32,
+            "Cambio 5D %": 5.92,
+            "Valor Mercado (P/E Ratio)": 18.65432,
             "FCF": "$634.12M",
-            "RSI 14D": "48.3 - Neutral",
+            "RSI 14D": "45.4 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 75.7,
+            "Score_Total": 81.4,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -489,14 +393,14 @@
             "Ticker": "LIT",
             "Nombre": "Global X Lithium & Battery Tech",
             "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 69.0,
-            "Drawdown 52W %": -24.66,
-            "Cambio 5D %": -2.9,
-            "Valor Mercado (P/E Ratio)": 23.13349,
+            "Precio Actual": 69.02,
+            "Drawdown 52W %": -24.64,
+            "Cambio 5D %": 0.23,
+            "Valor Mercado (P/E Ratio)": 23.140194,
             "FCF": "N/A",
-            "RSI 14D": "24.2 - 🚨 Sobrevendido",
+            "RSI 14D": "26.5 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 75.5,
+            "Score_Total": 78.6,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -534,21 +438,21 @@
             ]
         },
         {
-            "Ticker": "MU",
-            "Nombre": "Micron Technology, Inc.",
-            "Descripcion": "Semiconductors (Technology)",
-            "Precio Actual": 959.48,
-            "Drawdown 52W %": -23.54,
-            "Cambio 5D %": 6.1,
-            "Valor Mercado (P/E Ratio)": 21.692968,
-            "FCF": "$7.64B",
-            "RSI 14D": "43.2 - Neutral",
+            "Ticker": "SQM",
+            "Nombre": "Sociedad Quimica y Minera S.A.",
+            "Descripcion": "Specialty Chemicals (Basic Materials)",
+            "Precio Actual": 69.32,
+            "Drawdown 52W %": -28.46,
+            "Cambio 5D %": 4.51,
+            "Valor Mercado (P/E Ratio)": 24.237762,
+            "FCF": "$1.71B",
+            "RSI 14D": "41.3 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 75.0,
+            "Score_Total": 77.4,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
-            "Beta": 2.142,
+            "Beta": 0.994,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -582,69 +486,69 @@
             ]
         },
         {
-            "Ticker": "RKLB",
-            "Nombre": "Rocket Lab Corporation",
-            "Descripcion": "Aerospace & Defense (Industrials)",
-            "Precio Actual": 69.75,
-            "Drawdown 52W %": -53.81,
-            "Cambio 5D %": -8.46,
-            "Valor Mercado (P/E Ratio)": 2325.0,
-            "FCF": "$-215.00M",
-            "RSI 14D": "15.4 - 🚨 Sobrevendido",
+            "Ticker": "REMX",
+            "Nombre": "VanEck Rare Earth and Strategic",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 69.53,
+            "Drawdown 52W %": -37.67,
+            "Cambio 5D %": -5.05,
+            "Valor Mercado (P/E Ratio)": 31.632452,
+            "FCF": "N/A",
+            "RSI 14D": "19.2 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 77.3,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "PACB",
+            "Nombre": "Pacific Biosciences of Californ",
+            "Descripcion": "Medical Devices (Healthcare)",
+            "Precio Actual": 1.4,
+            "Drawdown 52W %": -48.72,
+            "Cambio 5D %": -6.04,
+            "Valor Mercado (P/E Ratio)": -3.5478966,
+            "FCF": "$-48.24M",
+            "RSI 14D": "30.0 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 75.0,
+            "Score_Total": 75.9,
             "Tipo_Dip": "Alto",
             "Categoria": "Cazador de Dips",
             "Tendencias": "Sana/Normal",
-            "Beta": 2.553,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "UAL",
-            "Nombre": "United Airlines Holdings, Inc.",
-            "Descripcion": "Airlines (Industrials)",
-            "Precio Actual": 117.26,
-            "Drawdown 52W %": -15.5,
-            "Cambio 5D %": -3.07,
-            "Valor Mercado (P/E Ratio)": 10.979401,
-            "FCF": "$910.12M",
-            "RSI 14D": "19.6 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 74.4,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": 1.258,
+            "Beta": 2.289,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -681,14 +585,14 @@
             "Ticker": "SEDG",
             "Nombre": "SolarEdge Technologies, Inc.",
             "Descripcion": "Solar (Technology)",
-            "Precio Actual": 47.88,
-            "Drawdown 52W %": -41.07,
-            "Cambio 5D %": -12.28,
-            "Valor Mercado (P/E Ratio)": 30.708843,
+            "Precio Actual": 45.14,
+            "Drawdown 52W %": -44.44,
+            "Cambio 5D %": -13.76,
+            "Valor Mercado (P/E Ratio)": 28.951487,
             "FCF": "$277.84M",
-            "RSI 14D": "38.4 - Neutral",
+            "RSI 14D": "39.4 - Neutral",
             "Monto Sugerido (SmartDCA)": "$120 USD",
-            "Score_Total": 74.1,
+            "Score_Total": 75.7,
             "Tipo_Dip": "Alto",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -726,15 +630,255 @@
             ]
         },
         {
+            "Ticker": "ENPH",
+            "Nombre": "Enphase Energy, Inc.",
+            "Descripcion": "Solar (Technology)",
+            "Precio Actual": 38.89,
+            "Drawdown 52W %": -47.26,
+            "Cambio 5D %": -5.33,
+            "Valor Mercado (P/E Ratio)": 38.50495,
+            "FCF": "$91.61M",
+            "RSI 14D": "37.5 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$120 USD",
+            "Score_Total": 75.4,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.615,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "QCOM",
+            "Nombre": "QUALCOMM Incorporated",
+            "Descripcion": "Semiconductors (Technology)",
+            "Precio Actual": 171.11,
+            "Drawdown 52W %": -33.93,
+            "Cambio 5D %": 0.29,
+            "Valor Mercado (P/E Ratio)": 18.379162,
+            "FCF": "$9.59B",
+            "RSI 14D": "45.3 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 75.2,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.638,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "UAL",
+            "Nombre": "United Airlines Holdings, Inc.",
+            "Descripcion": "Airlines (Industrials)",
+            "Precio Actual": 115.35,
+            "Drawdown 52W %": -16.88,
+            "Cambio 5D %": -2.91,
+            "Valor Mercado (P/E Ratio)": 10.974786,
+            "FCF": "$910.12M",
+            "RSI 14D": "19.5 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 75.2,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.258,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "ICLN",
+            "Nombre": "iShares Global Clean Energy ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 18.37,
+            "Drawdown 52W %": -22.54,
+            "Cambio 5D %": 0.11,
+            "Valor Mercado (P/E Ratio)": 19.85546,
+            "FCF": "N/A",
+            "RSI 14D": "35.6 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 75.0,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "GOOGL",
+            "Nombre": "Alphabet Inc.",
+            "Descripcion": "Internet Content & Information (Communication Services)",
+            "Precio Actual": 317.69,
+            "Drawdown 52W %": -22.2,
+            "Cambio 5D %": -10.37,
+            "Valor Mercado (P/E Ratio)": 15.948294,
+            "FCF": "$28.72B",
+            "RSI 14D": "29.6 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 74.3,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.247,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "RUN",
             "Nombre": "Sunrun Inc.",
             "Descripcion": "Solar (Technology)",
-            "Precio Actual": 10.95,
-            "Drawdown 52W %": -51.2,
-            "Cambio 5D %": -14.25,
-            "Valor Mercado (P/E Ratio)": 5.140845,
+            "Precio Actual": 10.38,
+            "Drawdown 52W %": -53.74,
+            "Cambio 5D %": -14.5,
+            "Valor Mercado (P/E Ratio)": 4.873239,
             "FCF": "$-2.24B",
-            "RSI 14D": "24.8 - 🚨 Sobrevendido",
+            "RSI 14D": "23.7 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
             "Score_Total": 73.8,
             "Tipo_Dip": "Alto",
@@ -774,401 +918,17 @@
             ]
         },
         {
-            "Ticker": "ICLN",
-            "Nombre": "iShares Global Clean Energy ETF",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 18.54,
-            "Drawdown 52W %": -21.83,
-            "Cambio 5D %": -2.83,
-            "Valor Mercado (P/E Ratio)": 20.039206,
-            "FCF": "N/A",
-            "RSI 14D": "33.1 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 73.2,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "TAN",
-            "Nombre": "Invesco Solar ETF",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 53.72,
-            "Drawdown 52W %": -28.94,
-            "Cambio 5D %": -3.73,
-            "Valor Mercado (P/E Ratio)": 20.626835,
-            "FCF": "N/A",
-            "RSI 14D": "36.9 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 73.2,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "QCOM",
-            "Nombre": "QUALCOMM Incorporated",
-            "Descripcion": "Semiconductors (Technology)",
-            "Precio Actual": 175.63,
-            "Drawdown 52W %": -32.18,
-            "Cambio 5D %": -1.32,
-            "Valor Mercado (P/E Ratio)": 18.864662,
-            "FCF": "$9.59B",
-            "RSI 14D": "44.4 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 73.1,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": 1.638,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "ARM",
-            "Nombre": "Arm Holdings plc",
-            "Descripcion": "Semiconductors (Technology)",
-            "Precio Actual": 283.4,
-            "Drawdown 52W %": -37.4,
-            "Cambio 5D %": 2.31,
-            "Valor Mercado (P/E Ratio)": 333.41174,
-            "FCF": "$750.50M",
-            "RSI 14D": "34.9 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 73.0,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": 3.77,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "VNM",
-            "Nombre": "VanEck Vietnam ETF",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 16.48,
-            "Drawdown 52W %": -16.98,
-            "Cambio 5D %": -4.96,
-            "Valor Mercado (P/E Ratio)": 13.879463,
-            "FCF": "N/A",
-            "RSI 14D": "15.9 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 72.4,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "DAL",
-            "Nombre": "Delta Air Lines, Inc.",
-            "Descripcion": "Airlines (Industrials)",
-            "Precio Actual": 83.52,
-            "Drawdown 52W %": -12.49,
-            "Cambio 5D %": -2.84,
-            "Valor Mercado (P/E Ratio)": 13.850745,
-            "FCF": "$2.82B",
-            "RSI 14D": "21.7 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 72.3,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": 1.288,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "SQM",
-            "Nombre": "Sociedad Quimica y Minera S.A.",
-            "Descripcion": "Specialty Chemicals (Basic Materials)",
-            "Precio Actual": 69.21,
-            "Drawdown 52W %": -28.57,
-            "Cambio 5D %": -3.23,
-            "Valor Mercado (P/E Ratio)": 24.1993,
-            "FCF": "$1.71B",
-            "RSI 14D": "37.9 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 71.9,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": 0.994,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "CPA",
-            "Nombre": "Copa Holdings, S.A.",
-            "Descripcion": "Airlines (Industrials)",
-            "Precio Actual": 138.79,
-            "Drawdown 52W %": -13.51,
-            "Cambio 5D %": -5.88,
-            "Valor Mercado (P/E Ratio)": 8.212426,
-            "FCF": "$-178.42M",
-            "RSI 14D": "29.8 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 71.8,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": 0.978,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
             "Ticker": "PEP",
             "Nombre": "Pepsico, Inc.",
             "Descripcion": "Beverages - Non-Alcoholic (Consumer Defensive)",
-            "Precio Actual": 135.65,
-            "Drawdown 52W %": -19.35,
-            "Cambio 5D %": 0.18,
-            "Valor Mercado (P/E Ratio)": 17.801836,
+            "Precio Actual": 134.95,
+            "Drawdown 52W %": -19.76,
+            "Cambio 5D %": -3.21,
+            "Valor Mercado (P/E Ratio)": 17.709974,
             "FCF": "$7.83B",
-            "RSI 14D": "39.6 - Neutral",
+            "RSI 14D": "30.9 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 71.5,
+            "Score_Total": 73.8,
             "Tipo_Dip": "Leve",
             "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
@@ -1206,21 +966,21 @@
             ]
         },
         {
-            "Ticker": "TIPS",
-            "Nombre": "Tianrong Internet Products and ",
-            "Descripcion": "Specialty Industrial Machinery (Industrials)",
-            "Precio Actual": 0.0,
-            "Drawdown 52W %": -99.64,
-            "Cambio 5D %": 0.0,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "33.3 - 🚨 Sobrevendido",
+            "Ticker": "ARM",
+            "Nombre": "Arm Holdings plc",
+            "Descripcion": "Semiconductors (Technology)",
+            "Precio Actual": 283.04,
+            "Drawdown 52W %": -37.48,
+            "Cambio 5D %": 8.03,
+            "Valor Mercado (P/E Ratio)": 332.98825,
+            "FCF": "$750.50M",
+            "RSI 14D": "39.7 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 69.2,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": -7.103,
+            "Score_Total": 72.7,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 3.77,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -1254,21 +1014,21 @@
             ]
         },
         {
-            "Ticker": "LMT",
-            "Nombre": "Lockheed Martin Corporation",
-            "Descripcion": "Aerospace & Defense (Industrials)",
-            "Precio Actual": 514.36,
-            "Drawdown 52W %": -25.18,
-            "Cambio 5D %": -0.02,
-            "Valor Mercado (P/E Ratio)": 24.932623,
-            "FCF": "$3.99B",
-            "RSI 14D": "45.4 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 68.4,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
+            "Ticker": "CPA",
+            "Nombre": "Copa Holdings, S.A.",
+            "Descripcion": "Airlines (Industrials)",
+            "Precio Actual": 135.72,
+            "Drawdown 52W %": -15.42,
+            "Cambio 5D %": -5.99,
+            "Valor Mercado (P/E Ratio)": 7.909091,
+            "FCF": "$-178.42M",
+            "RSI 14D": "27.7 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 72.7,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
-            "Beta": 0.113,
+            "Beta": 0.978,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -1305,14 +1065,14 @@
             "Ticker": "INTC",
             "Nombre": "Intel Corporation",
             "Descripcion": "Semiconductors (Technology)",
-            "Precio Actual": 102.62,
-            "Drawdown 52W %": -27.91,
-            "Cambio 5D %": -0.36,
-            "Valor Mercado (P/E Ratio)": 63.15155,
+            "Precio Actual": 100.23,
+            "Drawdown 52W %": -29.59,
+            "Cambio 5D %": 3.35,
+            "Valor Mercado (P/E Ratio)": 57.315884,
             "FCF": "$-8.30B",
-            "RSI 14D": "30.6 - 🚨 Sobrevendido",
+            "RSI 14D": "32.8 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 68.2,
+            "Score_Total": 72.2,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -1350,501 +1110,21 @@
             ]
         },
         {
-            "Ticker": "EDIT",
-            "Nombre": "Editas Medicine, Inc.",
-            "Descripcion": "Biotechnology (Healthcare)",
-            "Precio Actual": 2.78,
-            "Drawdown 52W %": -38.73,
-            "Cambio 5D %": -8.55,
-            "Valor Mercado (P/E Ratio)": -2.9686582,
-            "FCF": "$-73.82M",
-            "RSI 14D": "34.9 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 67.8,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": 2.1,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "AVAL",
-            "Nombre": "Grupo Aval Acciones y Valores S",
-            "Descripcion": "Banks - Regional (Financial Services)",
-            "Precio Actual": 5.04,
-            "Drawdown 52W %": -18.49,
-            "Cambio 5D %": 0.2,
-            "Valor Mercado (P/E Ratio)": 11.72093,
-            "FCF": "N/A",
-            "RSI 14D": "48.2 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 67.5,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": 0.407,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "UVXY",
-            "Nombre": "ProShares Ultra VIX Short Term ",
+            "Ticker": "VNM",
+            "Nombre": "VanEck Vietnam ETF",
             "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 23.76,
-            "Drawdown 52W %": -73.5,
-            "Cambio 5D %": 4.62,
-            "Valor Mercado (P/E Ratio)": "N/A",
+            "Precio Actual": 16.66,
+            "Drawdown 52W %": -16.07,
+            "Cambio 5D %": -4.58,
+            "Valor Mercado (P/E Ratio)": 14.031059,
             "FCF": "N/A",
-            "RSI 14D": "43.7 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 67.3,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "CCJ",
-            "Nombre": "Cameco Corporation",
-            "Descripcion": "Uranium (Energy)",
-            "Precio Actual": 90.37,
-            "Drawdown 52W %": -33.18,
-            "Cambio 5D %": -0.67,
-            "Valor Mercado (P/E Ratio)": 85.25472,
-            "FCF": "$624.78M",
-            "RSI 14D": "36.2 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 67.1,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": 1.0,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "BOTZ",
-            "Nombre": "Global X Robotics & Artificial ",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 34.89,
-            "Drawdown 52W %": -16.31,
-            "Cambio 5D %": -3.16,
-            "Valor Mercado (P/E Ratio)": 34.221985,
-            "FCF": "N/A",
-            "RSI 14D": "31.0 - 🚨 Sobrevendido",
+            "RSI 14D": "21.0 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 67.1,
+            "Score_Total": 72.2,
             "Tipo_Dip": "Leve",
             "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
             "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "ORCL",
-            "Nombre": "Oracle Corporation",
-            "Descripcion": "Software - Infrastructure (Technology)",
-            "Precio Actual": 125.84,
-            "Drawdown 52W %": -63.19,
-            "Cambio 5D %": -5.02,
-            "Valor Mercado (P/E Ratio)": 21.584906,
-            "FCF": "$-24.54B",
-            "RSI 14D": "35.4 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.9,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": 1.712,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "C",
-            "Nombre": "Citigroup, Inc.",
-            "Descripcion": "Banks - Diversified (Financial Services)",
-            "Precio Actual": 132.25,
-            "Drawdown 52W %": -10.62,
-            "Cambio 5D %": -1.96,
-            "Valor Mercado (P/E Ratio)": 14.251078,
-            "FCF": "N/A",
-            "RSI 14D": "38.4 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 66.8,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": 1.094,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "EWY",
-            "Nombre": "iShares MSCI South Korea ETF",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 170.43,
-            "Drawdown 52W %": -22.84,
-            "Cambio 5D %": -0.7,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "40.6 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.6,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "SMR",
-            "Nombre": "NuScale Power Corporation",
-            "Descripcion": "Specialty Industrial Machinery (Industrials)",
-            "Precio Actual": 8.68,
-            "Drawdown 52W %": -84.88,
-            "Cambio 5D %": 3.83,
-            "Valor Mercado (P/E Ratio)": -12.115122,
-            "FCF": "$-161.97M",
-            "RSI 14D": "34.3 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.4,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cazador de Dips",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": 2.252,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "UMC",
-            "Nombre": "United Microelectronics Corpora",
-            "Descripcion": "Semiconductors (Technology)",
-            "Precio Actual": 21.29,
-            "Drawdown 52W %": -25.19,
-            "Cambio 5D %": -14.57,
-            "Valor Mercado (P/E Ratio)": 34.90164,
-            "FCF": "$34.35B",
-            "RSI 14D": "36.1 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.3,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": 1.572,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "DHR",
-            "Nombre": "Danaher Corporation",
-            "Descripcion": "Diagnostics & Research (Healthcare)",
-            "Precio Actual": 179.14,
-            "Drawdown 52W %": -25.91,
-            "Cambio 5D %": -10.78,
-            "Valor Mercado (P/E Ratio)": 34.717056,
-            "FCF": "$4.33B",
-            "RSI 14D": "36.8 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.3,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Sana/Normal",
-            "Beta": 0.823,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -1881,14 +1161,14 @@
             "Ticker": "UUUU",
             "Nombre": "Energy Fuels Inc",
             "Descripcion": "Uranium (Energy)",
-            "Precio Actual": 12.31,
-            "Drawdown 52W %": -55.88,
-            "Cambio 5D %": -2.84,
-            "Valor Mercado (P/E Ratio)": 37.303032,
+            "Precio Actual": 12.01,
+            "Drawdown 52W %": -56.95,
+            "Cambio 5D %": 2.91,
+            "Valor Mercado (P/E Ratio)": 36.39394,
             "FCF": "$-80.26M",
-            "RSI 14D": "32.4 - 🚨 Sobrevendido",
+            "RSI 14D": "33.1 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.2,
+            "Score_Total": 71.8,
             "Tipo_Dip": "Alto",
             "Categoria": "Cazador de Dips",
             "Tendencias": "Bajista (Cuchillo)",
@@ -1926,213 +1206,21 @@
             ]
         },
         {
-            "Ticker": "TGLS",
-            "Nombre": "Tecnoglass Inc.",
-            "Descripcion": "Building Materials (Basic Materials)",
-            "Precio Actual": 45.22,
-            "Drawdown 52W %": -45.36,
-            "Cambio 5D %": -0.99,
-            "Valor Mercado (P/E Ratio)": 14.0,
-            "FCF": "$1.14M",
-            "RSI 14D": "43.1 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.0,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": 1.412,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "MRNA",
-            "Nombre": "Moderna, Inc.",
+            "Ticker": "EDIT",
+            "Nombre": "Editas Medicine, Inc.",
             "Descripcion": "Biotechnology (Healthcare)",
-            "Precio Actual": 58.07,
-            "Drawdown 52W %": -32.16,
-            "Cambio 5D %": -14.95,
-            "Valor Mercado (P/E Ratio)": -13.858395,
-            "FCF": "$-20.00M",
-            "RSI 14D": "32.6 - 🚨 Sobrevendido",
+            "Precio Actual": 2.73,
+            "Drawdown 52W %": -39.83,
+            "Cambio 5D %": -5.21,
+            "Valor Mercado (P/E Ratio)": -2.915265,
+            "FCF": "$-73.82M",
+            "RSI 14D": "15.7 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 66.0,
+            "Score_Total": 71.4,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
-            "Beta": 0.942,
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "GOOGL",
-            "Nombre": "Alphabet Inc.",
-            "Descripcion": "Internet Content & Information (Communication Services)",
-            "Precio Actual": 342.09,
-            "Drawdown 52W %": -16.23,
-            "Cambio 5D %": -7.77,
-            "Valor Mercado (P/E Ratio)": 17.155968,
-            "FCF": "$25.52B",
-            "RSI 14D": "38.1 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 65.9,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "ROBO",
-            "Nombre": "ROBO Global Robotics and Automa",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 79.4,
-            "Drawdown 52W %": -12.27,
-            "Cambio 5D %": -1.43,
-            "Valor Mercado (P/E Ratio)": 29.057066,
-            "FCF": "N/A",
-            "RSI 14D": "35.1 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 65.8,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "VIXY",
-            "Nombre": "VIX Short-Term Futures ETF",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 20.72,
-            "Drawdown 52W %": -54.73,
-            "Cambio 5D %": 3.29,
-            "Valor Mercado (P/E Ratio)": "N/A",
-            "FCF": "N/A",
-            "RSI 14D": "44.0 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 65.8,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
+            "Beta": 2.1,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2169,16 +1257,16 @@
             "Ticker": "PATH",
             "Nombre": "UiPath, Inc.",
             "Descripcion": "Software - Infrastructure (Technology)",
-            "Precio Actual": 10.7,
-            "Drawdown 52W %": -46.07,
-            "Cambio 5D %": -10.46,
-            "Valor Mercado (P/E Ratio)": 17.833332,
+            "Precio Actual": 10.2,
+            "Drawdown 52W %": -48.59,
+            "Cambio 5D %": -15.21,
+            "Valor Mercado (P/E Ratio)": 16.999998,
             "FCF": "$511.55M",
-            "RSI 14D": "36.4 - Neutral",
+            "RSI 14D": "28.2 - 🚨 Sobrevendido",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 65.4,
+            "Score_Total": 70.9,
             "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
+            "Categoria": "Cazador de Dips",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": 0.974,
             "Noticias_YF": [
@@ -2214,21 +1302,21 @@
             ]
         },
         {
-            "Ticker": "WIT",
-            "Nombre": "Wipro Limited",
-            "Descripcion": "Information Technology Services (Technology)",
-            "Precio Actual": 1.81,
-            "Drawdown 52W %": -41.42,
-            "Cambio 5D %": -1.63,
-            "Valor Mercado (P/E Ratio)": 13.923077,
-            "FCF": "$108.51B",
-            "RSI 14D": "40.0 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 65.4,
-            "Tipo_Dip": "Alto",
-            "Categoria": "Cuchillo Cayendo",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": 0.378,
+            "Ticker": "DAL",
+            "Nombre": "Delta Air Lines, Inc.",
+            "Descripcion": "Airlines (Industrials)",
+            "Precio Actual": 81.97,
+            "Drawdown 52W %": -14.12,
+            "Cambio 5D %": -5.46,
+            "Valor Mercado (P/E Ratio)": 13.846284,
+            "FCF": "$2.82B",
+            "RSI 14D": "20.2 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 70.9,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.288,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2265,14 +1353,14 @@
             "Ticker": "RIO",
             "Nombre": "Rio Tinto Plc",
             "Descripcion": "Other Industrial Metals & Mining (Basic Materials)",
-            "Precio Actual": 92.28,
-            "Drawdown 52W %": -18.03,
-            "Cambio 5D %": -1.43,
-            "Valor Mercado (P/E Ratio)": 14.883871,
+            "Precio Actual": 91.51,
+            "Drawdown 52W %": -18.72,
+            "Cambio 5D %": 0.93,
+            "Valor Mercado (P/E Ratio)": 15.026273,
             "FCF": "$3.50B",
-            "RSI 14D": "47.4 - Neutral",
+            "RSI 14D": "42.9 - Neutral",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 65.2,
+            "Score_Total": 70.7,
             "Tipo_Dip": "Leve",
             "Categoria": "Recuperacion Rapida",
             "Tendencias": "Sana/Normal",
@@ -2310,21 +1398,21 @@
             ]
         },
         {
-            "Ticker": "FAN",
-            "Nombre": "First Trust Global Wind Energy ",
-            "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 24.34,
-            "Drawdown 52W %": -10.52,
-            "Cambio 5D %": 0.04,
-            "Valor Mercado (P/E Ratio)": 24.352549,
-            "FCF": "N/A",
-            "RSI 14D": "39.3 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 65.2,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
+            "Ticker": "CCJ",
+            "Nombre": "Cameco Corporation",
+            "Descripcion": "Uranium (Energy)",
+            "Precio Actual": 89.33,
+            "Drawdown 52W %": -33.95,
+            "Cambio 5D %": 2.26,
+            "Valor Mercado (P/E Ratio)": 85.076195,
+            "FCF": "$624.78M",
+            "RSI 14D": "35.9 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 70.5,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
-            "Beta": "N/A",
+            "Beta": 1.0,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2358,21 +1446,21 @@
             ]
         },
         {
-            "Ticker": "VALE",
-            "Nombre": "VALE S.A.",
-            "Descripcion": "Other Industrial Metals & Mining (Basic Materials)",
-            "Precio Actual": 14.85,
-            "Drawdown 52W %": -17.22,
-            "Cambio 5D %": 1.23,
-            "Valor Mercado (P/E Ratio)": 21.52174,
-            "FCF": "$10.60B",
-            "RSI 14D": "49.3 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 64.3,
-            "Tipo_Dip": "Leve",
-            "Categoria": "Recuperacion Rapida",
-            "Tendencias": "Sana/Normal",
-            "Beta": 0.73,
+            "Ticker": "ORCL",
+            "Nombre": "Oracle Corporation",
+            "Descripcion": "Software - Infrastructure (Technology)",
+            "Precio Actual": 120.04,
+            "Drawdown 52W %": -64.88,
+            "Cambio 5D %": -3.36,
+            "Valor Mercado (P/E Ratio)": 20.590052,
+            "FCF": "$-24.54B",
+            "RSI 14D": "33.3 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 70.2,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cazador de Dips",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": 1.712,
             "Noticias_YF": [
                 {
                     "titulo": "",
@@ -2406,17 +1494,65 @@
             ]
         },
         {
-            "Ticker": "GLD",
-            "Nombre": "SPDR Gold Shares",
+            "Ticker": "OKLO",
+            "Nombre": "Oklo Inc.",
+            "Descripcion": "Utilities - Independent Power Producers (Utilities)",
+            "Precio Actual": 44.0,
+            "Drawdown 52W %": -77.3,
+            "Cambio 5D %": 5.52,
+            "Valor Mercado (P/E Ratio)": -52.082718,
+            "FCF": "$-100.00M",
+            "RSI 14D": "29.1 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 70.2,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cazador de Dips",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": 1.159,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "TAN",
+            "Nombre": "Invesco Solar ETF",
             "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 379.12,
-            "Drawdown 52W %": -25.62,
-            "Cambio 5D %": 1.82,
+            "Precio Actual": 52.85,
+            "Drawdown 52W %": -30.09,
+            "Cambio 5D %": -2.45,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "56.8 - Neutral",
+            "RSI 14D": "38.4 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 60.4,
+            "Score_Total": 69.8,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Sana/Normal",
@@ -2454,17 +1590,881 @@
             ]
         },
         {
+            "Ticker": "AVAL",
+            "Nombre": "Grupo Aval Acciones y Valores S",
+            "Descripcion": "Banks - Regional (Financial Services)",
+            "Precio Actual": 4.94,
+            "Drawdown 52W %": -20.1,
+            "Cambio 5D %": -0.6,
+            "Valor Mercado (P/E Ratio)": 11.488372,
+            "FCF": "N/A",
+            "RSI 14D": "45.0 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 69.6,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 0.407,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "C",
+            "Nombre": "Citigroup, Inc.",
+            "Descripcion": "Banks - Diversified (Financial Services)",
+            "Precio Actual": 131.88,
+            "Drawdown 52W %": -10.87,
+            "Cambio 5D %": 0.13,
+            "Valor Mercado (P/E Ratio)": 14.211207,
+            "FCF": "N/A",
+            "RSI 14D": "38.2 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 69.2,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.094,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "COPX",
+            "Nombre": "Global X Copper Miners ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 78.37,
+            "Drawdown 52W %": -21.36,
+            "Cambio 5D %": 4.94,
+            "Valor Mercado (P/E Ratio)": 17.519611,
+            "FCF": "N/A",
+            "RSI 14D": "52.8 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 69.1,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "MSTR",
+            "Nombre": "Strategy Inc",
+            "Descripcion": "Software - Application (Technology)",
+            "Precio Actual": 93.63,
+            "Drawdown 52W %": -77.92,
+            "Cambio 5D %": -0.43,
+            "Valor Mercado (P/E Ratio)": 20.984053,
+            "FCF": "$-8.70B",
+            "RSI 14D": "39.9 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 68.8,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": 3.545,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "GLD",
+            "Nombre": "SPDR Gold Shares",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 371.52,
+            "Drawdown 52W %": -27.11,
+            "Cambio 5D %": 1.8,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "44.7 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 68.7,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "WIT",
+            "Nombre": "Wipro Limited",
+            "Descripcion": "Information Technology Services (Technology)",
+            "Precio Actual": 1.78,
+            "Drawdown 52W %": -42.39,
+            "Cambio 5D %": -3.78,
+            "Valor Mercado (P/E Ratio)": 13.692308,
+            "FCF": "$108.51B",
+            "RSI 14D": "32.3 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 68.6,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cazador de Dips",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": 0.378,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "MU",
+            "Nombre": "Micron Technology, Inc.",
+            "Descripcion": "Semiconductors (Technology)",
+            "Precio Actual": 990.21,
+            "Drawdown 52W %": -21.09,
+            "Cambio 5D %": 16.06,
+            "Valor Mercado (P/E Ratio)": 22.372572,
+            "FCF": "$7.64B",
+            "RSI 14D": "51.5 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 68.4,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 2.142,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "EWY",
+            "Nombre": "iShares MSCI South Korea ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 173.86,
+            "Drawdown 52W %": -21.29,
+            "Cambio 5D %": 6.43,
+            "Valor Mercado (P/E Ratio)": "N/A",
+            "FCF": "N/A",
+            "RSI 14D": "46.0 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 68.2,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "MRNA",
+            "Nombre": "Moderna, Inc.",
+            "Descripcion": "Biotechnology (Healthcare)",
+            "Precio Actual": 57.02,
+            "Drawdown 52W %": -33.39,
+            "Cambio 5D %": -9.71,
+            "Valor Mercado (P/E Ratio)": -13.607813,
+            "FCF": "$-20.00M",
+            "RSI 14D": "17.7 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 68.2,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 0.942,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "VALE",
+            "Nombre": "VALE S.A.",
+            "Descripcion": "Other Industrial Metals & Mining (Basic Materials)",
+            "Precio Actual": 14.83,
+            "Drawdown 52W %": -17.34,
+            "Cambio 5D %": 4.29,
+            "Valor Mercado (P/E Ratio)": 22.469696,
+            "FCF": "$10.60B",
+            "RSI 14D": "47.8 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 68.1,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": 0.73,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "NXE",
+            "Nombre": "Nexgen Energy Ltd.",
+            "Descripcion": "Uranium (Energy)",
+            "Precio Actual": 9.37,
+            "Drawdown 52W %": -32.88,
+            "Cambio 5D %": 5.76,
+            "Valor Mercado (P/E Ratio)": -53.747917,
+            "FCF": "$-280.50M",
+            "RSI 14D": "46.4 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 67.7,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.653,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "VRTX",
+            "Nombre": "Vertex Pharmaceuticals Incorpor",
+            "Descripcion": "Biotechnology (Healthcare)",
+            "Precio Actual": 473.09,
+            "Drawdown 52W %": -11.35,
+            "Cambio 5D %": -2.66,
+            "Valor Mercado (P/E Ratio)": 28.010065,
+            "FCF": "$2.78B",
+            "RSI 14D": "16.3 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 67.6,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": 0.292,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "BOTZ",
+            "Nombre": "Global X Robotics & Artificial ",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 34.31,
+            "Drawdown 52W %": -17.7,
+            "Cambio 5D %": -3.43,
+            "Valor Mercado (P/E Ratio)": 33.65309,
+            "FCF": "N/A",
+            "RSI 14D": "31.3 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 67.5,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "FAN",
+            "Nombre": "First Trust Global Wind Energy ",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 24.2,
+            "Drawdown 52W %": -11.04,
+            "Cambio 5D %": 0.25,
+            "Valor Mercado (P/E Ratio)": 24.21398,
+            "FCF": "N/A",
+            "RSI 14D": "37.1 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 67.1,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "ECH",
+            "Nombre": "iShares MSCI Chile ETF",
+            "Descripcion": "Fondo Cotizado (ETF)",
+            "Precio Actual": 38.62,
+            "Drawdown 52W %": -18.02,
+            "Cambio 5D %": -1.15,
+            "Valor Mercado (P/E Ratio)": 12.195427,
+            "FCF": "N/A",
+            "RSI 14D": "46.2 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 67.0,
+            "Tipo_Dip": "Leve",
+            "Categoria": "Recuperacion Rapida",
+            "Tendencias": "Sana/Normal",
+            "Beta": "N/A",
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "NKE",
+            "Nombre": "Nike, Inc.",
+            "Descripcion": "Footwear & Accessories (Consumer Cyclical)",
+            "Precio Actual": 40.99,
+            "Drawdown 52W %": -47.47,
+            "Cambio 5D %": -8.03,
+            "Valor Mercado (P/E Ratio)": 19.519049,
+            "FCF": "$1.89B",
+            "RSI 14D": "34.3 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 66.9,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cazador de Dips",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": 1.128,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "UMC",
+            "Nombre": "United Microelectronics Corpora",
+            "Descripcion": "Semiconductors (Technology)",
+            "Precio Actual": 20.87,
+            "Drawdown 52W %": -26.67,
+            "Cambio 5D %": -6.37,
+            "Valor Mercado (P/E Ratio)": 34.213116,
+            "FCF": "$34.35B",
+            "RSI 14D": "38.0 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 66.0,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Sana/Normal",
+            "Beta": 1.572,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
+            "Ticker": "TGLS",
+            "Nombre": "Tecnoglass Inc.",
+            "Descripcion": "Building Materials (Basic Materials)",
+            "Precio Actual": 43.74,
+            "Drawdown 52W %": -47.15,
+            "Cambio 5D %": -6.6,
+            "Valor Mercado (P/E Ratio)": 14.019232,
+            "FCF": "$1.14M",
+            "RSI 14D": "42.7 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 63.2,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": 1.412,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "URNJ",
             "Nombre": "Sprott Junior Uranium Miners ET",
             "Descripcion": "Fondo Cotizado (ETF)",
-            "Precio Actual": 23.07,
-            "Drawdown 52W %": -43.47,
-            "Cambio 5D %": 1.14,
+            "Precio Actual": 23.16,
+            "Drawdown 52W %": -43.25,
+            "Cambio 5D %": 6.58,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "48.3 - Neutral",
+            "RSI 14D": "47.1 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 57.7,
+            "Score_Total": 62.2,
             "Tipo_Dip": "Alto",
             "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
@@ -2502,17 +2502,65 @@
             ]
         },
         {
+            "Ticker": "TSLA",
+            "Nombre": "Tesla, Inc.",
+            "Descripcion": "Auto Manufacturers (Consumer Cyclical)",
+            "Precio Actual": 319.69,
+            "Drawdown 52W %": -35.91,
+            "Cambio 5D %": -18.25,
+            "Valor Mercado (P/E Ratio)": 343.7527,
+            "FCF": "$4.84B",
+            "RSI 14D": "29.0 - 🚨 Sobrevendido",
+            "Monto Sugerido (SmartDCA)": "$80 USD",
+            "Score_Total": 51.7,
+            "Tipo_Dip": "Medio",
+            "Categoria": "Sweet Spot",
+            "Tendencias": "Bajista (Cuchillo)",
+            "Beta": 1.802,
+            "Noticias_YF": [
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                },
+                {
+                    "titulo": "",
+                    "url": "",
+                    "publisher": "Yahoo Finance",
+                    "time": "Jan 01, 1970"
+                }
+            ],
+            "Recomendacion_Analistas": null,
+            "Contexto_Reddit": null,
+            "Polymarket": [
+                "N/A"
+            ]
+        },
+        {
             "Ticker": "MSFT",
             "Nombre": "Microsoft Corporation",
             "Descripcion": "Software - Infrastructure (Technology)",
-            "Precio Actual": 390.34,
-            "Drawdown 52W %": -29.16,
-            "Cambio 5D %": -1.34,
-            "Valor Mercado (P/E Ratio)": 23.262217,
+            "Precio Actual": 381.58,
+            "Drawdown 52W %": -30.75,
+            "Cambio 5D %": -4.87,
+            "Valor Mercado (P/E Ratio)": 22.726622,
             "FCF": "$37.01B",
-            "RSI 14D": "54.0 - Neutral",
+            "RSI 14D": "44.3 - Neutral",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 48.0,
+            "Score_Total": 51.5,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
@@ -2553,14 +2601,14 @@
             "Ticker": "ETH-USD",
             "Nombre": "Ethereum USD",
             "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 1920.3,
-            "Drawdown 52W %": -44.28,
-            "Cambio 5D %": 3.16,
+            "Precio Actual": 1882.21,
+            "Drawdown 52W %": -45.39,
+            "Cambio 5D %": 0.57,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "70.3 - 🔥 Caro",
+            "RSI 14D": "60.0 - Neutral",
             "Monto Sugerido (SmartDCA)": "$100 USD",
-            "Score_Total": 46.6,
+            "Score_Total": 50.7,
             "Tipo_Dip": "Alto",
             "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
@@ -2601,62 +2649,14 @@
             "Ticker": "BTC-USD",
             "Nombre": "Bitcoin USD",
             "Descripcion": "Criptomoneda Fuerte",
-            "Precio Actual": 65421.15,
-            "Drawdown 52W %": -34.45,
-            "Cambio 5D %": 0.96,
+            "Precio Actual": 65016.31,
+            "Drawdown 52W %": -33.56,
+            "Cambio 5D %": 0.5,
             "Valor Mercado (P/E Ratio)": "N/A",
             "FCF": "N/A",
-            "RSI 14D": "60.4 - Neutral",
+            "RSI 14D": "54.4 - Neutral",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 45.4,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
-            "Tendencias": "Bajista (Cuchillo)",
-            "Beta": "N/A",
-            "Noticias_YF": [
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                },
-                {
-                    "titulo": "",
-                    "url": "",
-                    "publisher": "Yahoo Finance",
-                    "time": "Jan 01, 1970"
-                }
-            ],
-            "Recomendacion_Analistas": null,
-            "Contexto_Reddit": null,
-            "Polymarket": [
-                "N/A"
-            ]
-        },
-        {
-            "Ticker": "TSLA",
-            "Nombre": "Tesla, Inc.",
-            "Descripcion": "Auto Manufacturers (Consumer Cyclical)",
-            "Precio Actual": 374.01,
-            "Drawdown 52W %": -25.02,
-            "Cambio 5D %": -5.18,
-            "Valor Mercado (P/E Ratio)": 346.30554,
-            "FCF": "$4.71B",
-            "RSI 14D": "33.2 - 🚨 Sobrevendido",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 44.2,
+            "Score_Total": 48.3,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
@@ -2697,16 +2697,16 @@
             "Ticker": "PLTR",
             "Nombre": "Palantir Technologies Inc.",
             "Descripcion": "Software - Infrastructure (Technology)",
-            "Precio Actual": 124.57,
-            "Drawdown 52W %": -39.97,
-            "Cambio 5D %": -6.87,
-            "Valor Mercado (P/E Ratio)": 141.55682,
+            "Precio Actual": 123.37,
+            "Drawdown 52W %": -40.55,
+            "Cambio 5D %": -8.23,
+            "Valor Mercado (P/E Ratio)": 138.61798,
             "FCF": "$1.75B",
-            "RSI 14D": "48.5 - Neutral",
-            "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 42.2,
-            "Tipo_Dip": "Medio",
-            "Categoria": "Sweet Spot",
+            "RSI 14D": "41.8 - Neutral",
+            "Monto Sugerido (SmartDCA)": "$100 USD",
+            "Score_Total": 46.6,
+            "Tipo_Dip": "Alto",
+            "Categoria": "Cuchillo Cayendo",
             "Tendencias": "Bajista (Cuchillo)",
             "Beta": 1.562,
             "Noticias_YF": [
@@ -2745,14 +2745,14 @@
             "Ticker": "MELI",
             "Nombre": "MercadoLibre, Inc.",
             "Descripcion": "Internet Retail (Consumer Cyclical)",
-            "Precio Actual": 1799.21,
-            "Drawdown 52W %": -29.4,
-            "Cambio 5D %": -2.39,
-            "Valor Mercado (P/E Ratio)": 48.08151,
+            "Precio Actual": 1798.7,
+            "Drawdown 52W %": -29.42,
+            "Cambio 5D %": -3.16,
+            "Valor Mercado (P/E Ratio)": 47.396572,
             "FCF": "$-4.10B",
-            "RSI 14D": "60.1 - Neutral",
+            "RSI 14D": "56.7 - Neutral",
             "Monto Sugerido (SmartDCA)": "$80 USD",
-            "Score_Total": 35.9,
+            "Score_Total": 37.4,
             "Tipo_Dip": "Medio",
             "Categoria": "Sweet Spot",
             "Tendencias": "Bajista (Cuchillo)",
