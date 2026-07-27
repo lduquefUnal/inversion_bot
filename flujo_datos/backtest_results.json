@@ -1,51 +1,60 @@
 {
-    "fecha_generacion": "2026-07-27 02:54 UTC",
+    "fecha_generacion": "2026-07-27 13:36 UTC",
     "optimizacionesPorCategoria": {
         "🔥 Cazador Dips": {
             "tpPct": 15,
-            "slPct": 12,
+            "slPct": 15,
             "maxDays": 60,
-            "winRate": 51.6,
-            "avgPnlPct": 1.58,
+            "winRate": 57.3,
+            "avgPnlPct": 1.66,
             "totalTrades": 527,
-            "expectancy": 1.94
+            "expectancy": 2.19
         },
         "🎯 Sweet Spot": {
             "tpPct": 15,
             "slPct": 15,
             "maxDays": 60,
-            "winRate": 62.4,
-            "avgPnlPct": 3.84,
-            "totalTrades": 3099,
-            "expectancy": 3.73
+            "winRate": 63.2,
+            "avgPnlPct": 3.87,
+            "totalTrades": 3097,
+            "expectancy": 3.97
         },
         "⚡ Recup. Rápida": {
             "tpPct": 15,
             "slPct": 15,
             "maxDays": 60,
-            "winRate": 66.7,
-            "avgPnlPct": 3.57,
+            "winRate": 64.6,
+            "avgPnlPct": 3.49,
             "totalTrades": 48,
-            "expectancy": 5.0
+            "expectancy": 4.38
         },
         "⚠️ Cuchillos Cayendo": {
             "tpPct": 15,
-            "slPct": 5,
+            "slPct": 8,
             "maxDays": 15,
-            "winRate": 33.3,
-            "avgPnlPct": 0.47,
-            "totalTrades": 558,
-            "expectancy": 1.67
+            "winRate": 43.8,
+            "avgPnlPct": 0.49,
+            "totalTrades": 559,
+            "expectancy": 2.08
         }
     },
     "alertasUltimoMes": [
+        {
+            "ticker": "SOL-USD",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-26",
+            "precioEntrada": 76.6,
+            "precioActual": 76.82,
+            "pnlPct": 0.28,
+            "estado": "En Proceso ⏳"
+        },
         {
             "ticker": "ETH-USD",
             "categoria": "⚠️ Cuchillos Cayendo",
             "fechaAlerta": "2026-07-25",
             "precioEntrada": 1873.22,
-            "precioActual": 1940.82,
-            "pnlPct": 3.61,
+            "precioActual": 1961.81,
+            "pnlPct": 4.73,
             "estado": "En Proceso ⏳"
         },
         {
@@ -53,8 +62,8 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-25",
             "precioEntrada": 74.43,
-            "precioActual": 76.34,
-            "pnlPct": 2.57,
+            "precioActual": 76.82,
+            "pnlPct": 3.21,
             "estado": "En Proceso ⏳"
         },
         {
@@ -62,17 +71,98 @@
             "categoria": "⚠️ Cuchillos Cayendo",
             "fechaAlerta": "2026-07-24",
             "precioEntrada": 1860.18,
-            "precioActual": 1940.82,
-            "pnlPct": 4.34,
-            "estado": "En Proceso ⏳"
+            "precioActual": 1961.81,
+            "pnlPct": 5.46,
+            "estado": "Ganadora 🎯"
         },
         {
             "ticker": "SOL-USD",
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-24",
             "precioEntrada": 73.88,
-            "precioActual": 76.34,
-            "pnlPct": 3.33,
+            "precioActual": 76.82,
+            "pnlPct": 3.98,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "COIN",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 158.29,
+            "precioActual": 165.43,
+            "pnlPct": 4.51,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "MSTR",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 91.67,
+            "precioActual": 96.17,
+            "pnlPct": 4.91,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "GOOGL",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 319.74,
+            "precioActual": 328.19,
+            "pnlPct": 2.64,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "TSLA",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 313.03,
+            "precioActual": 314.83,
+            "pnlPct": 0.58,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "PLTR",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 122.92,
+            "precioActual": 127.3,
+            "pnlPct": 3.56,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "GLD",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 371.9,
+            "precioActual": 374.38,
+            "pnlPct": 0.67,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "URNJ",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 22.06,
+            "precioActual": 22.36,
+            "pnlPct": 1.36,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "SILJ",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 24.77,
+            "precioActual": 25.14,
+            "pnlPct": 1.48,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "CCJ",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 87.86,
+            "precioActual": 91.01,
+            "pnlPct": 3.59,
             "estado": "En Proceso ⏳"
         },
         {
@@ -80,8 +170,8 @@
             "categoria": "⚠️ Cuchillos Cayendo",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 1877.1,
-            "precioActual": 1940.82,
-            "pnlPct": 3.39,
+            "precioActual": 1961.81,
+            "pnlPct": 4.51,
             "estado": "En Proceso ⏳"
         },
         {
@@ -89,8 +179,8 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 75.86,
-            "precioActual": 76.34,
-            "pnlPct": 0.63,
+            "precioActual": 76.82,
+            "pnlPct": 1.27,
             "estado": "En Proceso ⏳"
         },
         {
@@ -98,8 +188,8 @@
             "categoria": "⚠️ Cuchillos Cayendo",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 161.16,
-            "precioActual": 158.29,
-            "pnlPct": -1.78,
+            "precioActual": 165.43,
+            "pnlPct": 2.65,
             "estado": "En Proceso ⏳"
         },
         {
@@ -107,8 +197,8 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 93.63,
-            "precioActual": 91.67,
-            "pnlPct": -2.09,
+            "precioActual": 96.17,
+            "pnlPct": 2.71,
             "estado": "En Proceso ⏳"
         },
         {
@@ -116,8 +206,8 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 381.58,
-            "precioActual": 381.7,
-            "pnlPct": 0.03,
+            "precioActual": 390.92,
+            "pnlPct": 2.45,
             "estado": "En Proceso ⏳"
         },
         {
@@ -125,8 +215,8 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 317.69,
-            "precioActual": 319.74,
-            "pnlPct": 0.65,
+            "precioActual": 328.19,
+            "pnlPct": 3.31,
             "estado": "En Proceso ⏳"
         },
         {
@@ -134,8 +224,8 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 319.69,
-            "precioActual": 313.03,
-            "pnlPct": -2.08,
+            "precioActual": 314.83,
+            "pnlPct": -1.52,
             "estado": "En Proceso ⏳"
         },
         {
@@ -143,8 +233,8 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 123.37,
-            "precioActual": 122.92,
-            "pnlPct": -0.36,
+            "precioActual": 127.3,
+            "pnlPct": 3.19,
             "estado": "En Proceso ⏳"
         },
         {
@@ -152,8 +242,8 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 371.52,
-            "precioActual": 371.9,
-            "pnlPct": 0.1,
+            "precioActual": 374.38,
+            "pnlPct": 0.77,
             "estado": "En Proceso ⏳"
         },
         {
@@ -161,8 +251,8 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 24.82,
-            "precioActual": 24.77,
-            "pnlPct": -0.2,
+            "precioActual": 25.14,
+            "pnlPct": 1.27,
             "estado": "En Proceso ⏳"
         },
         {
@@ -170,99 +260,9 @@
             "categoria": "🎯 Sweet Spot",
             "fechaAlerta": "2026-07-23",
             "precioEntrada": 89.33,
-            "precioActual": 87.86,
-            "pnlPct": -1.65,
+            "precioActual": 91.01,
+            "pnlPct": 1.89,
             "estado": "En Proceso ⏳"
-        },
-        {
-            "ticker": "ETH-USD",
-            "categoria": "⚠️ Cuchillos Cayendo",
-            "fechaAlerta": "2026-07-22",
-            "precioEntrada": 1933.49,
-            "precioActual": 1940.82,
-            "pnlPct": 0.38,
-            "estado": "En Proceso ⏳"
-        },
-        {
-            "ticker": "SOL-USD",
-            "categoria": "⚠️ Cuchillos Cayendo",
-            "fechaAlerta": "2026-07-22",
-            "precioEntrada": 77.91,
-            "precioActual": 76.34,
-            "pnlPct": -2.01,
-            "estado": "En Proceso ⏳"
-        },
-        {
-            "ticker": "COIN",
-            "categoria": "⚠️ Cuchillos Cayendo",
-            "fechaAlerta": "2026-07-22",
-            "precioEntrada": 166.12,
-            "precioActual": 158.29,
-            "pnlPct": -4.71,
-            "estado": "En Proceso ⏳"
-        },
-        {
-            "ticker": "MSTR",
-            "categoria": "⚠️ Cuchillos Cayendo",
-            "fechaAlerta": "2026-07-22",
-            "precioEntrada": 100.01,
-            "precioActual": 91.67,
-            "pnlPct": -8.34,
-            "estado": "Perdedora 🔴"
-        },
-        {
-            "ticker": "TSLA",
-            "categoria": "🎯 Sweet Spot",
-            "fechaAlerta": "2026-07-22",
-            "precioEntrada": 374.01,
-            "precioActual": 313.03,
-            "pnlPct": -16.3,
-            "estado": "Perdedora 🔴"
-        },
-        {
-            "ticker": "CCJ",
-            "categoria": "🎯 Sweet Spot",
-            "fechaAlerta": "2026-07-22",
-            "precioEntrada": 90.37,
-            "precioActual": 87.86,
-            "pnlPct": -2.78,
-            "estado": "En Proceso ⏳"
-        },
-        {
-            "ticker": "ETH-USD",
-            "categoria": "⚠️ Cuchillos Cayendo",
-            "fechaAlerta": "2026-07-21",
-            "precioEntrada": 1928.38,
-            "precioActual": 1940.82,
-            "pnlPct": 0.64,
-            "estado": "En Proceso ⏳"
-        },
-        {
-            "ticker": "SOL-USD",
-            "categoria": "🎯 Sweet Spot",
-            "fechaAlerta": "2026-07-21",
-            "precioEntrada": 78.11,
-            "precioActual": 76.34,
-            "pnlPct": -2.26,
-            "estado": "En Proceso ⏳"
-        },
-        {
-            "ticker": "COIN",
-            "categoria": "⚠️ Cuchillos Cayendo",
-            "fechaAlerta": "2026-07-21",
-            "precioEntrada": 175.85,
-            "precioActual": 158.29,
-            "pnlPct": -9.99,
-            "estado": "Perdedora 🔴"
-        },
-        {
-            "ticker": "MSTR",
-            "categoria": "⚠️ Cuchillos Cayendo",
-            "fechaAlerta": "2026-07-21",
-            "precioEntrada": 101.95,
-            "precioActual": 91.67,
-            "pnlPct": -10.08,
-            "estado": "Perdedora 🔴"
         }
     ]
 }
