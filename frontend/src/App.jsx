@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import AssetDetail from './pages/AssetDetail';
 import Login from './pages/Login';
 import Portfolio from './pages/Portfolio';
+import Backtesting from './pages/Backtesting';
 import { useAppStore } from './store/useAppStore';
 import { useAuth } from './store/AuthContext';
 import './App.css';
@@ -31,6 +32,7 @@ function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/backtesting" element={<Backtesting />} />
           <Route path="/login" element={<Login />} />
           <Route 
             path="/portfolio" 

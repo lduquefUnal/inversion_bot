@@ -20,6 +20,7 @@ const Header = () => {
           
           <nav style={{ display: 'flex', gap: '20px' }}>
             <Link to="/" style={{ color: '#888', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '500' }}>Explorar</Link>
+            <Link to="/backtesting" style={{ color: '#60a5fa', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '500' }}>📊 Backtesting</Link>
             <Link to="/portfolio" style={{ color: isAuthenticated ? '#00ff88' : '#888', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '500' }}>Mi Portafolio</Link>
           </nav>
         </div>

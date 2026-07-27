@@ -8,8 +8,9 @@ const REPORT_URL = '/ultimo_reporte.md';
 const fetchMarketData = async () => {
   try {
     const response = await fetch(`${MARKET_DATA_URL}?t=${new Date().getTime()}`);
-    if (!response.ok) throw new Error('No se pudo cargar la data del mercado');
-    const data = await response.json();
+    const textData = await response.text();
+    const sanitizedText = textData.replace(/:\s*NaN\b/g, ': null').replace(/:\s*Infinity\b/g, ': null');
+    const data = JSON.parse(sanitizedText);
 
     // Normalizar la llave generada por el bot (TOP_50 o TOP_25)
     if (data.TOP_50_DIPS && !data.TOP_25_DIPS) {

@@ -421,11 +421,25 @@ def main():
     for item in top_50_candidatas:
         if "Historia_Precios" in item:
             del item["Historia_Precios"]
-        
+
+    def sanitize_json_data(obj):
+        import math
+        if isinstance(obj, dict):
+            return {k: sanitize_json_data(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [sanitize_json_data(v) for v in obj]
+        elif isinstance(obj, float):
+            if math.isnan(obj) or math.isinf(obj):
+                return None
+            return obj
+        elif pd.isna(obj):
+            return None
+        return obj
+
     # Guardar timestamp dentro del JSON para que Vercel pueda leerlo correctamente
-    # (os.path.getmtime en Vercel retorna la fecha de build del servidor, no la real)
     fecha_ahora = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
-    resultado_final = {"fecha_generacion": fecha_ahora, "MACRO": macro_data, "TOP_50_DIPS": top_50_candidatas}
+    resultado_final = sanitize_json_data({"fecha_generacion": fecha_ahora, "MACRO": macro_data, "TOP_50_DIPS": top_50_candidatas})
+    
     with open("flujo_datos/mercado.json", "w", encoding='utf-8') as f:
         json.dump(resultado_final, f, indent=4, ensure_ascii=False)
         
@@ -438,6 +452,9 @@ def main():
     if bot:
         try: bot.send_message(CHAT_ID, "✅ *40%* - `Data Procesada`: Macro, RSI, Reddit, Polymarket y Gráficas de Velas listas. Nutriendo IA...", parse_mode="Markdown")
         except: pass
+    else:
+        print("✅ Data Procesada correctamente (Modo Autónomo sin Telegram).")
 
 if __name__ == "__main__":
     main()
+

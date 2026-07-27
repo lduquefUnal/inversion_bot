@@ -1,0 +1,268 @@
+{
+    "fecha_generacion": "2026-07-27 02:54 UTC",
+    "optimizacionesPorCategoria": {
+        "🔥 Cazador Dips": {
+            "tpPct": 15,
+            "slPct": 12,
+            "maxDays": 60,
+            "winRate": 51.6,
+            "avgPnlPct": 1.58,
+            "totalTrades": 527,
+            "expectancy": 1.94
+        },
+        "🎯 Sweet Spot": {
+            "tpPct": 15,
+            "slPct": 15,
+            "maxDays": 60,
+            "winRate": 62.4,
+            "avgPnlPct": 3.84,
+            "totalTrades": 3099,
+            "expectancy": 3.73
+        },
+        "⚡ Recup. Rápida": {
+            "tpPct": 15,
+            "slPct": 15,
+            "maxDays": 60,
+            "winRate": 66.7,
+            "avgPnlPct": 3.57,
+            "totalTrades": 48,
+            "expectancy": 5.0
+        },
+        "⚠️ Cuchillos Cayendo": {
+            "tpPct": 15,
+            "slPct": 5,
+            "maxDays": 15,
+            "winRate": 33.3,
+            "avgPnlPct": 0.47,
+            "totalTrades": 558,
+            "expectancy": 1.67
+        }
+    },
+    "alertasUltimoMes": [
+        {
+            "ticker": "ETH-USD",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-25",
+            "precioEntrada": 1873.22,
+            "precioActual": 1940.82,
+            "pnlPct": 3.61,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "SOL-USD",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-25",
+            "precioEntrada": 74.43,
+            "precioActual": 76.34,
+            "pnlPct": 2.57,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "ETH-USD",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 1860.18,
+            "precioActual": 1940.82,
+            "pnlPct": 4.34,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "SOL-USD",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-24",
+            "precioEntrada": 73.88,
+            "precioActual": 76.34,
+            "pnlPct": 3.33,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "ETH-USD",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 1877.1,
+            "precioActual": 1940.82,
+            "pnlPct": 3.39,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "SOL-USD",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 75.86,
+            "precioActual": 76.34,
+            "pnlPct": 0.63,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "COIN",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 161.16,
+            "precioActual": 158.29,
+            "pnlPct": -1.78,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "MSTR",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 93.63,
+            "precioActual": 91.67,
+            "pnlPct": -2.09,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "MSFT",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 381.58,
+            "precioActual": 381.7,
+            "pnlPct": 0.03,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "GOOGL",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 317.69,
+            "precioActual": 319.74,
+            "pnlPct": 0.65,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "TSLA",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 319.69,
+            "precioActual": 313.03,
+            "pnlPct": -2.08,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "PLTR",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 123.37,
+            "precioActual": 122.92,
+            "pnlPct": -0.36,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "GLD",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 371.52,
+            "precioActual": 371.9,
+            "pnlPct": 0.1,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "SILJ",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 24.82,
+            "precioActual": 24.77,
+            "pnlPct": -0.2,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "CCJ",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-23",
+            "precioEntrada": 89.33,
+            "precioActual": 87.86,
+            "pnlPct": -1.65,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "ETH-USD",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-22",
+            "precioEntrada": 1933.49,
+            "precioActual": 1940.82,
+            "pnlPct": 0.38,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "SOL-USD",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-22",
+            "precioEntrada": 77.91,
+            "precioActual": 76.34,
+            "pnlPct": -2.01,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "COIN",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-22",
+            "precioEntrada": 166.12,
+            "precioActual": 158.29,
+            "pnlPct": -4.71,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "MSTR",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-22",
+            "precioEntrada": 100.01,
+            "precioActual": 91.67,
+            "pnlPct": -8.34,
+            "estado": "Perdedora 🔴"
+        },
+        {
+            "ticker": "TSLA",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-22",
+            "precioEntrada": 374.01,
+            "precioActual": 313.03,
+            "pnlPct": -16.3,
+            "estado": "Perdedora 🔴"
+        },
+        {
+            "ticker": "CCJ",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-22",
+            "precioEntrada": 90.37,
+            "precioActual": 87.86,
+            "pnlPct": -2.78,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "ETH-USD",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-21",
+            "precioEntrada": 1928.38,
+            "precioActual": 1940.82,
+            "pnlPct": 0.64,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "SOL-USD",
+            "categoria": "🎯 Sweet Spot",
+            "fechaAlerta": "2026-07-21",
+            "precioEntrada": 78.11,
+            "precioActual": 76.34,
+            "pnlPct": -2.26,
+            "estado": "En Proceso ⏳"
+        },
+        {
+            "ticker": "COIN",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-21",
+            "precioEntrada": 175.85,
+            "precioActual": 158.29,
+            "pnlPct": -9.99,
+            "estado": "Perdedora 🔴"
+        },
+        {
+            "ticker": "MSTR",
+            "categoria": "⚠️ Cuchillos Cayendo",
+            "fechaAlerta": "2026-07-21",
+            "precioEntrada": 101.95,
+            "precioActual": 91.67,
+            "pnlPct": -10.08,
+            "estado": "Perdedora 🔴"
+        }
+    ]
+}

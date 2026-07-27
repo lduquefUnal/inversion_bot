@@ -10,7 +10,8 @@ def main():
     CHAT_ID = os.environ.get('CHAT_ID')
     
     if not all([TELEGRAM_TOKEN, CHAT_ID]):
-        sys.exit(1)
+        print("ℹ️ Telegram no configurado. Omitiendo paso de notificación Telegram.")
+        return
         
     bot = telebot.TeleBot(TELEGRAM_TOKEN)
     

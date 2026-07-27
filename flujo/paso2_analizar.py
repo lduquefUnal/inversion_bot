@@ -112,5 +112,15 @@ Output EXCLUSIVO: MARKDOWN puro (.md). Usa Emojis.
     with open(ruta_guardado, "w", encoding="utf-8") as f:
         f.write(reporte)
 
+    with open("flujo_datos/ultimo_reporte.md", "w", encoding="utf-8") as f:
+        f.write(reporte)
+
+    try:
+        with open("frontend/public/ultimo_reporte.md", "w", encoding="utf-8") as f:
+            f.write(reporte)
+    except: pass
+
+    print("✅ Reporte guardado localmente en ultimo_reporte.md")
+
 if __name__ == "__main__":
     main()
