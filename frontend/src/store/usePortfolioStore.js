@@ -86,14 +86,27 @@ export const usePortfolioStore = create((set, get) => ({
   entries: load() ?? buildSeed(),
 
   // ── CRUD Posiciones ────────────────────────────────────────────────────────
-  addPosition: ({ ticker, nombre }) => {
+  addPosition: ({ ticker, nombre, categoria }) => {
     const exists = get().entries.find(e => e.position.ticker === ticker);
-    if (exists) return exists.position.id;
-    const newEntry = { position: { id: uuidv4(), ticker, nombre: nombre || ticker }, lotes: [] };
+    if (exists) {
+      if (categoria) {
+        get().updatePositionCategory(exists.position.id, categoria);
+      }
+      return exists.position.id;
+    }
+    const newEntry = { position: { id: uuidv4(), ticker, nombre: nombre || ticker, categoria: categoria || "🎯 Sweet Spot" }, lotes: [] };
     const updated = [...get().entries, newEntry];
     save(updated);
     set({ entries: updated });
     return newEntry.position.id;
+  },
+
+  updatePositionCategory: (positionId, categoria) => {
+    const updated = get().entries.map(e =>
+      e.position.id === positionId ? { ...e, position: { ...e.position, categoria } } : e
+    );
+    save(updated);
+    set({ entries: updated });
   },
 
   removePosition: (positionId) => {

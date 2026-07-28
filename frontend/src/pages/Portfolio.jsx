@@ -21,7 +21,14 @@ const UMBRALES = {
   SEÑALES_SELL:      3,    // mínimo señales para SELL
 };
 
-const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker) => {
+const CATEGORY_PARAMS = {
+  "🎯 Sweet Spot":          { tpPct: 15, slPct: 8,  maxDays: 14, label: "Sweet Spot", emoji: "🎯" },
+  "🔥 Cazador Dips":        { tpPct: 12, slPct: 8,  maxDays: 21, label: "Cazador Dips", emoji: "🔥" },
+  "⚡ Recup. Rápida":       { tpPct: 15, slPct: 5,  maxDays: 7,  label: "Recup. Rápida", emoji: "⚡" },
+  "⚠️ Cuchillos Cayendo":   { tpPct: 5,  slPct: 5,  maxDays: 7,  label: "Cuchillos Cayendo", emoji: "⚠️" }
+};
+
+const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes = [], posCategory = null) => {
   if (!precioActual || !precioPromedio) {
     return { veredicto: 'SIN_DATA', color: 'nodata', señales: [], recomendacion: null, justificacion: 'Precio actual no disponible.' };
   }
@@ -30,9 +37,32 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker) => {
   const mercado  = activos.find(a => a.Ticker === ticker);
   const gananciaPorc = ((precioActual - precioPromedio) / precioPromedio) * 100;
 
+  // Categoría asignada o auto-detectada del mercado
+  const catNombre = posCategory || mercado?.Categoria || "🎯 Sweet Spot";
+  const params = CATEGORY_PARAMS[catNombre] || CATEGORY_PARAMS["🎯 Sweet Spot"];
+
   const señalesVenta = [];
   const señalesCompra = [];
   let rsiNum = null, score = null, cambio5D = null;
+
+  // 🎯 Alertas dinámicas de Backtesting V4 según la Categoría asignada
+  if (gananciaPorc >= params.tpPct) {
+    señalesVenta.push(`🎯 TP +${params.tpPct}% Alcanzado (Venta con Ganancias)`);
+  } else if (gananciaPorc <= -params.slPct) {
+    señalesVenta.push(`🛑 SL -${params.slPct}% Alcanzado (Cierre por Protección)`);
+  }
+
+  if (lotes && lotes.length > 0) {
+    const hoy = new Date();
+    const masAntiguo = lotes.reduce((min, l) => {
+      const f = new Date(l.fechaCompra);
+      return f < min ? f : min;
+    }, new Date());
+    const diasTranscurridos = Math.floor((hoy - masAntiguo) / (1000 * 60 * 60 * 24));
+    if (diasTranscurridos >= params.maxDays && gananciaPorc < params.tpPct && gananciaPorc > -params.slPct) {
+      señalesVenta.push(`⏱️ Límite de ${params.maxDays} Días Alcanzado (${diasTranscurridos}d activo)`);
+    }
+  }
 
   if (mercado) {
     rsiNum  = parseFloat(mercado['RSI 14D']);
@@ -41,7 +71,7 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker) => {
     const tendencia = mercado['Tendencias'] || '';
     const drawdown  = mercado['Drawdown 52W %'];
 
-    // Señales de venta
+    // Señales de venta adicionales
     if (rsiNum > UMBRALES.RSI_SELL)       señalesVenta.push(`RSI ${rsiNum.toFixed(0)} (sobrecompra)`);
     if (score !== 'N/A' && score < UMBRALES.SCORE_MIN) señalesVenta.push(`Score bajo (${score})`);
     if (tendencia.includes('Bajista') || tendencia.includes('Cuchillo')) señalesVenta.push('Tendencia bajista');
@@ -59,7 +89,13 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker) => {
   else if (gananciaPorc > UMBRALES.GANANCIA_WATCH) señalesVenta.push(`Ganancia +${gananciaPorc.toFixed(1)}% (vigilar)`);
 
   let veredicto, color, justificacion, recomendacion;
-  if (señalesVenta.length >= UMBRALES.SEÑALES_SELL || rsiNum > 76 || gananciaPorc > UMBRALES.GANANCIA_SELL) {
+  if (gananciaPorc >= params.tpPct) {
+    veredicto = 'SELL'; color = 'sell'; recomendacion = 'vender';
+    justificacion = `🎯 VENDER: TP +${params.tpPct}% alcanzado para ${catNombre} (+${gananciaPorc.toFixed(1)}%). Venta con ganancia.`;
+  } else if (gananciaPorc <= -params.slPct) {
+    veredicto = 'SELL'; color = 'sell'; recomendacion = 'vender';
+    justificacion = `🛑 VENDER: SL -${params.slPct}% alcanzado para ${catNombre} (${gananciaPorc.toFixed(1)}%). Cierre de protección.`;
+  } else if (señalesVenta.length >= UMBRALES.SEÑALES_SELL || rsiNum > 76 || gananciaPorc > UMBRALES.GANANCIA_SELL) {
     veredicto = 'SELL'; color = 'sell'; recomendacion = 'vender';
     justificacion = `🔴 ${señalesVenta.join(' · ')}. Considera salida estratégica.`;
   } else if (señalesVenta.length >= 1) {
@@ -70,10 +106,10 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker) => {
     justificacion = `💎 ${señalesCompra.join(' · ')}. Buena zona de acumulación DCA.`;
   } else {
     veredicto = 'HOLD'; color = 'hold'; recomendacion = 'mantener';
-    justificacion = `🟢 Sin señales de alerta. Estrategia DCA en curso.`;
+    justificacion = `🟢 Sin señales de alerta. Posición en rango estratégico (${catNombre}: TP +${params.tpPct}% / SL -${params.slPct}% / ${params.maxDays}d).`;
   }
 
-  return { veredicto, color, justificacion, recomendacion, señalesVenta, señalesCompra, gananciaPorc, rsiNum, score, cambio5D };
+  return { veredicto, color, justificacion, recomendacion, señalesVenta, señalesCompra, gananciaPorc, rsiNum, score, cambio5D, catNombre, params };
 };
 
 const VEREDICTO_ICON = { SELL: '🔴', WATCH: '🟡', HOLD: '🟢', DCA: '💎', SIN_DATA: '⚫' };
@@ -127,27 +163,60 @@ const LoteModal = ({ lote, positionId, positionTicker, onClose, onSave }) => {
 };
 
 // ─── Modal Nueva Posición ───────────────────────────────────────────────────
-const NuevaPosicionModal = ({ tickersList, onClose, onAdd }) => {
+const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
   const [ticker, setTicker] = useState('');
   const [nombre, setNombre] = useState('');
+  const [categoria, setCategoria] = useState('🎯 Sweet Spot');
+  const [autoDetectado, setAutoDetectado] = useState(false);
+
+  const handleTickerChange = (val) => {
+    const uppercaseVal = val.toUpperCase();
+    setTicker(uppercaseVal);
+    const activos = datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || [];
+    const mercado = activos.find(a => a.Ticker === uppercaseVal);
+    if (mercado && mercado.Categoria && CATEGORY_PARAMS[mercado.Categoria]) {
+      setCategoria(mercado.Categoria);
+      setAutoDetectado(true);
+    } else {
+      setAutoDetectado(false);
+    }
+  };
+
   return (
     <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
       <motion.div className="modal-card" initial={{ scale: 0.85, y: 40 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.85, y: 40 }} onClick={e => e.stopPropagation()}>
         <h2>🆕 Nueva Posición</h2>
-        <p className="modal-sub">Primero define el activo. Luego añades las compras (lotes) individuales.</p>
+        <p className="modal-sub">Define el activo y asigna la categoría de estrategia óptima para sus TP, SL y Días.</p>
         <div className="modal-form">
           <div className="form-group">
             <label>Ticker</label>
-            <input value={ticker} onChange={e => setTicker(e.target.value.toUpperCase())} placeholder="ej: PLTR, BTC-USD, EC" list="tickers-list" />
+            <input value={ticker} onChange={e => handleTickerChange(e.target.value)} placeholder="ej: PLTR, BTC-USD, EC" list="tickers-list" />
             <datalist id="tickers-list">{tickersList.map(t => <option key={t} value={t} />)}</datalist>
           </div>
           <div className="form-group">
             <label>Nombre del activo (opcional)</label>
             <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="ej: Palantir Technologies" />
           </div>
+          <div className="form-group">
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Categoría de Estrategia</span>
+              {autoDetectado && <span style={{ color: '#10b981', fontSize: '0.75rem', fontWeight: 'bold' }}>🤖 Auto-detectado del Mercado</span>}
+            </label>
+            <select
+              value={categoria}
+              onChange={e => { setCategoria(e.target.value); setAutoDetectado(false); }}
+              style={{ background: 'rgba(15,23,42,0.9)', color: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', width: '100%' }}
+            >
+              {Object.entries(CATEGORY_PARAMS).map(([catKey, p]) => (
+                <option key={catKey} value={catKey}>
+                  {catKey} (TP +{p.tpPct}% / SL -{p.slPct}% / {p.maxDays}d max)
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="modal-actions">
             <button className="btn-cancel" onClick={onClose}>Cancelar</button>
-            <button className="btn-save" disabled={!ticker} onClick={() => { onAdd(ticker, nombre); onClose(); }}>Continuar →</button>
+            <button className="btn-save" disabled={!ticker} onClick={() => { onAdd(ticker, nombre, categoria); onClose(); }}>Continuar →</button>
           </div>
         </div>
       </motion.div>
@@ -204,6 +273,9 @@ const PositionCard = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
     else addLote(position.id, data);
   }, [position.id, addLote, updateLote]);
 
+  const catInfo = oraculo.params || CATEGORY_PARAMS[position.categoria] || CATEGORY_PARAMS["🎯 Sweet Spot"];
+  const catLabel = oraculo.catNombre || position.categoria || "🎯 Sweet Spot";
+
   return (
     <motion.div
       className={`portfolio-card oracle-${oraculo.color}`}
@@ -215,7 +287,12 @@ const PositionCard = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
       {/* Cabecera */}
       <div className="card-top">
         <div className="ticker-info">
-          <h2><Link to={`/activo/${position.ticker}`} className="ticker-link">{position.ticker}</Link></h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <h2><Link to={`/activo/${position.ticker}`} className="ticker-link">{position.ticker}</Link></h2>
+            <span style={{ fontSize: '0.75rem', background: 'rgba(59,130,246,0.15)', color: '#60a5fa', padding: '2px 8px', borderRadius: '12px', border: '1px solid rgba(96,165,250,0.3)', fontWeight: 'bold' }}>
+              {catLabel} (TP +{catInfo.tpPct}% / SL -{catInfo.slPct}% / {catInfo.maxDays}d)
+            </span>
+          </div>
           <span className="amount">{position.nombre} · {cantidadTotal.toFixed(6).replace(/\.?0+$/, '')} u.</span>
         </div>
         <div className="card-controls">
@@ -353,7 +430,7 @@ const Portfolio = () => {
     return entries.map(entry => {
       const { precioPromedio } = calcularResumenPosicion(entry.lotes);
       const precioActual = precioMap[entry.position.ticker];
-      const oraculo = calcularOraculo(precioPromedio, precioActual, marketData, entry.position.ticker);
+      const oraculo = calcularOraculo(precioPromedio, precioActual, marketData, entry.position.ticker, entry.lotes, entry.position.categoria);
       return { entry, precioActual, oraculo };
     });
   }, [entries, precioMap, marketData]);
@@ -374,8 +451,8 @@ const Portfolio = () => {
   const alertas = entriesConOraculo.filter(({ oraculo }) => ['SELL', 'WATCH'].includes(oraculo.veredicto));
   const oportunidades = entriesConOraculo.filter(({ oraculo }) => oraculo.veredicto === 'DCA');
 
-  const handleAddPosition = (ticker, nombre) => {
-    const id = addPosition({ ticker, nombre });
+  const handleAddPosition = (ticker, nombre, categoria) => {
+    const id = addPosition({ ticker, nombre, categoria });
     setAddingLoteForId(id);
     // auto-abrir form de primer lote después de crear
   };
@@ -606,6 +683,7 @@ const Portfolio = () => {
         {nuevoModal && (
           <NuevaPosicionModal
             tickersList={tickersList}
+            datosJson={marketData}
             onClose={() => setNuevoModal(false)}
             onAdd={handleAddPosition}
           />

@@ -105,6 +105,15 @@ const AssetCard = ({ item, index }) => {
           <span style={{ padding: '4px 10px', borderRadius: '20px', background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}`, fontWeight: 'bold', fontSize: '0.8rem' }}>
             {cfg.emoji} {cfg.label}
           </span>
+          <span style={{
+            padding: '4px 10px', borderRadius: '20px',
+            background: (item.Dias_Consecutivos === 1) ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)',
+            color: (item.Dias_Consecutivos === 1) ? '#f59e0b' : '#10b981',
+            border: `1px solid ${(item.Dias_Consecutivos === 1) ? '#f59e0b' : '#10b981'}`,
+            fontWeight: 'bold', fontSize: '0.8rem'
+          }}>
+            {(item.Dias_Consecutivos === 1) ? '⏳ Día 1 (En Mira)' : '🟢 🔥 Confirmado (Día 2)'}
+          </span>
           <span style={{ fontSize: '0.85rem', background: 'rgba(15,23,42,0.8)', padding: '4px 10px', borderRadius: '12px', color: dip_color, border: `1px solid ${dip_color}` }}>Dip {tipo_dip}</span>
           <span style={{ fontSize: '0.85rem', background: 'rgba(15,23,42,0.8)', padding: '4px 10px', borderRadius: '12px', color: cambio_color }}>5D: {cambio_5d_str}</span>
         </div>
