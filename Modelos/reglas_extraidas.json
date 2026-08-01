@@ -1,0 +1,43 @@
+{
+  "tiempo_evaluación_segundos": 0.1,
+  "metricas_globales": {
+    "win_rate_global_%": 78.79,
+    "sharpe_ratio": 5.25,
+    "sortino_ratio": 42903183.98,
+    "profit_factor": 6.9,
+    "expectancy_pct_por_trade": 8.76,
+    "total_operaciones": 33
+  },
+  "win_rate_por_categoría": {
+    "Cazador Dips": {
+      "win_rate_%": 72.22,
+      "total_operaciones": 18
+    },
+    "Cuchillos Cayendo": {
+      "win_rate_%": 91.67,
+      "total_operaciones": 12
+    },
+    "Sweet Spot": {
+      "win_rate_%": 66.67,
+      "total_operaciones": 3
+    }
+  },
+  "win_rate_por_sector": {
+    "Índices & ETFs Sectoriales": {
+      "win_rate_%": 100.0,
+      "total_operaciones": 3
+    },
+    "Tecnología & Semiconductores": {
+      "win_rate_%": 100.0,
+      "total_operaciones": 4
+    },
+    "Criptomonedas & Blockchain": {
+      "win_rate_%": 100.0,
+      "total_operaciones": 2
+    },
+    "Oro, Commodities & Bonos": {
+      "win_rate_%": 75.0,
+      "total_operaciones": 4
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "fecha_entrenamiento": "2026-07-31 22:31:20",
+  "total_activos_universo": 219,
+  "criterio_optimizacion": "F0.5-Score (Beta=0.5)",
+  "umbral_optimo": 0.4,
+  "f05_score": 0.409,
+  "precision_%": 80.0,
+  "recall_%": 13.82,
+  "f1_score": 0.236,
+  "roc_auc_score": 0.8,
+  "features": [
+    "Cat_Sweet_Spot",
+    "Cat_Cazador_Dips",
+    "Cat_Recup_Rapida",
+    "Cat_Cuchillos_Cayendo",
+    "RSI_2",
+    "RSI_14",
+    "ATR_%",
+    "Tendencia_Sana",
+    "Drawdown_52W_%"
+  ]
+}

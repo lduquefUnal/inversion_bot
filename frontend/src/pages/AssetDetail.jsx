@@ -183,50 +183,72 @@ const AssetDetail = () => {
   const periods = ['1S', '1M', '3M', '1A', '3A', '5A'];
   const toggleIndicator = name => setIndicators(prev => ({ ...prev, [name]: !prev[name] }));
 
-  // Métricas con tooltips
+  // Métricas con tooltips — mapeadas a predicciones_v2.json
+  const dd52 = assetInfo?.['Drawdown_52W_%'] ?? assetInfo?.['Drawdown 52W %'];
+  const rsi14val = assetInfo?.RSI_14D ?? assetInfo?.['RSI 14D'];
+  const rsi2val = assetInfo?.RSI_2D;
+  const fcfVal = assetInfo?.FCF;
+  const peVal = assetInfo?.PE_Ratio ?? assetInfo?.['Valor Mercado (P/E Ratio)'];
+  const betaVal = assetInfo?.Beta;
+  const probVal = assetInfo?.['Probabilidad_Exito_%'];
+  const kellyVal = assetInfo?.['Position_Sizing_Kelly_%'];
+  const stopVal = assetInfo?.Stop_Loss_ATR_USD;
+
   const metrics = [
     {
-      label: 'Score Total',
-      value: assetInfo?.Score_Total ?? 'N/A',
-      color: 'var(--accent-color)',
-      tip: 'Puntuación ponderada (0-100) basada en drawdown, RSI, tendencia SMA200, calidad fundamental y momentum de 5 días. > 70 = oportunidad interesante.'
+      label: 'Prob. Éxito ML',
+      value: probVal != null ? `${probVal}%` : 'N/A',
+      color: probVal >= 60 ? '#10b981' : probVal >= 40 ? '#eab308' : '#ef4444',
+      tip: 'Probabilidad de éxito calculada por el modelo LightGBM V2 (Win Rate 80%). ≥40% = BUY signal.'
     },
     {
       label: 'Drawdown 52W',
-      value: assetInfo?.['Drawdown 52W %'] ? `${assetInfo['Drawdown 52W %']}%` : 'N/A',
+      value: dd52 != null ? `${dd52}%` : 'N/A',
       color: '#ef4444',
-      tip: 'Caída máxima desde el precio más alto de los últimos 52 semanas. Un dip > 40% puede ser zona de acumulación agresiva.'
+      tip: 'Caída máxima desde el precio más alto de las últimas 52 semanas. Un dip > 40% puede ser zona de acumulación agresiva.'
     },
     {
       label: 'RSI 14D',
-      value: assetInfo?.['RSI 14D'] ?? 'N/A',
-      color: assetInfo?.['RSI 14D']?.includes('Sobrevendido') ? '#10b981' : assetInfo?.['RSI 14D']?.includes('Caro') ? '#ef4444' : '#f8fafc',
-      tip: 'Relative Strength Index (0-100). < 35 = Sobrevendido (posible rebote) | > 70 = Sobrecomprado (posible corrección) | 35-70 = Zona neutral.'
+      value: rsi14val != null ? String(rsi14val).split(' ')[0] : 'N/A',
+      color: Number(rsi14val) < 30 ? '#10b981' : Number(rsi14val) > 70 ? '#ef4444' : '#f8fafc',
+      tip: 'RSI 14 días. < 30 = Sobrevendido (posible rebote) | > 70 = Sobrecomprado | 30-70 = Zona neutral.'
+    },
+    {
+      label: 'RSI 2D (Connors)',
+      value: rsi2val != null ? String(rsi2val) : 'N/A',
+      color: Number(rsi2val) < 10 ? '#10b981' : '#a78bfa',
+      tip: 'RSI de 2 días (estrategia Connors). < 10 = señal de entrada extrema de corto plazo.'
     },
     {
       label: 'FCF',
-      value: assetInfo?.FCF ?? 'N/A',
-      color: assetInfo?.FCF?.startsWith('$') && !assetInfo.FCF.includes('-') ? '#10b981' : '#ef4444',
-      tip: 'Flujo de Caja Libre (Free Cash Flow). Dinero real generado tras gastos de capital. Positivo = empresa sana financieramente. Negativo en growth = puede ser normal.'
+      value: fcfVal ?? 'N/A',
+      color: fcfVal && !String(fcfVal).includes('-') && fcfVal !== 'N/A' ? '#10b981' : '#ef4444',
+      tip: 'Flujo de Caja Libre. Positivo = empresa genera dinero real. Negativo en growth = puede ser normal.'
     },
     {
       label: 'P/E Ratio',
-      value: assetInfo?.['Valor Mercado (P/E Ratio)'] ? parseFloat(assetInfo['Valor Mercado (P/E Ratio)']).toFixed(1) : 'N/A',
+      value: peVal && peVal !== 'N/A' ? parseFloat(peVal).toFixed(1) : 'N/A',
       color: '#eab308',
-      tip: 'Precio / Beneficio. Cuánto pagas por cada $1 de ganancia. < 15 = barato | 15-30 = razonable | > 30 = caro o alto crecimiento esperado. Negativo = empresa con pérdidas.'
+      tip: 'Precio / Beneficio. < 15 = barato | 15-30 = razonable | > 30 = caro o alto crecimiento esperado.'
     },
     {
-      label: 'Monto DCA',
-      value: assetInfo?.['Monto Sugerido (SmartDCA)'] ?? '$100 USD',
-      color: '#eab308',
-      tip: 'Monto sugerido por la estrategia Smart DCA según el nivel de riesgo. $80 = conservador (dip leve) | $100 = moderado | $120 = agresivo (dip fuerte). Puramente educativo.'
-    },
-    {
-      label: 'Beta (Volatilidad)',
-      value: assetInfo?.Beta ?? 'N/A',
+      label: 'Beta (Vol.)',
+      value: betaVal != null && betaVal !== 'N/A' ? Number(betaVal).toFixed(2) : 'N/A',
       color: '#a78bfa',
-      tip: 'Mide la volatilidad frente al mercado. >1.0 significa más agresivo (Valiente) que el S&P500, <1.0 es más conservador.'
-    }
+      tip: 'Volatilidad vs S&P 500. > 1 = más agresivo que el mercado. > 2 = especulativo.'
+    },
+    {
+      label: 'Kelly %',
+      value: kellyVal != null ? `${kellyVal}%` : 'N/A',
+      color: '#818cf8',
+      tip: 'Position sizing Half-Kelly: % del capital sugerido para esta posición según la probabilidad del modelo.'
+    },
+    {
+      label: 'Stop Loss ATR',
+      value: stopVal != null ? `$${stopVal}` : 'N/A',
+      color: '#ef4444',
+      tip: 'Precio de stop loss calculado a 2x ATR bajo el precio de entrada.'
+    },
   ];
 
   return (

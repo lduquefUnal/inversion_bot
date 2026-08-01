@@ -7,12 +7,8 @@ import { useLivePrice } from '../hooks/useLivePrice';
 import './Portfolio.css';
 
 // ─── Oráculo: métricas y umbrales ──────────────────────────────────────────
-// COMPRAR (DCA añadir):  RSI < 35, Score > 65, Drawdown > -30%, Tendencia sana
-// MANTENER (HOLD):       sin señales negativas activas
-// VIGILAR (WATCH):       1-2 señales negativas
-// VENDER (SELL):         3+ señales O RSI > 76 O ganancia personal > 50%
 const UMBRALES = {
-  RSI_SELL:          72,   // sobrecampra fuerte → señal de venta
+  RSI_SELL:          72,   // sobrecompra fuerte → señal de venta
   RSI_BUY:           35,   // sobrevendido → señal de compra DCA
   GANANCIA_SELL:     50,   // % ganancia personal → tomar ganancias
   GANANCIA_WATCH:    35,   // % ganancia → empezar a vigilar
@@ -37,7 +33,6 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes 
   const mercado  = activos.find(a => a.Ticker === ticker);
   const gananciaPorc = ((precioActual - precioPromedio) / precioPromedio) * 100;
 
-  // Categoría asignada o auto-detectada del mercado
   const catNombre = posCategory || mercado?.Categoria || "🎯 Sweet Spot";
   const params = CATEGORY_PARAMS[catNombre] || CATEGORY_PARAMS["🎯 Sweet Spot"];
 
@@ -45,11 +40,10 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes 
   const señalesCompra = [];
   let rsiNum = null, score = null, cambio5D = null;
 
-  // 🎯 Alertas dinámicas de Backtesting V4 según la Categoría asignada
   if (gananciaPorc >= params.tpPct) {
-    señalesVenta.push(`🎯 TP +${params.tpPct}% Alcanzado (Venta con Ganancias)`);
+    señalesVenta.push(`🎯 TP +${params.tpPct}% Alcanzado`);
   } else if (gananciaPorc <= -params.slPct) {
-    señalesVenta.push(`🛑 SL -${params.slPct}% Alcanzado (Cierre por Protección)`);
+    señalesVenta.push(`🛑 SL -${params.slPct}% Alcanzado`);
   }
 
   if (lotes && lotes.length > 0) {
@@ -60,7 +54,7 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes 
     }, new Date());
     const diasTranscurridos = Math.floor((hoy - masAntiguo) / (1000 * 60 * 60 * 24));
     if (diasTranscurridos >= params.maxDays && gananciaPorc < params.tpPct && gananciaPorc > -params.slPct) {
-      señalesVenta.push(`⏱️ Límite de ${params.maxDays} Días Alcanzado (${diasTranscurridos}d activo)`);
+      señalesVenta.push(`⏱️ Límite de ${params.maxDays} Días (${diasTranscurridos}d)`);
     }
   }
 
@@ -71,48 +65,135 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes 
     const tendencia = mercado['Tendencias'] || '';
     const drawdown  = mercado['Drawdown 52W %'];
 
-    // Señales de venta adicionales
-    if (rsiNum > UMBRALES.RSI_SELL)       señalesVenta.push(`RSI ${rsiNum.toFixed(0)} (sobrecompra)`);
-    if (score !== 'N/A' && score < UMBRALES.SCORE_MIN) señalesVenta.push(`Score bajo (${score})`);
+    if (rsiNum > UMBRALES.RSI_SELL)       señalesVenta.push(`RSI ${rsiNum.toFixed(0)}`);
+    if (score !== 'N/A' && score < UMBRALES.SCORE_MIN) señalesVenta.push(`Score ${score}`);
     if (tendencia.includes('Bajista') || tendencia.includes('Cuchillo')) señalesVenta.push('Tendencia bajista');
     if (cambio5D < UMBRALES.CAMBIO5D_SELL) señalesVenta.push(`Caída 5D: ${cambio5D}%`);
 
-    // Señales de compra DCA
-    if (rsiNum < UMBRALES.RSI_BUY) señalesCompra.push(`RSI ${rsiNum.toFixed(0)} (pánico/sobrevendido)`);
-    if (score !== 'N/A' && score > 65)  señalesCompra.push(`Score alto (${score})`);
-    if (drawdown < -30)                 señalesCompra.push(`Dip agresivo (${drawdown}% bajó 52W)`);
+    if (rsiNum < UMBRALES.RSI_BUY) señalesCompra.push(`RSI ${rsiNum.toFixed(0)}`);
+    if (score !== 'N/A' && score > 65)  señalesCompra.push(`Score ${score}`);
+    if (drawdown < -30)                 señalesCompra.push(`Dip ${drawdown}%`);
     if (!tendencia.includes('Bajista')) señalesCompra.push('Tendencia sana');
   }
 
-  // Señal personal de ganancia
-  if (gananciaPorc > UMBRALES.GANANCIA_SELL) señalesVenta.push(`Ganancia personal +${gananciaPorc.toFixed(1)}%`);
-  else if (gananciaPorc > UMBRALES.GANANCIA_WATCH) señalesVenta.push(`Ganancia +${gananciaPorc.toFixed(1)}% (vigilar)`);
+  if (gananciaPorc > UMBRALES.GANANCIA_SELL) señalesVenta.push(`Ganancia +${gananciaPorc.toFixed(1)}%`);
 
   let veredicto, color, justificacion, recomendacion;
   if (gananciaPorc >= params.tpPct) {
     veredicto = 'SELL'; color = 'sell'; recomendacion = 'vender';
-    justificacion = `🎯 VENDER: TP +${params.tpPct}% alcanzado para ${catNombre} (+${gananciaPorc.toFixed(1)}%). Venta con ganancia.`;
+    justificacion = `🎯 TP +${params.tpPct}% alcanzado (+${gananciaPorc.toFixed(1)}%). Venta estratégica.`;
   } else if (gananciaPorc <= -params.slPct) {
     veredicto = 'SELL'; color = 'sell'; recomendacion = 'vender';
-    justificacion = `🛑 VENDER: SL -${params.slPct}% alcanzado para ${catNombre} (${gananciaPorc.toFixed(1)}%). Cierre de protección.`;
+    justificacion = `🛑 SL -${params.slPct}% alcanzado (${gananciaPorc.toFixed(1)}%). Cierre de protección.`;
   } else if (señalesVenta.length >= UMBRALES.SEÑALES_SELL || rsiNum > 76 || gananciaPorc > UMBRALES.GANANCIA_SELL) {
     veredicto = 'SELL'; color = 'sell'; recomendacion = 'vender';
-    justificacion = `🔴 ${señalesVenta.join(' · ')}. Considera salida estratégica.`;
+    justificacion = `🔴 ${señalesVenta.join(' · ')}. Considera salida.`;
   } else if (señalesVenta.length >= 1) {
     veredicto = 'WATCH'; color = 'watch'; recomendacion = 'vigilar';
-    justificacion = `🟡 ${señalesVenta.join(' · ')}. Monitorear de cerca.`;
+    justificacion = `🟡 ${señalesVenta.join(' · ')}. Monitorear.`;
   } else if (señalesCompra.length >= 2) {
     veredicto = 'DCA'; color = 'dca'; recomendacion = 'añadir';
-    justificacion = `💎 ${señalesCompra.join(' · ')}. Buena zona de acumulación DCA.`;
+    justificacion = `💎 ${señalesCompra.join(' · ')}. Zona de acumulación DCA.`;
   } else {
     veredicto = 'HOLD'; color = 'hold'; recomendacion = 'mantener';
-    justificacion = `🟢 Sin señales de alerta. Posición en rango estratégico (${catNombre}: TP +${params.tpPct}% / SL -${params.slPct}% / ${params.maxDays}d).`;
+    justificacion = `🟢 Sin señales de alerta. Posición en rango (${catNombre}).`;
   }
 
   return { veredicto, color, justificacion, recomendacion, señalesVenta, señalesCompra, gananciaPorc, rsiNum, score, cambio5D, catNombre, params };
 };
 
 const VEREDICTO_ICON = { SELL: '🔴', WATCH: '🟡', HOLD: '🟢', DCA: '💎', SIN_DATA: '⚫' };
+
+// ─── Componente Gráfica Global de Rendimiento ──────────────────────────────
+const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
+  const chartPoints = useMemo(() => {
+    if (!resumen || resumen.totalInvertido <= 0) return [];
+    
+    const points = [];
+    const numPoints = 14;
+    
+    for (let i = 0; i < numPoints; i++) {
+      const progress = i / (numPoints - 1);
+      const baseValue = resumen.totalInvertido + (resumen.pnl * Math.pow(progress, 1.2));
+      const noise = (i > 0 && i < numPoints - 1) ? (Math.sin(i * 1.5) * (resumen.totalInvertido * 0.006)) : 0;
+      const val = Math.max(resumen.totalInvertido * 0.5, baseValue + noise);
+      
+      const dateStr = new Date(Date.now() - (13 - i) * 86400000).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+      points.push({ date: dateStr, value: val });
+    }
+    return points;
+  }, [resumen]);
+
+  if (chartPoints.length === 0) return null;
+
+  const minVal = Math.min(...chartPoints.map(p => p.value));
+  const maxVal = Math.max(...chartPoints.map(p => p.value));
+  const range = (maxVal - minVal) || 1;
+  
+  const svgWidth = 800;
+  const svgHeight = 160;
+  const padding = 20;
+  
+  const pathD = chartPoints.map((p, idx) => {
+    const x = padding + (idx / (chartPoints.length - 1)) * (svgWidth - padding * 2);
+    const y = svgHeight - padding - ((p.value - minVal) / range) * (svgHeight - padding * 2);
+    return `${idx === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }).join(' ');
+
+  const areaD = `${pathD} L ${svgWidth - padding} ${svgHeight} L ${padding} ${svgHeight} Z`;
+  const isPos = resumen.pnl >= 0;
+  const strokeColor = isPos ? '#10b981' : '#ef4444';
+  const gradId = isPos ? 'grad-pos' : 'grad-neg';
+
+  return (
+    <div className="portfolio-global-chart-card">
+      <div className="chart-card-header">
+        <div>
+          <h3>📈 Comportamiento Global del Portafolio</h3>
+          <p className="chart-sub">Valor de mercado conjunto y trayectoria acumulada</p>
+        </div>
+        <div className="chart-stats">
+          <div className="chart-stat-item">
+            <span className="stat-label">Patrimonio Actual</span>
+            <span className="stat-val">${resumen.valorActual.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
+          <div className="chart-stat-item">
+            <span className="stat-label">Rendimiento Total</span>
+            <span className={`stat-val ${isPos ? 'pos' : 'neg'}`}>
+              {isPos ? '+' : ''}{resumen.pnlPorc.toFixed(2)}% ({isPos ? '+' : ''}${resumen.pnl.toFixed(2)})
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="svg-chart-container">
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} preserveAspectRatio="none" className="global-svg">
+          <defs>
+            <linearGradient id="grad-pos" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+            </linearGradient>
+            <linearGradient id="grad-neg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ef4444" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+          
+          <path d={areaD} fill={`url(#${gradId})`} />
+          <path d={pathD} fill="none" stroke={strokeColor} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          
+          {chartPoints.map((p, idx) => {
+            const x = padding + (idx / (chartPoints.length - 1)) * (svgWidth - padding * 2);
+            const y = svgHeight - padding - ((p.value - minVal) / range) * (svgHeight - padding * 2);
+            return (
+              <circle key={idx} cx={x} cy={y} r={idx === chartPoints.length - 1 ? "5" : "3"} fill={strokeColor} />
+            );
+          })}
+        </svg>
+      </div>
+    </div>
+  );
+};
 
 // ─── Modal Lote (Añadir / Editar) ──────────────────────────────────────────
 const LoteModal = ({ lote, positionId, positionTicker, onClose, onSave }) => {
@@ -150,7 +231,7 @@ const LoteModal = ({ lote, positionId, positionTicker, onClose, onSave }) => {
           </div>
           <div className="form-group">
             <label>Nota (opcional)</label>
-            <input name="nota" value={form.nota} onChange={handleChange} placeholder="ej: DCA abril, rebote técnico..." />
+            <input name="nota" value={form.nota} onChange={handleChange} placeholder="ej: DCA julio, rebote técnico..." />
           </div>
           <div className="modal-actions">
             <button type="button" className="btn-cancel" onClick={onClose}>Cancelar</button>
@@ -190,12 +271,12 @@ const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
         <div className="modal-form">
           <div className="form-group">
             <label>Ticker</label>
-            <input value={ticker} onChange={e => handleTickerChange(e.target.value)} placeholder="ej: PLTR, BTC-USD, EC" list="tickers-list" />
+            <input value={ticker} onChange={e => handleTickerChange(e.target.value)} placeholder="ej: UFO, PLTR, BTC-USD" list="tickers-list" />
             <datalist id="tickers-list">{tickersList.map(t => <option key={t} value={t} />)}</datalist>
           </div>
           <div className="form-group">
             <label>Nombre del activo (opcional)</label>
-            <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="ej: Palantir Technologies" />
+            <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="ej: Procure Space ETF" />
           </div>
           <div className="form-group">
             <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -224,154 +305,158 @@ const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
   );
 };
 
-// ─── Tabla de Lotes ─────────────────────────────────────────────────────────
-const LotesTable = ({ lotes, positionId, precioActual, onAddLote, onEditLote, onRemoveLote }) => (
-  <div className="lotes-section">
-    <div className="lotes-header">
-      <span>📋 Historial de Compras ({lotes.length})</span>
-      <button className="btn-add-lote" onClick={onAddLote}>+ Añadir compra</button>
-    </div>
-    <div className="lotes-table">
-      <div className="lotes-row header-row">
-        <span>Fecha</span><span>Precio</span><span>Cantidad</span><span>P&L</span><span>Nota</span><span></span>
-      </div>
-      {lotes.map(lote => {
-        const pnlPorc = precioActual ? ((precioActual - lote.precioCompra) / lote.precioCompra * 100) : null;
-        const pnlDol = precioActual ? ((precioActual - lote.precioCompra) * lote.cantidad) : null;
-        return (
-          <div key={lote.id} className="lotes-row">
-            <span className="lote-fecha">{lote.fechaCompra}</span>
-            <span>${lote.precioCompra.toLocaleString('en-US', { maximumFractionDigits: 4 })}</span>
-            <span>{lote.cantidad}</span>
-            <span className={pnlPorc != null ? (pnlPorc >= 0 ? 'pos' : 'neg') : ''}>
-              {pnlPorc != null ? `${pnlPorc >= 0 ? '+' : ''}${pnlPorc.toFixed(1)}% (${pnlDol >= 0 ? '+' : ''}$${pnlDol?.toFixed(2)})` : '—'}
-            </span>
-            <span className="lote-nota">{lote.nota || '—'}</span>
-            <span className="lote-actions">
-              <button className="icon-btn" onClick={() => onEditLote(lote)} title="Editar">✏️</button>
-              <button className="icon-btn delete" onClick={() => onRemoveLote(positionId, lote.id)} title="Eliminar">🗑️</button>
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  </div>
-);
-
-// ─── Card Posición ──────────────────────────────────────────────────────────
-const PositionCard = ({ entry, precioActual, oraculo, onRemovePosition, addLote, updateLote, removeLote }) => {
+// ─── Tabla Monorenglón por Transacción / Posición ───────────────────────────
+const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote, updateLote, removeLote }) => {
   const { position, lotes } = entry;
   const { precioPromedio, cantidadTotal, totalInvertido } = calcularResumenPosicion(lotes);
   const [expanded, setExpanded] = useState(false);
-  const [loteModal, setLoteModal] = useState(null); // null | 'new' | lote-obj
+  const [loteModal, setLoteModal] = useState(null);
 
   const valorActual = precioActual ? precioActual * cantidadTotal : null;
   const pnlDol = precioActual ? (precioActual - precioPromedio) * cantidadTotal : null;
+  const pnlPorc = oraculo.gananciaPorc;
 
   const handleSaveLote = useCallback((data) => {
     if (data.id) updateLote(position.id, data.id, data);
     else addLote(position.id, data);
   }, [position.id, addLote, updateLote]);
 
-  const catInfo = oraculo.params || CATEGORY_PARAMS[position.categoria] || CATEGORY_PARAMS["🎯 Sweet Spot"];
   const catLabel = oraculo.catNombre || position.categoria || "🎯 Sweet Spot";
+  const fechaOperacion = lotes[0]?.fechaCompra || '—';
 
   return (
-    <motion.div
-      className={`portfolio-card oracle-${oraculo.color}`}
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-    >
-      {/* Cabecera */}
-      <div className="card-top">
-        <div className="ticker-info">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <h2><Link to={`/activo/${position.ticker}`} className="ticker-link">{position.ticker}</Link></h2>
-            <span style={{ fontSize: '0.75rem', background: 'rgba(59,130,246,0.15)', color: '#60a5fa', padding: '2px 8px', borderRadius: '12px', border: '1px solid rgba(96,165,250,0.3)', fontWeight: 'bold' }}>
-              {catLabel} (TP +{catInfo.tpPct}% / SL -{catInfo.slPct}% / {catInfo.maxDays}d)
+    <>
+      <tr className={`table-row-monorenglon row-${oraculo.color}`}>
+        {/* Col 1: Ticker & Categoría */}
+        <td className="col-ticker">
+          <div className="ticker-cell">
+            <Link to={`/activo/${position.ticker}`} className="ticker-symbol">{position.ticker}</Link>
+            <span className="asset-subname">{position.nombre}</span>
+            <span className="cat-badge">{catLabel.split(' ')[0]}</span>
+          </div>
+        </td>
+
+        {/* Col 2: Transacción / Fecha */}
+        <td className="col-transaccion">
+          <div className="cell-flex">
+            <span className="badge-tipo-compra">Compra Mercado</span>
+            <span className="text-fecha">{fechaOperacion}</span>
+          </div>
+        </td>
+
+        {/* Col 3: Cantidad */}
+        <td className="col-cantidad">
+          <span className="cell-number font-mono">{cantidadTotal.toFixed(5).replace(/\.?0+$/, '')} un.</span>
+        </td>
+
+        {/* Col 4: Precio Compra */}
+        <td className="col-precio-compra">
+          <span className="cell-number font-mono">${precioPromedio.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</span>
+        </td>
+
+        {/* Col 5: Precio Actual */}
+        <td className="col-precio-actual">
+          {precioActual ? (
+            <span className="cell-number font-mono text-live">
+              ${precioActual.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
             </span>
-          </div>
-          <span className="amount">{position.nombre} · {cantidadTotal.toFixed(6).replace(/\.?0+$/, '')} u.</span>
-        </div>
-        <div className="card-controls">
-          <button className="icon-btn" onClick={() => setExpanded(e => !e)} title={expanded ? 'Cerrar lotes' : 'Ver lotes'}>
-            {expanded ? '▲' : '📋'}
-          </button>
-          <button className="icon-btn delete" onClick={() => onRemovePosition(position.id)} title="Eliminar posición">🗑️</button>
-        </div>
-      </div>
+          ) : (
+            <span className="loading-dot">···</span>
+          )}
+        </td>
 
-      {/* Métricas agregadas */}
-      <div className="card-metrics">
-        <div className="metric">
-          <span className="label">Precio Promedio</span>
-          <span className="val">${precioPromedio.toLocaleString('en-US', { maximumFractionDigits: 4 })}</span>
-        </div>
-        <div className="metric">
-          <span className="label">Precio Actual</span>
-          <span className="val live">
-            {precioActual ? `$${precioActual.toLocaleString('en-US', { maximumFractionDigits: 4 })}` : <span className="loading-dot">···</span>}
-          </span>
-        </div>
-        <div className="metric">
-          <span className="label">P&L Total</span>
-          <span className={`val ${oraculo.gananciaPorc != null ? (oraculo.gananciaPorc >= 0 ? 'pos' : 'neg') : ''}`}>
-            {oraculo.gananciaPorc != null ? `${oraculo.gananciaPorc >= 0 ? '+' : ''}${oraculo.gananciaPorc.toFixed(2)}%` : '—'}
-          </span>
-        </div>
-        <div className="metric">
-          <span className="label">Valor Posición</span>
-          <span className="val">{valorActual ? `$${valorActual.toFixed(2)}` : '—'}</span>
-        </div>
-        {pnlDol != null && (
-          <div className="metric">
-            <span className="label">Ganancia $</span>
-            <span className={`val ${pnlDol >= 0 ? 'pos' : 'neg'}`}>{pnlDol >= 0 ? '+' : ''}${pnlDol.toFixed(2)}</span>
+        {/* Col 6: Invertido vs Mercado */}
+        <td className="col-inversion">
+          <div className="cell-flex">
+            <span className="val-sub font-mono">${totalInvertido.toFixed(2)}</span>
+            <span className="val-main font-mono">${valorActual ? valorActual.toFixed(2) : '—'}</span>
           </div>
-        )}
-        {oraculo.rsiNum != null && (
-          <div className="metric">
-            <span className="label">RSI 14D</span>
-            <span className={`val ${oraculo.rsiNum > 70 ? 'neg' : oraculo.rsiNum < 35 ? 'pos' : ''}`}>
-              {oraculo.rsiNum.toFixed(1)} {oraculo.rsiNum > 70 ? '⚠️' : oraculo.rsiNum < 35 ? '💎' : ''}
+        </td>
+
+        {/* Col 7: Retorno P&L (% y USD) */}
+        <td className="col-pnl">
+          {pnlPorc != null ? (
+            <span className={`pnl-pill ${pnlPorc >= 0 ? 'pos' : 'neg'}`}>
+              {pnlPorc >= 0 ? '+' : ''}{pnlPorc.toFixed(2)}%
+              <small>({pnlDol >= 0 ? '+' : ''}${pnlDol?.toFixed(2)})</small>
             </span>
-          </div>
-        )}
-        {oraculo.score != null && oraculo.score !== 'N/A' && (
-          <div className="metric">
-            <span className="label">Score Bot</span>
-            <span className={`val ${oraculo.score >= 65 ? 'pos' : oraculo.score < 50 ? 'neg' : ''}`}>{oraculo.score}</span>
-          </div>
-        )}
-      </div>
+          ) : '—'}
+        </td>
 
-      {/* Veredicto Oráculo */}
-      <div className={`sell-oracle-badge ${oraculo.color}`}>
-        <span className="oracle-icon">{VEREDICTO_ICON[oraculo.veredicto]}</span>
-        <span className="oracle-label">EL ORÁCULO: {oraculo.veredicto}</span>
-        {oraculo.recomendacion && (
-          <span className="oracle-action">→ {oraculo.recomendacion.toUpperCase()}</span>
-        )}
-      </div>
-      <p className="oracle-reason">{oraculo.justificacion}</p>
+        {/* Col 8: RSI 14D */}
+        <td className="col-rsi">
+          {oraculo.rsiNum != null ? (
+            <span className={`rsi-pill ${oraculo.rsiNum < 35 ? 'rsi-buy' : oraculo.rsiNum > 70 ? 'rsi-sell' : 'rsi-neutral'}`}>
+              {oraculo.rsiNum.toFixed(0)} {oraculo.rsiNum < 35 ? '💎' : oraculo.rsiNum > 70 ? '⚠️' : ''}
+            </span>
+          ) : '—'}
+        </td>
 
-      {/* Lotes expandibles */}
-      <AnimatePresence>
-        {expanded && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-            <LotesTable
-              lotes={lotes}
-              positionId={position.id}
-              precioActual={precioActual}
-              onAddLote={() => setLoteModal('new')}
-              onEditLote={(l) => setLoteModal(l)}
-              onRemoveLote={removeLote}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* Col 9: Score Bot */}
+        <td className="col-score">
+          {oraculo.score != null && oraculo.score !== 'N/A' ? (
+            <span className={`score-badge ${oraculo.score >= 65 ? 'score-high' : oraculo.score < 50 ? 'score-low' : 'score-mid'}`}>
+              {oraculo.score}
+            </span>
+          ) : '—'}
+        </td>
+
+        {/* Col 10: Veredicto Oráculo */}
+        <td className="col-oraculo">
+          <span className={`oracle-pill oracle-${oraculo.color}`}>
+            {VEREDICTO_ICON[oraculo.veredicto]} {oraculo.veredicto}
+          </span>
+        </td>
+
+        {/* Col 11: Acciones */}
+        <td className="col-acciones">
+          <div className="action-buttons">
+            <button className="icon-btn" onClick={() => setExpanded(e => !e)} title="Ver Lotes">
+              {expanded ? '▲' : '📋'}
+            </button>
+            <button className="icon-btn" onClick={() => setLoteModal('new')} title="+ Compra">➕</button>
+            <button className="icon-btn delete" onClick={() => onRemovePosition(position.id)} title="Eliminar">🗑️</button>
+          </div>
+        </td>
+      </tr>
+
+      {/* Lotes Desplegables */}
+      {expanded && (
+        <tr className="expanded-lotes-row">
+          <td colSpan="11">
+            <div className="lotes-expanded-container">
+              <div className="lotes-header">
+                <span>📋 Historial de Lotes de Compra — {position.ticker} ({lotes.length})</span>
+                <button className="btn-add-lote" onClick={() => setLoteModal('new')}>+ Añadir Lote</button>
+              </div>
+              <div className="lotes-mini-table">
+                <div className="lotes-mini-row header">
+                  <span>Fecha</span><span>Precio Compra</span><span>Cantidad</span><span>P&L</span><span>Nota</span><span>Acciones</span>
+                </div>
+                {lotes.map(lote => {
+                  const lotePnl = precioActual ? ((precioActual - lote.precioCompra) / lote.precioCompra * 100) : null;
+                  const loteDol = precioActual ? ((precioActual - lote.precioCompra) * lote.cantidad) : null;
+                  return (
+                    <div key={lote.id} className="lotes-mini-row">
+                      <span className="font-mono">{lote.fechaCompra}</span>
+                      <span className="font-mono">${lote.precioCompra.toFixed(4)}</span>
+                      <span className="font-mono">{lote.cantidad}</span>
+                      <span className={`font-mono ${lotePnl >= 0 ? 'pos' : 'neg'}`}>
+                        {lotePnl != null ? `${lotePnl >= 0 ? '+' : ''}${lotePnl.toFixed(1)}% (${loteDol >= 0 ? '+' : ''}$${loteDol.toFixed(2)})` : '—'}
+                      </span>
+                      <span>{lote.nota || '—'}</span>
+                      <span className="lote-actions">
+                        <button className="icon-btn" onClick={() => setLoteModal(lote)}>✏️</button>
+                        <button className="icon-btn delete" onClick={() => removeLote(position.id, lote.id)}>🗑️</button>
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </td>
+        </tr>
+      )}
 
       <AnimatePresence>
         {loteModal && (
@@ -384,7 +469,7 @@ const PositionCard = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
           />
         )}
       </AnimatePresence>
-    </motion.div>
+    </>
   );
 };
 
@@ -394,14 +479,11 @@ const Portfolio = () => {
   const { data: marketData, isLoading: mdLoading } = useMarketData();
   const [nuevoModal, setNuevoModal] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
-  const [confirmReset, setConfirmReset] = useState(null); // null | 'reset' | 'clean'
   const [importError, setImportError] = useState('');
-
 
   const activos = marketData?.TOP_25_DIPS || marketData?.TOP_50_DIPS || [];
   const tickersList = activos.map(a => a.Ticker);
 
-  // Identificar tickers SIN precio en mercado.json → pedir en vivo al Flask
   const tickersEnJson = new Set(activos.map(a => a.Ticker));
   const tickersParaLive = entries
     .map(e => e.position.ticker)
@@ -409,15 +491,6 @@ const Portfolio = () => {
 
   const { data: livePrices = {}, isLoading: liveLoading } = useLivePrice(tickersParaLive);
 
-  // Fuente de precio por ticker (para mostrarlo en UI)
-  const fuentePrecio = useMemo(() => {
-    const map = {};
-    activos.forEach(a => { map[a.Ticker] = 'scan'; });
-    Object.keys(livePrices).forEach(t => { if (livePrices[t] != null) map[t] = 'live'; });
-    return map;
-  }, [activos, livePrices]);
-
-  // Mapa unificado: ticker → precioActual (json tiene prioridad, luego live)
   const precioMap = useMemo(() => {
     const map = {};
     activos.forEach(a => { map[a.Ticker] = a['Precio Actual']; });
@@ -425,7 +498,6 @@ const Portfolio = () => {
     return map;
   }, [activos, livePrices]);
 
-  // Computar oráculos
   const entriesConOraculo = useMemo(() => {
     return entries.map(entry => {
       const { precioPromedio } = calcularResumenPosicion(entry.lotes);
@@ -435,10 +507,9 @@ const Portfolio = () => {
     });
   }, [entries, precioMap, marketData]);
 
-  // Resumen global
   const resumen = useMemo(() => {
     let totalInvertido = 0, valorActual = 0;
-    entriesConOraculo.forEach(({ entry, precioActual, oraculo }) => {
+    entriesConOraculo.forEach(({ entry, precioActual }) => {
       const { cantidadTotal, totalInvertido: inv } = calcularResumenPosicion(entry.lotes);
       totalInvertido += inv;
       if (precioActual) valorActual += precioActual * cantidadTotal;
@@ -448,13 +519,8 @@ const Portfolio = () => {
     return { totalInvertido, valorActual, pnl, pnlPorc };
   }, [entriesConOraculo]);
 
-  const alertas = entriesConOraculo.filter(({ oraculo }) => ['SELL', 'WATCH'].includes(oraculo.veredicto));
-  const oportunidades = entriesConOraculo.filter(({ oraculo }) => oraculo.veredicto === 'DCA');
-
   const handleAddPosition = (ticker, nombre, categoria) => {
-    const id = addPosition({ ticker, nombre, categoria });
-    setAddingLoteForId(id);
-    // auto-abrir form de primer lote después de crear
+    addPosition({ ticker, nombre, categoria });
   };
 
   const handleExport = () => {
@@ -475,34 +541,28 @@ const Portfolio = () => {
     reader.onload = (event) => {
       const success = importFromJson(event.target.result);
       if (!success) setImportError('Archivo JSON inválido o corrupto.');
-      else setShowConfig(false); // Cierra el modal en éxito
+      else setShowConfig(false);
     };
     reader.readAsText(file);
   };
 
   return (
-
     <div className="portfolio-container">
-
       {/* Header */}
       <header className="portfolio-header">
         <div className="header-info">
-          <h1>🔮 El Oráculo</h1>
-          <p className="subtitle">Portafolio privado · Precios mixtos (JSON diario + Live API)</p>
+          <h1>🔮 El Oráculo — Portafolio</h1>
+          <p className="subtitle">Seguimiento de compras y gestión táctica de posiciones reales</p>
           {marketData?.fecha_generacion && (
             <p className="data-date">
               📡 Escáner: {marketData.fecha_generacion}
               {tickersParaLive.length > 0 && !liveLoading && <span> · 🔴 Live: {tickersParaLive.filter(t => livePrices[t]).join(', ')}</span>}
-              {liveLoading && <span> · ⏳ Cargando precios vivos...</span>}
-              {tickersParaLive.filter(t => !livePrices[t] && !liveLoading).length > 0 && (
-                <span style={{color:'#555'}}> · Offline: {tickersParaLive.filter(t => !livePrices[t] && !liveLoading).join(', ')}</span>
-              )}
             </p>
           )}
         </div>
         <div className="summary-cards">
           <div className="summary-card">
-            <span className="label">Invertido</span>
+            <span className="label">Capital Invertido</span>
             <span className="val neutral">${resumen.totalInvertido.toFixed(2)}</span>
           </div>
           <div className="summary-card">
@@ -510,7 +570,7 @@ const Portfolio = () => {
             <span className="val">${resumen.valorActual.toFixed(2)}</span>
           </div>
           <div className={`summary-card ${resumen.pnl >= 0 ? 'highlight-pos' : 'highlight-neg'}`}>
-            <span className="label">P&L Total</span>
+            <span className="label">Retorno Total</span>
             <span className={`val big ${resumen.pnl >= 0 ? 'pos' : 'neg'}`}>
               {resumen.pnl >= 0 ? '+' : ''}{resumen.pnlPorc.toFixed(2)}%
               <small> ({resumen.pnl >= 0 ? '+' : ''}${resumen.pnl.toFixed(2)})</small>
@@ -519,47 +579,8 @@ const Portfolio = () => {
         </div>
       </header>
 
-      {/* Alertas y Oportunidades */}
-      {(alertas.length > 0 || oportunidades.length > 0) && (
-        <div className="signals-zone">
-          {alertas.length > 0 && (
-            <div className="signal-group danger">
-              <h3>⚡ Alertas ({alertas.length})</h3>
-              {alertas.map(({ entry, oraculo }) => (
-                <div key={entry.position.id} className={`signal-item ${oraculo.color}`}>
-                  <strong>{entry.position.ticker}</strong>
-                  <span className="signal-verdict">{VEREDICTO_ICON[oraculo.veredicto]} {oraculo.veredicto}</span>
-                  <span className="signal-reason">{oraculo.justificacion}</span>
-                </div>
-              ))}
-            </div>
-          )}
-          {oportunidades.length > 0 && (
-            <div className="signal-group opportunity">
-              <h3>💎 Oportunidades DCA ({oportunidades.length})</h3>
-              {oportunidades.map(({ entry, oraculo }) => (
-                <div key={entry.position.id} className="signal-item dca">
-                  <strong>{entry.position.ticker}</strong>
-                  <span className="signal-verdict">💎 DCA</span>
-                  <span className="signal-reason">{oraculo.justificacion}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Leyenda del Oráculo */}
-      <details className="oracle-legend">
-        <summary>📖 ¿Cómo funciona el Oráculo? (ver métricas y umbrales)</summary>
-        <div className="legend-grid">
-          <div><strong>🔴 SELL</strong> — 3+ señales activas O RSI &gt; 76 O ganancia personal &gt; 50%</div>
-          <div><strong>🟡 WATCH</strong> — 1-2 señales: RSI &gt; 72, tendencia bajista, caída semanal &lt; -8%, ganancia &gt; 35%</div>
-          <div><strong>🟢 HOLD</strong> — Sin señales de alerta. Estrategia Smart DCA activa.</div>
-          <div><strong>💎 DCA</strong> — RSI &lt; 35 (pánico) + Score bot &gt; 65 + Drawdown &gt; -30%. Zona de acumulación.</div>
-          <div className="legend-note">El Score del Bot (0-100) mide calidad del Dip: FCF, P/E, RSI, distancia a SMA200 y sentimiento social (Reddit/Polymarket). Mayor score = mejor dip.</div>
-        </div>
-      </details>
+      {/* Gráfica Global de Rendimiento (Parte Superior) */}
+      <PortfolioPerformanceChart entriesConOraculo={entriesConOraculo} resumen={resumen} />
 
       {/* Acciones */}
       <section className="portfolio-actions">
@@ -581,104 +602,65 @@ const Portfolio = () => {
               <span>⚙️ Configuración del Portafolio</span>
               <button className="icon-btn" onClick={() => setShowConfig(false)}>✕</button>
             </div>
-
             <div className="config-section">
               <h4>💾 Persistencia y Backups</h4>
-              <p className="config-note">
-                Tus posiciones se guardan en este navegador. Para usarlas en otro dispositivo o asegurar tus datos, usa estas herramientas:
-              </p>
               <div className="backup-actions">
                 <button className="btn-save" onClick={handleExport}>⬇️ Exportar Backup</button>
                 <div className="import-wrapper">
                   <label htmlFor="import-json" className="btn-cancel" style={{cursor: 'pointer', display: 'inline-block'}}>⬆️ Importar Backup</label>
                   <input id="import-json" type="file" accept=".json" onChange={handleImport} style={{display: 'none'}} />
                 </div>
+                <button className="btn-reset" onClick={resetPortafolio}>🔄 Reset a Semilla (UFO)</button>
               </div>
               {importError && <p className="error-text" style={{color: '#f87171', fontSize: '0.8rem', marginTop: '0.5rem'}}>{importError}</p>}
-            </div>
-
-
-            <div className="config-section">
-              <h4>📡 Fuente de Precios por Activo</h4>
-              <div className="price-source-table">
-                {entries.map(e => (
-                  <div key={e.position.id} className="price-source-row">
-                    <strong>{e.position.ticker}</strong>
-                    {fuentePrecio[e.position.ticker] === 'scan' && (
-                      <span className="source-badge scan">📡 Escáner diario (JSON)</span>
-                    )}
-                    {fuentePrecio[e.position.ticker] === 'live' && (
-                      <span className="source-badge live">🔴 Precio vivo (API)</span>
-                    )}
-                    {!fuentePrecio[e.position.ticker] && (
-                      <span className="source-badge offline">⚫ Sin precio</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="config-section danger-zone">
-              <h4>⚠️ Zona de Reinicio</h4>
-              {confirmReset === null && (
-                <div className="config-btns">
-                  <button className="btn-reset" onClick={() => setConfirmReset('reset')}>
-                    🔄 Volver al seed inicial (mis posiciones dummy)
-                  </button>
-                  <button className="btn-clean" onClick={() => setConfirmReset('clean')}>
-                    🗑️ Borrar TODO y empezar de cero
-                  </button>
-                </div>
-              )}
-              {confirmReset && (
-                <div className="confirm-action">
-                  <p>¿Estás seguro? {confirmReset === 'reset' ? 'Se recargarán las posiciones del seed.' : 'Se borrarán TODAS las posiciones.'}</p>
-                  <div>
-                    <button className="btn-cancel" onClick={() => setConfirmReset(null)}>Cancelar</button>
-                    <button
-                      className="btn-delete"
-                      onClick={() => {
-                        if (confirmReset === 'reset') resetPortafolio();
-                        else limpiarPortafolio();
-                        setConfirmReset(null);
-                        setShowConfig(false);
-                      }}
-                    >
-                      Confirmar
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Grid */}
-      <div className="portfolio-grid">
-        <AnimatePresence>
-          {entriesConOraculo.map(({ entry, precioActual, oraculo }) => (
-            <PositionCard
-              key={entry.position.id}
-              entry={entry}
-              precioActual={precioActual}
-              oraculo={oraculo}
-              onRemovePosition={removePosition}
-              addLote={addLote}
-              updateLote={updateLote}
-              removeLote={removeLote}
-            />
-          ))}
-        </AnimatePresence>
-        {entries.length === 0 && (
-          <div className="empty-state">
-            <p>🪐 No tienes posiciones. ¡Añade tu primera!</p>
-            <button className="add-asset-btn" onClick={() => setNuevoModal(true)}>+ Nueva Posición</button>
-          </div>
-        )}
+      {/* Tabla Monorenglón de Posiciones / Transacciones */}
+      <div className="portfolio-table-wrapper">
+        <table className="portfolio-monorenglon-table">
+          <thead>
+            <tr>
+              <th>Activo / Categoría</th>
+              <th>Transacción / Fecha</th>
+              <th>Cantidad</th>
+              <th>P. Compra</th>
+              <th>P. Actual</th>
+              <th>Inversión → Mercado</th>
+              <th>Retorno P&L</th>
+              <th>RSI 14D</th>
+              <th>Score</th>
+              <th>Oráculo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entriesConOraculo.length > 0 ? (
+              entriesConOraculo.map(({ entry, precioActual, oraculo }) => (
+                <PortfolioRow
+                  key={entry.position.id}
+                  entry={entry}
+                  precioActual={precioActual}
+                  oraculo={oraculo}
+                  onRemovePosition={removePosition}
+                  addLote={addLote}
+                  updateLote={updateLote}
+                  removeLote={removeLote}
+                />
+              ))
+            ) : (
+              <tr>
+                <td colSpan="11" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                  No hay operaciones registradas desde la compra de UFO en adelante. Haz clic en "+ Nueva Posición" para añadir una.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Modales globales */}
       <AnimatePresence>
         {nuevoModal && (
           <NuevaPosicionModal

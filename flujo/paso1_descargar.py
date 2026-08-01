@@ -3,12 +3,22 @@ import json
 import os
 import glob
 import datetime
-from dotenv import load_dotenv
-load_dotenv()
-import telebot
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+try:
+    import telebot
+except ImportError:
+    telebot = None
 import sys
 import pandas as pd
-import mplfinance as mpf
+try:
+    import mplfinance as mpf
+except ImportError:
+    mpf = None
 import urllib.request
 import urllib.parse
 
@@ -322,23 +332,24 @@ def main():
             # Visualizar mas dias (200 dias de mercado en pantalla)
             df_plot = df.tail(200).copy() 
             
-            mc = mpf.make_marketcolors(up='g', down='r', edge='inherit', wick='inherit', volume='in')
-            s  = mpf.make_mpf_style(marketcolors=mc, gridstyle='--', gridaxis='both')
-            
-            my_addplots = [
-                mpf.make_addplot(df_plot['SMA50'], color='orange', width=1.1),
-                mpf.make_addplot(df_plot['SMA100'], color='green', width=1.1),
-                mpf.make_addplot(df_plot['SMA200'], color='purple', width=2.0),
-                mpf.make_addplot(df_plot['RSI'], panel=2, color='blue', ylabel='RSI')
-            ]
-            
-            # Título y Leyenda explicática
-            plot_title = f"{nombre} ({ticker})\nSMA 50(Amar.) | SMA 100(Verd.) | SMA 200(Mor.)"
-            mpf.plot(df_plot, type='candle', style=s, volume=True, addplot=my_addplots,
-                     title=plot_title, ylabel="Precio (USD)", 
-                     savefig=f"flujo_datos/top_{i+1}_{ticker}.png", tight_layout=True)
+            if mpf is not None:
+                mc = mpf.make_marketcolors(up='g', down='r', edge='inherit', wick='inherit', volume='in')
+                s  = mpf.make_mpf_style(marketcolors=mc, gridstyle='--', gridaxis='both')
+                
+                my_addplots = [
+                    mpf.make_addplot(df_plot['SMA50'], color='orange', width=1.1),
+                    mpf.make_addplot(df_plot['SMA100'], color='green', width=1.1),
+                    mpf.make_addplot(df_plot['SMA200'], color='purple', width=2.0),
+                    mpf.make_addplot(df_plot['RSI'], panel=2, color='blue', ylabel='RSI')
+                ]
+                
+                # Título y Leyenda explicática
+                plot_title = f"{nombre} ({ticker})\nSMA 50(Amar.) | SMA 100(Verd.) | SMA 200(Mor.)"
+                mpf.plot(df_plot, type='candle', style=s, volume=True, addplot=my_addplots,
+                         title=plot_title, ylabel="Precio (USD)", 
+                         savefig=f"flujo_datos/top_{i+1}_{ticker}.png", tight_layout=True)
         except Exception as e:
-            print(f"Error plt: {e}")
+            pass
             
         import urllib.request
         import urllib.parse

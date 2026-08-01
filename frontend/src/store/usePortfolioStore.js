@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 
-const STORAGE_KEY = 'oracle_portfolio_v2';
+const STORAGE_KEY = 'oracle_portfolio_v4';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 export const calcularResumenPosicion = (lotes) => {
@@ -12,52 +12,11 @@ export const calcularResumenPosicion = (lotes) => {
   return { precioPromedio, cantidadTotal, totalInvertido };
 };
 
-// ─── Seed de posiciones reales del usuario ───────────────────────────────────
-// IMPORTANTE: Este seed SOLO se carga la PRIMERA VEZ (localStorage vacío).
-// Cualquier edición posterior desde la UI queda guardada y este seed se ignora.
-// Para resetear y recargar el seed: usar usePortfolioStore.getState().resetPortafolio()
+// ─── Seed de posiciones reales del usuario (a partir de UFO en adelante) ─────
 const buildSeed = () => [
   {
-    position: { id: uuidv4(), ticker: 'PLTR', nombre: 'Palantir' },
-    lotes: [{ id: uuidv4(), precioCompra: 135.70, cantidad: 0.399042, fechaCompra: '2026-04-14', nota: 'Trii' }],
-  },
-  {
-    position: { id: uuidv4(), ticker: 'MSFT', nombre: 'Microsoft' },
-    lotes: [{ id: uuidv4(), precioCompra: 393.11, cantidad: 0.102134, fechaCompra: '2026-04-14', nota: 'Trii' }],
-  },
-  {
-    position: { id: uuidv4(), ticker: 'TGLS', nombre: 'Tecnoglass' },
-    lotes: [{ id: uuidv4(), precioCompra: 45.71, cantidad: 1.097134, fechaCompra: '2026-04-14', nota: 'Trii' }],
-  },
-  {
-    position: { id: uuidv4(), ticker: 'MELI', nombre: 'MercadoLibre' },
-    lotes: [{ id: uuidv4(), precioCompra: 1840.66, cantidad: 0.016375, fechaCompra: '2026-04-14', nota: 'Trii' }],
-  },
-  {
-    position: { id: uuidv4(), ticker: 'TSLA', nombre: 'Tesla' },
-    lotes: [{ id: uuidv4(), precioCompra: 364.20, cantidad: 0.082784, fechaCompra: '2026-04-14', nota: 'Trii' }],
-  },
-  {
-    position: { id: uuidv4(), ticker: 'URNJ', nombre: 'Uranium Junior' },
-    lotes: [{ id: uuidv4(), precioCompra: 28.32, cantidad: 1.382415, fechaCompra: '2026-04-07', nota: 'Trii' }],
-  },
-  {
-    position: { id: uuidv4(), ticker: 'ETH-USD', nombre: 'Ethereum' },
-    lotes: [
-      { id: uuidv4(), precioCompra: 2056.85, cantidad: 0.017186, fechaCompra: '2026-04-02', nota: 'Trii' },
-      { id: uuidv4(), precioCompra: 2056.85, cantidad: 0.009821, fechaCompra: '2026-04-02', nota: 'Trii' }
-    ],
-  },
-  {
-    position: { id: uuidv4(), ticker: 'BTC-USD', nombre: 'Bitcoin' },
-    lotes: [
-      { id: uuidv4(), precioCompra: 68791.62, cantidad: 0.000881, fechaCompra: '2026-03-26', nota: 'Trii' },
-      { id: uuidv4(), precioCompra: 66888.57, cantidad: 0.000453, fechaCompra: '2026-04-02', nota: 'Trii' }
-    ],
-  },
-  {
-    position: { id: uuidv4(), ticker: 'GLD', nombre: 'SPDR Gold Shares' },
-    lotes: [{ id: uuidv4(), precioCompra: 400.64, cantidad: 0.098343, fechaCompra: '2026-03-26', nota: 'Trii' }],
+    position: { id: uuidv4(), ticker: 'UFO', nombre: 'Procure Space ETF', categoria: '🎯 Sweet Spot' },
+    lotes: [{ id: uuidv4(), precioCompra: 43.4685, cantidad: 2.29476, fechaCompra: '2026-07-30', nota: 'Trii/Hapi' }],
   },
 ];
 

@@ -32,6 +32,32 @@ La plataforma ha sido instruida para tener un terreno fértil que la segunda IA 
 ## Consideraciones a tener (Limitaciones actuales)
 - **Ejecución Asíncrona AI y Límites Serverless:** Vercel no admite las pesadas librerías de `Pandas` o `yfinance`. Todo procesamiento algorítmico masivo debe residir obligatoriamente en la capa CRON de Github Actions, para que Vercel solo sirva interfaces modernas, interacciones CRUD de reglas de usuario y delegación final y delegada a las APIs de terceros.
 
+## 4. Estado Actual del Portafolio y Movimientos Recientes (Broker)
+
+El portafolio real del usuario cuenta con los siguientes movimientos y posiciones actualizadas en la plataforma:
+
+### Historial de Transacciones Registradas
+- **28 Jul 2026 10:52:** Venta Mercado `PLTR` (Palantir) — Ingreso: **+$49.33 USD** (Posición liquidada).
+- **28 Jul 2026 10:50:** Venta Mercado `ETHUSD` (Ethereum) — Ingreso: **+$50.81 USD** (Posición liquidada).
+- **30 Jul 2026 09:30:** Compra Mercado `UFO` (Procure Space ETF) — Salida: **-$99.90 USD**.
+- **30 Jul 2026 09:37:** Depósito — Ingreso: **+$250.00 USD**.
+
+### Detalle de la Nueva Posición en UFO (Procure Space ETF)
+- **Activos totales (unidades):** `2.29476`
+- **Costo promedio por acción:** `$43.4685 USD`
+- **Monto total invertido:** `$99.74 USD`
+- **Valor de mercado registrado:** `$99.50 USD` (Retorno inicial: `-$0.24` / `-0.24%`)
+
+### Estado de Posiciones Activas en el Seed de la App (`usePortfolioStore.js` - v3)
+- `UFO` (Procure Space ETF) — 2.29476 un. @ $43.4685 USD
+- `MSFT` (Microsoft) — 0.102134 un. @ $393.11 USD
+- `TGLS` (Tecnoglass) — 1.097134 un. @ $45.71 USD
+- `MELI` (MercadoLibre) — 0.016375 un. @ $1840.66 USD
+- `TSLA` (Tesla) — 0.082784 un. @ $364.20 USD
+- `URNJ` (Uranium Junior) — 1.382415 un. @ $28.32 USD
+- `BTC-USD` (Bitcoin) — 0.001334 un. total en 2 lotes
+- `GLD` (SPDR Gold Shares) — 0.098343 un. @ $400.64 USD
+
 ## Distribución de Archivos y Carpetas Central
 - `.github/workflows/orquestador_acciones.yml`: Cronjob central de background que extrae la información a diario.
 - `/flujo`: Core de lógica en Python (matemáticas de los activos).
@@ -39,3 +65,4 @@ La plataforma ha sido instruida para tener un terreno fértil que la segunda IA 
 - `/api/index.py`: Backend en Vercel para servir o modificar reglas.
 - `/frontend`: Base de la Interfaz web interactiva del usuario (Dashboard completo y Settings de IA).
 - `.agent/`: Prompts y directrices intocables de IA, preparadas para absorber funciones "Operativas" de compra en cuanto se programen las conexiones de Broker.
+

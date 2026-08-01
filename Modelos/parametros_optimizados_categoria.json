@@ -1,0 +1,22 @@
+{
+  "Sweet Spot": {
+    "tp": 0.05,
+    "sl": 0.04,
+    "max_days": 5,
+    "tp_pct": "+5%",
+    "sl_pct": "-4%",
+    "win_rate_esperado_%": 31.07,
+    "sharpe_ratio_estimado": 1.12,
+    "total_éxitos_simulados": 4875
+  },
+  "Recup. Rapida": {
+    "tp": 0.05,
+    "sl": 0.1,
+    "max_days": 5,
+    "tp_pct": "+5%",
+    "sl_pct": "-10%",
+    "win_rate_esperado_%": 25.15,
+    "sharpe_ratio_estimado": 1.09,
+    "total_éxitos_simulados": 2044
+  }
+}
