@@ -94,21 +94,29 @@ const AIThesisPanel = ({ item }) => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
+  const [currentModel, setCurrentModel] = useState('');
 
   const runAnalysis = async () => {
     if (!GEMINI_API_KEY) {
       setError('⚙️ Configura VITE_GEMINI_API_KEY en el .env.local del frontend (o en Vercel > Settings > Environment Variables).');
       return;
     }
-    setLoading(true); setError(''); setResult('');
+    setLoading(true); setError(''); setResult(''); setCurrentModel('');
     const prompt = buildThesisPrompt(item);
-    // Modelos en orden de preferencia (fallback si hay quota exhausted)
+    // Modelos ordenados por disponibilidad real de cuota (RPD):
+    // gemini-3.1-flash-lite → 500 RPD | gemini-3.5-flash-lite → 500 RPD
+    // gemini-2.5-flash → 20 RPD | gemini-3-flash → 20 RPD | gemini-3.5-flash → 20 RPD
+    // gemma-4-26b-it → 14.4K RPD (fallback texto)
     const MODELS = [
-      'gemini-1.5-flash',
-      'gemini-1.5-flash-8b',
-      'gemini-1.5-pro',
-      'gemini-2.0-flash-lite',
-      'gemini-2.0-flash',
+      'gemini-3.1-flash-lite',       // 15 RPM · 500 RPD ← más cuota
+      'gemini-3.5-flash-lite',       // 15 RPM · 500 RPD ← más cuota
+      'gemini-2.5-flash-lite',       // 10 RPM · 20 RPD
+      'gemini-2.5-flash',            //  5 RPM · 20 RPD
+      'gemini-3-flash',              //  5 RPM · 20 RPD
+      'gemini-3.5-flash',            //  5 RPM · 20 RPD
+      'gemini-3.6-flash',            //  5 RPM · 20 RPD
+      'gemini-2.5-flash-preview-05-20', // fallback preview
+      'gemma-4-26b-it',              // 30 RPM · 14.4K RPD (Gemma 4)
     ];
 
     let lastError = '';
@@ -116,6 +124,7 @@ const AIThesisPanel = ({ item }) => {
 
     for (const model of MODELS) {
       try {
+        setCurrentModel(model);
         const res = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
           {
@@ -193,10 +202,10 @@ const AIThesisPanel = ({ item }) => {
               padding: '6px 16px', borderRadius: '8px', border: 'none',
               cursor: loading ? 'wait' : 'pointer',
               background: loading ? 'rgba(99,102,241,0.3)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-              color: '#fff', fontWeight: 700, fontSize: '0.78rem',
+              color: '#fff', fontWeight: 700, fontSize: '0.78rem', whiteSpace: 'nowrap',
             }}
           >
-            {loading ? '⏳ Analizando…' : '✨ Generar Tesis'}
+            {loading ? '⏳ Buscando modelo…' : '✨ Generar Tesis'}
           </button>
         )}
         {result && (
@@ -208,21 +217,29 @@ const AIThesisPanel = ({ item }) => {
           </button>
         )}
       </div>
+      {/* Indicador de modelo en progreso */}
+      {loading && currentModel && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '10px 0 0', padding: '8px 12px', background: 'rgba(99,102,241,0.08)', borderRadius: '8px', border: '1px solid rgba(99,102,241,0.15)' }}>
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6366f1', animation: 'pulse 1s infinite' }} />
+          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Probando: </span>
+          <span style={{ fontSize: '0.75rem', color: '#818cf8', fontFamily: 'monospace', fontWeight: 600 }}>{currentModel}</span>
+        </div>
+      )}
 
-      {error && <p style={{ color: '#ef4444', fontSize: '0.78rem', margin: 0 }}>{error}</p>}
+      {error && <p style={{ color: '#ef4444', fontSize: '0.78rem', margin: '8px 0 0' }}>{error}</p>}
 
       {result && (
         <div style={{
           background: 'rgba(20,28,48,0.8)', borderRadius: '12px',
-          border: '1px solid rgba(99,102,241,0.15)', padding: '16px',
+          border: '1px solid rgba(99,102,241,0.15)', padding: '16px', marginTop: '10px',
         }}>
           {renderResult(result)}
         </div>
       )}
 
       {!result && !error && !loading && (
-        <p style={{ color: '#334155', fontSize: '0.75rem', margin: 0 }}>
-          Análisis Bull/Bear/Veredicto generado con todos los datos del vector del activo.
+        <p style={{ color: '#334155', fontSize: '0.75rem', margin: '4px 0 0' }}>
+          Tesis Bull/Bear + veredicto cuantitativo con todos los datos del vector ML.
         </p>
       )}
     </div>
