@@ -1,0 +1,9 @@
+# Excluir archivos pesados de entrenamiento local para no exceder el límite de Vercel (500MB)
+Modelos/*.csv
+Modelos/*.pkl
+flujo_ml/
+.pytest_cache/
+*.log
+.git/
+node_modules/
+frontend/node_modules/

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "cp ../flujo_datos/mercado.json public/mercado.json && cp ../flujo_datos/ultimo_reporte.md public/ultimo_reporte.md && cp ../flujo_datos/predicciones_v2.json public/predicciones_v2.json && cp ../flujo_datos/backtest_45d.json public/backtest_45d.json 2>/dev/null || true && vite build",
+    "build": "mkdir -p public && (cp ../flujo_datos/*.json public/ 2>/dev/null || true) && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
