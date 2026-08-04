@@ -1,13 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
 /**
- * Estrategia de precios en vivo (sin necesidad de Flask para el MVP):
- *
- *  CRIPTO → CoinGecko API (gratuita, sin API key, CORS permitido)
- *  ACCIONES → Yahoo Finance query endpoint (público, sin key, puede fallar por CORS)
- *             fallback → Flask /api/precio si está corriendo en local
- *
- * Si todos fallan → el precio queda como null y el Oráculo muestra SIN_DATA.
+ * Estrategia de precios en vivo altamente confiable:
+ * 1. Criptos → CoinGecko API
+ * 2. Backend Flask / Vercel API `/api/precio` (usando yfinance nativo en Python)
+ * 3. Fallback directo en navegador → AllOrigins Proxy + Yahoo Finance chart API
  */
 
 // ─── Mapeo Cripto → CoinGecko IDs ────────────────────────────────────────────
@@ -36,7 +33,6 @@ const fetchCryptoPrices = async (cryptoTickers) => {
     if (!res.ok) throw new Error(`CoinGecko HTTP ${res.status}`);
     const data = await res.json();
 
-    // Invertir el mapa: { bitcoin: { usd: 95000 } } → { 'BTC-USD': 95000 }
     const result = {};
     cryptoTickers.forEach(ticker => {
       const cgId = COINGECKO_IDS[ticker];
@@ -51,78 +47,73 @@ const fetchCryptoPrices = async (cryptoTickers) => {
   }
 };
 
-// ─── Fetch Yahoo Finance (acciones) ──────────────────────────────────────────
-// Usa el endpoint público de Yahoo Finance v8 chart.
-// Nota: en algunos navegadores/redes puede tener CORS. En ese caso cae al Flask fallback.
-const fetchStockPrices = async (stockTickers) => {
-  if (stockTickers.length === 0) return {};
-
-  const results = {};
-  await Promise.allSettled(
-    stockTickers.map(async (ticker) => {
-      try {
-        // Intentar Yahoo Finance directo
-        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d&includePrePost=false`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`YF HTTP ${res.status}`);
-        const data = await res.json();
-        const meta = data?.chart?.result?.[0]?.meta;
-        if (meta?.regularMarketPrice) {
-          results[ticker] = meta.regularMarketPrice;
-        }
-      } catch (e) {
-        // Silencioso — el fallback al Flask lo maneja Portfolio.jsx
-        console.warn(`[Yahoo Finance] ${ticker}:`, e.message);
-      }
-    })
-  );
-  return results;
-};
-
-// ─── Fetch Flask fallback ─────────────────────────────────────────────────────
-const API_BASE = import.meta.env.DEV ? 'http://localhost:5000' : '';
-
+// ─── Fetch Backend Vercel / Flask `/api/precio` ─────────────────────────────
 const fetchFlaskPrices = async (tickers) => {
   if (!tickers.length) return {};
   try {
-    const res = await fetch(`${API_BASE}/api/precio?tickers=${encodeURIComponent(tickers.join(','))}`);
-    if (!res.ok) throw new Error(`Flask HTTP ${res.status}`);
+    const res = await fetch(`/api/precio?tickers=${encodeURIComponent(tickers.join(','))}`);
+    if (!res.ok) throw new Error(`API HTTP ${res.status}`);
     return await res.json();
   } catch (e) {
     return {};
   }
 };
 
+// ─── Fetch Stock Yahoo Finance con Proxy AllOrigins ──────────────────────────
+const fetchStockPricesAllOrigins = async (stockTickers) => {
+  if (stockTickers.length === 0) return {};
+
+  const results = {};
+  await Promise.allSettled(
+    stockTickers.map(async (ticker) => {
+      try {
+        const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error(`AllOrigins HTTP ${res.status}`);
+        const wrapper = await res.json();
+        if (wrapper?.contents) {
+          const parsed = JSON.parse(wrapper.contents);
+          const meta = parsed?.chart?.result?.[0]?.meta;
+          if (meta?.regularMarketPrice != null) {
+            results[ticker] = Number(meta.regularMarketPrice);
+          }
+        }
+      } catch (e) {
+        console.warn(`[Yahoo AllOrigins] ${ticker}:`, e.message);
+      }
+    })
+  );
+  return results;
+};
+
 // ─── Hook principal ───────────────────────────────────────────────────────────
-/**
- * @param {string[]} tickers - Tickers que NO están en mercado.json
- * @returns {{ data: Record<string, number|null>, isLoading }}
- */
 export const useLivePrice = (tickers = []) => {
   return useQuery({
     queryKey: ['livePrices', [...tickers].sort().join(',')],
     enabled: tickers.length > 0,
-    staleTime: 4 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: 3 * 60 * 1000,
     retry: 0,
     queryFn: async () => {
       const cryptoTickers = tickers.filter(t => COINGECKO_IDS[t]);
       const stockTickers  = tickers.filter(t => !COINGECKO_IDS[t]);
 
-      // Lanzar en paralelo
-      const [cryptoPrices, stockPrices] = await Promise.all([
-        fetchCryptoPrices(cryptoTickers),
-        fetchStockPrices(stockTickers),
-      ]);
+      // 1. Intentar Backend API (Vercel / Flask) primero para todos los tickers
+      const backendPrices = await fetchFlaskPrices(tickers);
 
-      const combined = { ...cryptoPrices, ...stockPrices };
+      // 2. Para los que faltan: Criptos → CoinGecko
+      const cryptoPrices = await fetchCryptoPrices(cryptoTickers);
 
-      // Para los que siguen sin precio → intentar Flask como último recurso
-      const sinPrecio = tickers.filter(t => combined[t] == null);
-      if (sinPrecio.length > 0) {
-        const flaskPrices = await fetchFlaskPrices(sinPrecio);
-        Object.assign(combined, flaskPrices);
-      }
+      // 3. Para los stocks que sigan sin precio → Yahoo Finance a través de AllOrigins
+      const sinPrecioStock = stockTickers.filter(t => backendPrices[t] == null);
+      const stockPricesProxy = await fetchStockPricesAllOrigins(sinPrecioStock);
+
+      const combined = {
+        ...cryptoPrices,
+        ...stockPricesProxy,
+        ...backendPrices, // El backend tiene prioridad si está activo
+      };
 
       return combined;
     },
