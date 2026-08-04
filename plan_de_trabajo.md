@@ -335,3 +335,29 @@ python3 -m pytest flujo_ml/tests/ -v
 ```
 
 **Artefactos Creados / Planeados:** `flujo_ml/v3_threshold_por_cat.py`, `flujo_ml/v3_entrenar_por_cat.py`, actualización empírica de `bt_honesto.asignar_categoria()`, `Modelos/modelo_metadata_v3_cat.json`.
+
+---
+
+## ⏳ V3.8: Ponderación Exponencial por Antigüedad (Sample Weighting por Deriva de Mercado)
+
+**Objetivo:** Mitigar el **Concept Drift (Deriva del Régimen de Mercado)** asignando mayor peso y relevancia a los patrones del último año sin desaprovechar los 5 años de datos históricos.
+
+### 📌 Metodología de Pesado Temporal
+
+1. **Decaimiento Exponencial por Vida Media (Half-Life = 365 días):**
+   $$w_i = 0.5^{\left( \frac{\text{días\_desde\_hoy}}{365} \right)}$$
+   - Muestras del año actual: **$100\%$ de peso en la función de pérdida del árbol ($w = 1.0$)**.
+   - Muestras de hace 1 año: **$50\%$ de peso ($w = 0.50$)**.
+   - Muestras de hace 2 años: **$25\%$ de peso ($w = 0.25$)**.
+   - Muestras de hace 4 años: **$6\%$ de peso ($w = 0.06$)**.
+
+2. **Inclusión en el Entrenamiento LightGBM:**
+   ```python
+   # Integración en v3_entrenar_por_cat.py:
+   train_data = lgb.Dataset(X_train, label=y_train, weight=sample_weights)
+   ```
+
+3. **Beneficios Esperados:**
+   - Adapta las fronteras de decisión a la liquidez y volatilidad actual del mercado (2025–2026).
+   - Evita que regímenes de mercado extintos (como la era de tasas al $0\%$ durante la pandemia) distorsionen las señales presentes.
+
