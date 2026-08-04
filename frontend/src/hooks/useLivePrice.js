@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
 /**
- * Estrategia de precios en vivo altamente confiable:
- * 1. Criptos → CoinGecko API
- * 2. Backend Flask / Vercel API `/api/precio` (usando yfinance nativo en Python)
- * 3. Fallback directo en navegador → AllOrigins Proxy + Yahoo Finance chart API
+ * Estrategia de precios en vivo altamente confiable sin spam de consola:
+ * 1. Criptos → CoinGecko API (gratuita, sin CORS)
+ * 2. Acciones → Yahoo Finance chart API vía AllOrigins Proxy
+ * 3. Producción (Vercel) → /api/precio fallback
  */
 
 // ─── Mapeo Cripto → CoinGecko IDs ────────────────────────────────────────────
@@ -47,18 +47,6 @@ const fetchCryptoPrices = async (cryptoTickers) => {
   }
 };
 
-// ─── Fetch Backend Vercel / Flask `/api/precio` ─────────────────────────────
-const fetchFlaskPrices = async (tickers) => {
-  if (!tickers.length) return {};
-  try {
-    const res = await fetch(`/api/precio?tickers=${encodeURIComponent(tickers.join(','))}`);
-    if (!res.ok) throw new Error(`API HTTP ${res.status}`);
-    return await res.json();
-  } catch (e) {
-    return {};
-  }
-};
-
 // ─── Fetch Stock Yahoo Finance con Proxy AllOrigins ──────────────────────────
 const fetchStockPricesAllOrigins = async (stockTickers) => {
   if (stockTickers.length === 0) return {};
@@ -87,6 +75,18 @@ const fetchStockPricesAllOrigins = async (stockTickers) => {
   return results;
 };
 
+// ─── Fetch Backend Vercel `/api/precio` (solo producción) ───────────────────
+const fetchFlaskPrices = async (tickers) => {
+  if (!tickers.length) return {};
+  try {
+    const res = await fetch(`/api/precio?tickers=${encodeURIComponent(tickers.join(','))}`);
+    if (!res.ok) throw new Error(`API HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    return {};
+  }
+};
+
 // ─── Hook principal ───────────────────────────────────────────────────────────
 export const useLivePrice = (tickers = []) => {
   return useQuery({
@@ -99,21 +99,23 @@ export const useLivePrice = (tickers = []) => {
       const cryptoTickers = tickers.filter(t => COINGECKO_IDS[t]);
       const stockTickers  = tickers.filter(t => !COINGECKO_IDS[t]);
 
-      // 1. Intentar Backend API (Vercel / Flask) primero para todos los tickers
-      const backendPrices = await fetchFlaskPrices(tickers);
-
-      // 2. Para los que faltan: Criptos → CoinGecko
+      // 1. Criptos en vivo → CoinGecko API
       const cryptoPrices = await fetchCryptoPrices(cryptoTickers);
 
-      // 3. Para los stocks que sigan sin precio → Yahoo Finance a través de AllOrigins
-      const sinPrecioStock = stockTickers.filter(t => backendPrices[t] == null);
-      const stockPricesProxy = await fetchStockPricesAllOrigins(sinPrecioStock);
+      // 2. Acciones en vivo → Yahoo Finance vía AllOrigins Proxy
+      const stockPricesProxy = await fetchStockPricesAllOrigins(stockTickers);
 
       const combined = {
         ...cryptoPrices,
         ...stockPricesProxy,
-        ...backendPrices, // El backend tiene prioridad si está activo
       };
+
+      // 3. En Producción (Vercel) se usa /api/precio solo si algún activo quedó sin precio
+      const sinPrecio = tickers.filter(t => combined[t] == null);
+      if (sinPrecio.length > 0 && !import.meta.env.DEV) {
+        const backendPrices = await fetchFlaskPrices(sinPrecio);
+        Object.assign(combined, backendPrices);
+      }
 
       return combined;
     },

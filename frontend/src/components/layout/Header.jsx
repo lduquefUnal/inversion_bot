@@ -6,23 +6,45 @@ import { useAuth } from '../../store/AuthContext';
 const Header = () => {
   const { data } = useMarketData();
   const { isAuthenticated, logout } = useAuth();
-  const [copRate, setCopRate] = React.useState('3.155');
+  const [copRate, setCopRate] = React.useState('3,230.44');
   
   const vix = data?.MACRO?.VIX || '18.3';
 
   React.useEffect(() => {
-    fetch('https://api.exchangerate-api.com/v4/latest/USD')
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {
-        if (d && d.rates && d.rates.COP) {
-          setCopRate(Number(d.rates.COP).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 }));
-        } else {
-          return fetch('https://open.er-api.com/v6/latest/USD').then(r => r.json()).then(d2 => {
-            if (d2?.rates?.COP) setCopRate(Number(d2.rates.COP).toLocaleString('es-CO'));
-          });
+    // Consulta de TRM Oficial de Colombia (dolar-colombia.com) en vivo
+    const fetchTrmOficial = async () => {
+      try {
+        const targetUrl = 'https://www.dolar-colombia.com/';
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+        const res = await fetch(proxyUrl);
+        if (res.ok) {
+          const wrapper = await res.json();
+          if (wrapper?.contents) {
+            const match = wrapper.contents.match(/exchange-rate_up[^">]*>.*?([\d\.,]+)<\/span>/) ||
+                          wrapper.contents.match(/3,[\d\.,]+/);
+            if (match && match[1]) {
+              setCopRate(match[1]);
+              return;
+            }
+          }
         }
-      })
-      .catch(() => {});
+      } catch (e) {
+        console.warn('[TRM Colombia] Fallback a API global');
+      }
+
+      // Fallback a API global de tipos de cambio
+      try {
+        const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        if (res.ok) {
+          const d = await res.json();
+          if (d?.rates?.COP) {
+            setCopRate(Number(d.rates.COP).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+          }
+        }
+      } catch (e) {}
+    };
+
+    fetchTrmOficial();
   }, []);
 
   return (
