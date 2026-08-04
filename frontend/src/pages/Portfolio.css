@@ -79,6 +79,21 @@
 .stat-val.pos { color: #10b981; }
 .stat-val.neg { color: #ef4444; }
 
+.chart-window-controls {
+  display: flex; gap: 6px; align-items: center; background: rgba(15,23,42,0.8);
+  padding: 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
+}
+.btn-window {
+  background: transparent; border: none;
+  color: #94a3b8; border-radius: 6px; padding: 4px 10px; font-size: 0.75rem;
+  font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.btn-window:hover { background: rgba(255,255,255,0.1); color: #f8fafc; }
+.btn-window.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.4);
+}
+
 .svg-chart-container { width: 100%; height: 160px; position: relative; }
 .global-svg { width: 100%; height: 100%; overflow: visible; }
 
