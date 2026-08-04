@@ -1,22 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useMarketData } from '../../hooks/useMarketData';
-
 import { useAuth } from '../../store/AuthContext';
 
 const Header = () => {
   const { data } = useMarketData();
   const { isAuthenticated, logout } = useAuth();
-  const [copRate, setCopRate] = React.useState('4,180');
+  const [copRate, setCopRate] = React.useState('3.155');
   
   const vix = data?.MACRO?.VIX || '18.3';
 
   React.useEffect(() => {
-    fetch('https://open.er-api.com/v6/latest/USD')
+    fetch('https://api.exchangerate-api.com/v4/latest/USD')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (d && d.rates && d.rates.COP) {
-          setCopRate(Math.round(d.rates.COP).toLocaleString('es-CO'));
+          setCopRate(Number(d.rates.COP).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 }));
+        } else {
+          return fetch('https://open.er-api.com/v6/latest/USD').then(r => r.json()).then(d2 => {
+            if (d2?.rates?.COP) setCopRate(Number(d2.rates.COP).toLocaleString('es-CO'));
+          });
         }
       })
       .catch(() => {});
