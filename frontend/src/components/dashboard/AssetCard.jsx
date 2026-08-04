@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 // ─── Paleta categorías ────────────────────────────────────────────────────────
 const CAT_CFG = {
-  'Sweet Spot':        { emoji: '🎯', bg: 'rgba(234,179,8,0.15)',   color: '#eab308', border: '#eab308', desc: 'Fundamentos sólidos, corrección temporal. Tendencia de largo plazo intacta (precio > SMA200).' },
-  'Cazador Dips':      { emoji: '🔥', bg: 'rgba(239,68,68,0.15)',   color: '#ef4444', border: '#ef4444', desc: 'Drawdown >35% + RSI 2D <10 (Connors). Alto riesgo, alta recompensa.' },
-  'Recup. Rapida':     { emoji: '⚡', bg: 'rgba(16,185,129,0.15)',  color: '#10b981', border: '#10b981', desc: 'EMA20 ≥ SMA50, precio sobre SMA200. Ciclo corto de recuperación con momentum alcista.' },
+  'Sweet Spot': { emoji: '🎯', bg: 'rgba(234,179,8,0.15)', color: '#eab308', border: '#eab308', desc: 'Fundamentos sólidos, corrección temporal. Tendencia de largo plazo intacta (precio > SMA200).' },
+  'Cazador Dips': { emoji: '🔥', bg: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '#ef4444', desc: 'Drawdown >35% + RSI 2D <10 (Connors). Alto riesgo, alta recompensa.' },
+  'Recup. Rapida': { emoji: '⚡', bg: 'rgba(16,185,129,0.15)', color: '#10b981', border: '#10b981', desc: 'EMA20 ≥ SMA50, precio sobre SMA200. Ciclo corto de recuperación con momentum alcista.' },
   'Cuchillos Cayendo': { emoji: '⚠️', bg: 'rgba(100,116,139,0.15)', color: '#94a3b8', border: '#64748b', desc: 'Sin soporte claro. Máxima cautela. Solo traders con alta tolerancia al riesgo.' },
 };
 const DEF_CFG = { emoji: '📊', bg: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '#818cf8', desc: 'Activo en evaluación.' };
@@ -38,7 +38,12 @@ export const getCategoryParams = (catRaw) => {
 };
 
 // ─── API Gemini ───────────────────────────────────────────────────────────────
-const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const getGeminiKey = () =>
+  import.meta.env.VITE_GEMINI_API_KEY ||
+  localStorage.getItem('VITE_GEMINI_API_KEY') ||
+  localStorage.getItem('GEMINI_API_KEY') ||
+  '';
+
 const MODELS = [
   'gemini-3.1-flash-lite',
   'gemini-3.5-flash-lite',
@@ -111,33 +116,38 @@ const useGeminiThesis = (item) => {
   const [modelUsed, setModelUsed] = useState('');
 
   const run = useCallback(async () => {
-    if (!GEMINI_KEY) {
+    const activeKey = getGeminiKey();
+    if (!activeKey) {
       setError('Configura VITE_GEMINI_API_KEY en Vercel > Settings > Environment Variables.');
       return;
     }
     setLoading(true); setText(''); setError(''); setModelUsed('');
     const prompt = buildPrompt(item);
     let success = false;
+    let lastErrMsg = '';
 
     for (const model of MODELS) {
       setCurrentModel(model);
       try {
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${activeKey}`,
           { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }
         );
         const d = await res.json();
         if (d.error) {
           const msg = d.error.message || '';
-          if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('limit')) continue;
+          lastErrMsg = msg;
+          if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('limit') || msg.includes('not found')) continue;
           throw new Error(msg);
         }
         const result = d.candidates?.[0]?.content?.parts?.[0]?.text;
         if (result) { setText(result); setModelUsed(model); success = true; break; }
-      } catch (e) { /* sigue al siguiente modelo */ }
+      } catch (e) {
+        lastErrMsg = e.message || 'Error de red / API';
+      }
     }
 
-    if (!success) setError('Sin cuota disponible en todos los modelos. Verifica en console.cloud.google.com');
+    if (!success) setError(lastErrMsg || 'Sin cuota disponible en los modelos Gemini. Revisa tu API key.');
     setCurrentModel('');
     setLoading(false);
   }, [item]);

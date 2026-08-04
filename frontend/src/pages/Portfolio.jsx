@@ -59,18 +59,18 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes 
   }
 
   if (mercado) {
-    rsiNum  = parseFloat(mercado['RSI 14D']);
-    score   = mercado['Score_Total'];
-    cambio5D = mercado['Cambio 5D %'];
+    rsiNum  = parseFloat(mercado['RSI_14D'] ?? mercado['RSI 14D'] ?? NaN);
+    score   = mercado['Score_Total'] ?? mercado['Score Total'] ?? 'N/A';
+    cambio5D = parseFloat(mercado['Cambio_5D_%'] ?? mercado['Cambio 5D %'] ?? 0);
     const tendencia = mercado['Tendencias'] || '';
-    const drawdown  = mercado['Drawdown 52W %'];
+    const drawdown  = parseFloat(mercado['Drawdown_52W_%'] ?? mercado['Drawdown 52W %'] ?? 0);
 
-    if (rsiNum > UMBRALES.RSI_SELL)       señalesVenta.push(`RSI ${rsiNum.toFixed(0)}`);
+    if (!isNaN(rsiNum) && rsiNum > UMBRALES.RSI_SELL)       señalesVenta.push(`RSI ${rsiNum.toFixed(0)}`);
     if (score !== 'N/A' && score < UMBRALES.SCORE_MIN) señalesVenta.push(`Score ${score}`);
     if (tendencia.includes('Bajista') || tendencia.includes('Cuchillo')) señalesVenta.push('Tendencia bajista');
     if (cambio5D < UMBRALES.CAMBIO5D_SELL) señalesVenta.push(`Caída 5D: ${cambio5D}%`);
 
-    if (rsiNum < UMBRALES.RSI_BUY) señalesCompra.push(`RSI ${rsiNum.toFixed(0)}`);
+    if (!isNaN(rsiNum) && rsiNum < UMBRALES.RSI_BUY) señalesCompra.push(`RSI ${rsiNum.toFixed(0)}`);
     if (score !== 'N/A' && score > 65)  señalesCompra.push(`Score ${score}`);
     if (drawdown < -30)                 señalesCompra.push(`Dip ${drawdown}%`);
     if (!tendencia.includes('Bajista')) señalesCompra.push('Tendencia sana');
@@ -104,12 +104,29 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes 
 
 const VEREDICTO_ICON = { SELL: '🔴', WATCH: '🟡', HOLD: '🟢', DCA: '💎', SIN_DATA: '⚫' };
 
+const VEREDICTO_LABEL = {
+  SELL: 'SELL (Vender)',
+  WATCH: 'WATCH (Vigilar)',
+  HOLD: 'HOLD (Mantener)',
+  DCA: 'DCA (Acumular)',
+  SIN_DATA: 'SIN DATA'
+};
+
+const VEREDICTO_TOOLTIP = {
+  DCA: '💎 DCA (Dollar-Cost Averaging): El activo está sobrevendido (RSI bajo) con alta probabilidad a favor. El algoritmo sugiere compras tácticas progresivas.',
+  HOLD: '🟢 HOLD (Mantener): La posición se mantiene dentro de parámetros normales sin riesgo ni meta alcanzada.',
+  WATCH: '🟡 WATCH (Vigilar): Muestra alertas técnicas tempranas. Se recomienda monitorear de cerca.',
+  SELL: '🔴 SELL (Vender): Ha tocado el precio de Take Profit (+10/15%) o límite de Stop Loss / Time Stop.',
+  SIN_DATA: 'Sin información suficiente en el escáner.'
+};
+
 // ─── Componente Gráfica Global de Rendimiento ──────────────────────────────
 const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
-  const chartPoints = useMemo(() => {
-    if (!resumen || resumen.totalInvertido <= 0) return [];
+  const [windowKey, setWindowKey] = useState('TODO');
+
+  const { chartPoints, windowPnl, windowPnlPct } = useMemo(() => {
+    if (!resumen || resumen.totalInvertido <= 0) return { chartPoints: [], windowPnl: 0, windowPnlPct: 0 };
     
-    // Extraer todos los lotes reales ordenados cronológicamente por fecha de compra
     const allLotes = [];
     (entriesConOraculo || []).forEach(({ entry, precioActual }) => {
       (entry.lotes || []).forEach(l => {
@@ -124,47 +141,57 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
       });
     });
 
-    if (allLotes.length === 0) return [];
+    if (allLotes.length === 0) return { chartPoints: [], windowPnl: 0, windowPnlPct: 0 };
     allLotes.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    const startDate = new Date(allLotes[0].date);
     const endDate = new Date();
-    const totalDays = Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)));
-    const numPoints = Math.min(14, Math.max(5, totalDays + 1));
-    const points = [];
+    const earliestDate = new Date(allLotes[0].date);
+    let startDate = earliestDate;
 
-    // Incluir un punto inicial en cero justo un día antes del primer lote
-    const prevDay = new Date(startDate.getTime() - 86400000);
-    const prevDayStr = prevDay.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-    points.push({ date: prevDayStr, value: 0 });
+    const daysMap = { '1S': 7, '1M': 30, '3M': 90, '1A': 365 };
+    if (windowKey !== 'TODO' && daysMap[windowKey]) {
+      startDate = new Date(endDate.getTime() - daysMap[windowKey] * 86400000);
+    }
+
+    const totalDays = Math.max(1, Math.ceil((endDate - startDate) / 86400000));
+    const numPoints = Math.min(24, Math.max(8, totalDays + 1));
+    const points = [];
 
     for (let i = 0; i < numPoints; i++) {
       const pRatio = i / (numPoints - 1);
       const currentTimeMs = startDate.getTime() + pRatio * (endDate.getTime() - startDate.getTime());
       const currentDate = new Date(currentTimeMs);
 
-      // Sumar lotes comprados hasta esta fecha
-      let totalCostAtDate = 0;
       let totalValAtDate = 0;
-
+      let totalCostAtDate = 0;
       allLotes.forEach(l => {
         const lDate = new Date(l.date);
         if (lDate <= currentDate) {
           totalCostAtDate += l.cost;
-          // Interpolación suave del valor del activo desde su costo de compra hasta su precio actual hoy
-          const activeDays = Math.max(1, (endDate - lDate) / (1000 * 60 * 60 * 24));
-          const elapsedDays = Math.max(0, (currentDate - lDate) / (1000 * 60 * 60 * 24));
+          const activeDays = Math.max(1, (endDate - lDate) / 86400000);
+          const elapsedDays = Math.max(0, (currentDate - lDate) / 86400000);
           const progress = Math.min(1, elapsedDays / activeDays);
           totalValAtDate += l.cost + (l.valNow - l.cost) * progress;
         }
       });
 
       const dateStr = currentDate.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-      points.push({ date: dateStr, value: totalValAtDate });
+      points.push({ date: dateStr, value: totalValAtDate, cost: totalCostAtDate, profit: totalValAtDate - totalCostAtDate });
     }
 
-    return points;
-  }, [entriesConOraculo, resumen]);
+    let winPnl = resumen.pnl;
+    let winPnlPct = resumen.pnlPorc;
+
+    if (windowKey !== 'TODO' && points.length > 1) {
+      const startProfit = points[0].profit;
+      const endProfit = points[points.length - 1].profit;
+      winPnl = endProfit - startProfit;
+      const baseCost = points[points.length - 1].cost || resumen.totalInvertido || 1;
+      winPnlPct = (winPnl / baseCost) * 100;
+    }
+
+    return { chartPoints: points, windowPnl: winPnl, windowPnlPct: winPnlPct };
+  }, [entriesConOraculo, resumen, windowKey]);
 
   if (chartPoints.length === 0) return null;
 
@@ -184,26 +211,40 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
 
   const areaD = `${pathD} L ${svgWidth - padding} ${svgHeight} L ${padding} ${svgHeight} Z`;
   const isPos = resumen.pnl >= 0;
-  const strokeColor = isPos ? '#10b981' : '#ef4444';
-  const gradId = isPos ? 'grad-pos' : 'grad-neg';
+  const isWindowPos = windowPnl >= 0;
+  const strokeColor = isWindowPos ? '#10b981' : '#ef4444';
+  const gradId = isWindowPos ? 'grad-pos' : 'grad-neg';
 
   return (
     <div className="portfolio-global-chart-card">
       <div className="chart-card-header">
         <div>
           <h3>📈 Comportamiento Global del Portafolio</h3>
-          <p className="chart-sub">Valor de mercado conjunto y trayectoria acumulada</p>
+          <p className="chart-sub">Valor de mercado conjunto y trayectoria por ventanas temporales</p>
         </div>
-        <div className="chart-stats">
-          <div className="chart-stat-item">
-            <span className="stat-label">Patrimonio Actual</span>
-            <span className="stat-val">${resumen.valorActual.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+          <div className="chart-window-controls">
+            {['1S', '1M', '3M', '1A', 'TODO'].map(w => (
+              <button
+                key={w}
+                className={`btn-window ${windowKey === w ? 'active' : ''}`}
+                onClick={() => setWindowKey(w)}
+              >
+                {w}
+              </button>
+            ))}
           </div>
-          <div className="chart-stat-item">
-            <span className="stat-label">Rendimiento Total</span>
-            <span className={`stat-val ${isPos ? 'pos' : 'neg'}`}>
-              {isPos ? '+' : ''}{resumen.pnlPorc.toFixed(2)}% ({isPos ? '+' : ''}${resumen.pnl.toFixed(2)})
-            </span>
+          <div className="chart-stats">
+            <div className="chart-stat-item">
+              <span className="stat-label">Rendimiento en Ventana ({windowKey})</span>
+              <span className={`stat-val ${isWindowPos ? 'pos' : 'neg'}`}>
+                {isWindowPos ? '+' : ''}{windowPnlPct.toFixed(2)}% ({isWindowPos ? '+' : ''}${windowPnl.toFixed(2)})
+              </span>
+            </div>
+            <div className="chart-stat-item">
+              <span className="stat-label">Patrimonio Actual</span>
+              <span className="stat-val font-mono">${resumen.valorActual.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -440,9 +481,12 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
 
         {/* Col 8: RSI 14D */}
         <td className="col-rsi">
-          {oraculo.rsiNum != null ? (
-            <span className={`rsi-pill ${oraculo.rsiNum < 35 ? 'rsi-buy' : oraculo.rsiNum > 70 ? 'rsi-sell' : 'rsi-neutral'}`}>
-              {oraculo.rsiNum.toFixed(0)} {oraculo.rsiNum < 35 ? '💎' : oraculo.rsiNum > 70 ? '⚠️' : ''}
+          {oraculo.rsiNum != null && !isNaN(oraculo.rsiNum) ? (
+            <span
+              className={`rsi-pill ${oraculo.rsiNum < 35 ? 'rsi-buy' : oraculo.rsiNum > 70 ? 'rsi-sell' : 'rsi-neutral'}`}
+              title={`RSI 14D = ${oraculo.rsiNum.toFixed(1)}: ${oraculo.rsiNum < 35 ? 'Sobrevendido (Zona de Dip/Acumulación)' : oraculo.rsiNum > 70 ? 'Sobrecomprado' : 'Zona Neutra'}`}
+            >
+              {oraculo.rsiNum.toFixed(0)}
             </span>
           ) : '—'}
         </td>
@@ -458,8 +502,12 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
 
         {/* Col 10: Veredicto Oráculo */}
         <td className="col-oraculo">
-          <span className={`oracle-pill oracle-${oraculo.color}`}>
-            {VEREDICTO_ICON[oraculo.veredicto]} {oraculo.veredicto}
+          <span
+            className={`oracle-pill oracle-${oraculo.color}`}
+            title={VEREDICTO_TOOLTIP[oraculo.veredicto] || oraculo.justificacion}
+            style={{ cursor: 'help' }}
+          >
+            {VEREDICTO_ICON[oraculo.veredicto]} {VEREDICTO_LABEL[oraculo.veredicto] || oraculo.veredicto}
           </span>
         </td>
 
@@ -541,17 +589,21 @@ const Portfolio = () => {
   const activos = marketData?.TOP_25_DIPS || marketData?.TOP_50_DIPS || [];
   const tickersList = activos.map(a => a.Ticker);
 
-  const tickersEnJson = new Set(activos.map(a => a.Ticker));
-  const tickersParaLive = entries
-    .map(e => e.position.ticker)
-    .filter(t => !tickersEnJson.has(t));
+  const tickersParaLive = entries.map(e => e.position.ticker);
 
   const { data: livePrices = {}, isLoading: liveLoading } = useLivePrice(tickersParaLive);
 
   const precioMap = useMemo(() => {
     const map = {};
-    activos.forEach(a => { map[a.Ticker] = a['Precio Actual']; });
-    Object.entries(livePrices).forEach(([t, p]) => { if (p != null) map[t] = p; });
+    activos.forEach(a => {
+      const p = a['Precio_Actual'] ?? a['Precio Actual'] ?? a['Precio'] ?? a['precio_actual'];
+      if (p != null && !isNaN(Number(p))) {
+        map[a.Ticker] = Number(p);
+      }
+    });
+    Object.entries(livePrices).forEach(([t, p]) => {
+      if (p != null && !isNaN(Number(p))) map[t] = Number(p);
+    });
     return map;
   }, [activos, livePrices]);
 
@@ -687,9 +739,9 @@ const Portfolio = () => {
               <th>P. Actual</th>
               <th>Inversión → Mercado</th>
               <th>Retorno P&L</th>
-              <th>RSI 14D</th>
+              <th title="RSI (Índice de Fuerza Relativa 14 días): Medida de velocidad y cambio de precio. <35 indica zona de acumulación/dip, >70 sobrecompra.">RSI 14D ℹ️</th>
               <th>Score</th>
-              <th>Oráculo</th>
+              <th title="Veredicto Táctico del Algoritmo: DCA (Acumular), HOLD (Mantener), WATCH (Vigilar), SELL (Vender).">Oráculo ℹ️</th>
               <th>Acciones</th>
             </tr>
           </thead>
