@@ -8,11 +8,10 @@ description: Guía cuantitativa para Position Sizing, Stop Loss ATR, Trailing St
 Esta skill define las reglas de dimensionamiento de posición, salidas tácticas y métricas financieras para el bot de inversión.
 
 ## 1. Position Sizing (Dimensionamiento de Posición)
-- **Criterio de Kelly Modificado ($f^*$):**
-  $$f^* = p - \frac{1 - p}{b}$$
-  donde $p$ es la probabilidad predicha por LightGBM y $b$ es la relación beneficio/riesgo (TP / SL). Para evitar sobre-apalancamiento, se aplica Half-Kelly ($f^* / 2$).
-- **Paridad por Volatilidad (ATR Sizing):**
-  $$\text{Capital por Operación (\%)} = \min\left(20\%, \frac{\text{Riesgo Máximo (2\%)}}{\text{ATR}_{14}\%}\right)$$
+- **Capital fijo por operación:** $100–150 USD/trade (estilo SmartDCA). Este es el modelo operativo real.
+- **Rentabilidad real (EA_lineal):** `EA_lineal = E% × trades_año`. Con E=+5%/trade y 12 trades/año → +60%/año sobre el capital por trade. **Usar siempre EA_lineal, no EA_compuesto** (EA_comp asume reinversión total del capital, da cifras irreales de 1500%+).
+- **Paridad por Volatilidad ATR (sizing contextual opcional):**
+  $$\text{Capital por Operación (\%)} = \min\left(20\%, \frac{\text{Riesgo Máximo (2\%)}}{{\text{ATR}_{14}\%}}\right)$$
 
 ## 2. Stop Loss & Take Profit Dinámicos
 - **Stop Loss Basado en ATR:** $SL = \text{Precio Entrado} - (2.0 \times \text{ATR}_{14})$.

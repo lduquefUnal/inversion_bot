@@ -1,0 +1,51 @@
+{
+  "fecha": "2026-08-02 17:04:05",
+  "config": {
+    "cfg": "actual",
+    "dias": 11,
+    "th": 0.5
+  },
+  "ea_lineal_%": 68.7,
+  "ea_kelly_%": 0.7,
+  "cat_params": {
+    "Sweet Spot": [
+      0.15,
+      0.06
+    ],
+    "Cazador Dips": [
+      0.12,
+      0.05
+    ],
+    "Recup. Rapida": [
+      0.1,
+      0.04
+    ],
+    "Cuchillos Cayendo": [
+      0.08,
+      0.04
+    ]
+  },
+  "features": [
+    "Cat_Sweet_Spot",
+    "Cat_Cazador_Dips",
+    "Cat_Recup_Rapida",
+    "Cat_Cuchillos_Cayendo",
+    "RSI_2",
+    "RSI_7",
+    "RSI_14",
+    "ATR_%",
+    "Dist_SMA200_%",
+    "RVOL_5D",
+    "Return_5D_%",
+    "Tendencia_Sana",
+    "Drawdown_52W_%",
+    "RR_Ratio",
+    "ATR_Risk_Pct",
+    "TP_ATR",
+    "Abs_Drawdown",
+    "RSI2_DD",
+    "RSI2_RSI14",
+    "FCF_log",
+    "Beta"
+  ]
+}

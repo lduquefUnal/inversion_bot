@@ -53,3 +53,19 @@ Esta skill define el marco teórico y práctico para estrategias de Swing Tradin
 | **🎯 Sweet Spot** | `Close > SMA200` & `Drawdown [-20%, -40%]` | `RSI(2) < 15` | TP +15% / SL -8% | **78.5%** |
 | **🔥 Cazador Dips** | `Drawdown > -35%` & `RSI(14) < 32` | `CMF_20 > -0.05` | TP +12% / SL -8% | **72.2%** |
 | **⚠️ Cuchillos Cayendo** | `Close < SMA200` & Sobrevendido Extremo | `RSI(2) < 6` & $RVOL > 1.2$ | TP +8% / SL -5% | **68.5%** |
+
+---
+
+## ⚡ 3. Combos Validados Empíricamente (V3.6 — Backtesting OOS Doble)
+
+Los TP/SL de la matriz anterior son *targets de entrenamiento*. Los siguientes son los parámetros que sobrevivieron validación real en dos ventanas OOS independientes (W2: Feb–Abr 2026, W1: May–Jul 2026):
+
+| Categoría | Combo Validado | WR Real | EA% W2 | EA% W1 | Estado |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **🔥 Cazador Dips** | **TP 8% / SL 4% / 11d** | 39–41% | +77% | +93% | ✅ Config recomendada |
+| 🔥 Cazador Dips | TP 8% / SL 3% / 11d | 33% | +51% | +89% | ✅ Alternativa |
+| **⚠️ Cuchillos** | **TP 15% / SL 3% / 7d** | 20% | +239% | +151% | ✅ Alto EA, WR bajo |
+| **🎯 Sweet Spot** | **TP 8% / SL 5% / 11d** | 44–50% | ~+42% | +42% | ✅ Más estable |
+| ~~Recup TP20~~  | TP 20% / SL 5% / 30d | — | falla | +6.14% | ❌ Sobreajuste |
+
+> **Nota de alineación:** Los TP/SL de la skill (§2) mejoran el AUC de entrenamiento (0.623 con sus parámetros vs. 0.571 con otros), pero los combos operativos reales (§3) tienen TP más bajos y plazos de 7–15 días. Usar siempre §3 para configuración de producción.

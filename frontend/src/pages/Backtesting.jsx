@@ -1,49 +1,52 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMarketData } from '../hooks/useMarketData';
 
-// ─── Datos estáticos del modelo LightGBM V2 ──────────────────────────────────
-// Fuente: Modelos/reporte_optimizador_categorias.csv — optimizado con F₀.₅-Score
-const MODELO_CATEGORIAS = [
+// ─── Configuración Base de Categorías V3.7 ──────────────────────────────────
+const DEFAULT_CATEGORIAS = [
+  {
+    id: '⚡ Recup. Rápida',
+    emoji: '⚡',
+    nombre: 'Recup. Rapida',
+    tp: 10, sl: 4, limiteDias: 7, confirmacion: 1,
+    winRate: 48.5, retornoTrade: 2.66, totalTrades: 33, cagr: 35.6, ea: 35.6,
+    frecuencia: '1 trade c/ 2.7 días',
+    color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: '#10b981',
+    desc: 'Activos en tendencia alcista primaria (precio > SMA200) en corrección corta. Alta rotación con inercia de rebote favorable.',
+    f05: 0.4514,
+  },
   {
     id: '🎯 Sweet Spot',
     emoji: '🎯',
     nombre: 'Sweet Spot',
-    tp: 15, sl: 8, confirmacion: 2, limiteDias: 14,
-    winRate: 78.5, cagr: 46.2, retornoTrade: 3.85, totalTrades: 174,
+    tp: 15, sl: 6, limiteDias: 14, confirmacion: 2,
+    winRate: 33.3, retornoTrade: -1.48, totalTrades: 19, cagr: 0.0, ea: 0.0,
+    frecuencia: '1 trade c/ 4.7 días',
     color: '#eab308', bg: 'rgba(234,179,8,0.15)', border: '#eab308',
-    desc: 'Fundamentos sólidos con corrección temporal. Tendencia de largo plazo intacta (precio > SMA200). Zona óptima Smart DCA.',
-    f05: 0.82,
+    desc: 'Drawdown moderado (-20% a -35%) en tendencia sana. Descuento temporal con margen de seguridad.',
+    f05: 0.2941,
   },
   {
     id: '🔥 Cazador Dips',
     emoji: '🔥',
     nombre: 'Cazador Dips',
-    tp: 12, sl: 8, confirmacion: 1, limiteDias: 21,
-    winRate: 72.2, cagr: 38.5, retornoTrade: 3.20, totalTrades: 212,
+    tp: 12, sl: 5, limiteDias: 11, confirmacion: 1,
+    winRate: 45.5, retornoTrade: 3.76, totalTrades: 26, cagr: 45.1, ea: 45.1,
+    frecuencia: '1 trade c/ 3.5 días',
     color: '#ef4444', bg: 'rgba(239,68,68,0.15)', border: '#ef4444',
-    desc: 'Drawdown >35% + RSI 2D <10 (Connors). Mayor tiempo máximo (21d) para esperar rebote tras caída agresiva.',
-    f05: 0.76,
-  },
-  {
-    id: '⚡ Recup. Rápida',
-    emoji: '⚡',
-    nombre: 'Recup. Rápida',
-    tp: 15, sl: 5, confirmacion: 1, limiteDias: 7,
-    winRate: 80.0, cagr: 52.0, retornoTrade: 4.10, totalTrades: 323,
-    color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: '#10b981',
-    desc: 'EMA20 ≥ SMA50, precio sobre SMA200. Ciclo corto (7d máx) = alta rotación de capital con momentum alcista.',
-    f05: 0.85,
+    desc: 'Caídas profundas (>35%) con sobreventa RSI14 <32. Exige confirmación de flujo o umbral de alta probabilidad.',
+    f05: 0.3906,
   },
   {
     id: '⚠️ Cuchillos Cayendo',
     emoji: '⚠️',
     nombre: 'Cuchillos Cayendo',
-    tp: 8, sl: 5, confirmacion: 2, limiteDias: 7,
-    winRate: 68.5, cagr: 23.8, retornoTrade: 1.80, totalTrades: 378,
+    tp: 8, sl: 4, limiteDias: 5, confirmacion: 2,
+    winRate: 45.8, retornoTrade: -0.50, totalTrades: 99, cagr: 0.0, ea: 0.0,
+    frecuencia: '1 trade c/ 0.9 días',
     color: '#94a3b8', bg: 'rgba(100,116,139,0.15)', border: '#64748b',
-    desc: 'Sin soporte claro. Menor TP (8%) y ciclo muy corto (7d) para minimizar exposición al riesgo bajista.',
-    f05: 0.71,
+    desc: 'Sin soporte de tendencia (precio < SMA200). Alta volatilidad; se desactiva de asignación de capital salvo prob muy alta.',
+    f05: 0.5189,
   },
 ];
 
@@ -66,13 +69,75 @@ const Bar = ({ pct, color }) => (
 );
 
 // ─── Componente principal ─────────────────────────────────────────────────────
+const RESULT_CFG = {
+  WIN:     { label: '✅ WIN',     color: '#10b981', bg: 'rgba(16,185,129,0.12)',   border: 'rgba(16,185,129,0.3)' },
+  LOSS:    { label: '❌ LOSS',    color: '#ef4444', bg: 'rgba(239,68,68,0.12)',    border: 'rgba(239,68,68,0.3)' },
+  TIMEOUT: { label: '⏱️ TIMEOUT', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' },
+  ABIERTO: { label: '🔵 ABIERTO', color: '#60a5fa', bg: 'rgba(96,165,250,0.12)', border: 'rgba(96,165,250,0.3)' },
+};
+
+const CAT_COLOR = {
+  'Sweet Spot':        { color: '#eab308', bg: 'rgba(234,179,8,0.12)' },
+  'Cazador Dips':      { color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+  'Recup. Rapida':     { color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+  'Cuchillos Cayendo': { color: '#94a3b8', bg: 'rgba(100,116,139,0.12)' },
+};
+
 const Backtesting = () => {
-  const [selectedCat, setSelectedCat] = useState('⚡ Recup. Rápida'); // la mejor por CAGR
+  const [selectedCat, setSelectedCat] = useState('⚡ Recup. Rápida');
   const { data: marketData, isLoading } = useMarketData();
 
-  const cat = MODELO_CATEGORIAS.find(c => c.id === selectedCat) || MODELO_CATEGORIAS[0];
+  // Estados dinámicos de artefactos V3.7
+  const [v3Meta, setV3Meta] = useState(null);
+  const [shapData, setShapData] = useState(null);
+  const [bt, setBt] = useState(null);
+  const [btLoading, setBtLoading] = useState(true);
+  const [btFilter, setBtFilter] = useState('TODOS');
+  const [btCatFilter, setBtCatFilter] = useState('Todos');
 
-  // Activos actuales filtrados por esta categoría (desde predicciones_v2.json)
+  useEffect(() => {
+    // Cargar metadata de modelos dinámicos V3.7
+    fetch('/modelo_metadata_v3_cat.json?t=' + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(d => d && setV3Meta(d))
+      .catch(() => {});
+
+    // Cargar SHAP importances
+    fetch('/v3_shap_importances.json?t=' + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(d => d && setShapData(d))
+      .catch(() => {});
+
+    // Cargar backtest OOS consolidado V3.7
+    fetch('/v3_backtest_reporte_consolidado.json?t=' + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(d => d && setV3Meta(prev => ({ ...prev, consolidado: d })))
+      .catch(() => {});
+
+    // Cargar trades reales del backtest 45 días
+    fetch('/backtest_45d.json?t=' + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { setBt(d); setBtLoading(false); })
+      .catch(() => setBtLoading(false));
+  }, []);
+
+  // Fusionar categorías base con metadatos dinámicos V3.7
+  const categoriasDyn = useMemo(() => {
+    return DEFAULT_CATEGORIAS.map(c => {
+      const meta = v3Meta ? v3Meta[c.nombre] : null;
+      if (!meta) return c;
+      return {
+        ...c,
+        f05: meta.f05_score || c.f05,
+        winRate: meta.metrics?.['wr_%'] ?? c.winRate,
+        totalTrades: meta.metrics?.n ?? c.totalTrades,
+        thOptimo: meta.th_optimo,
+      };
+    });
+  }, [v3Meta]);
+
+  const cat = categoriasDyn.find(c => c.id === selectedCat) || categoriasDyn[0];
+
   const activosCat = useMemo(() => {
     const predicciones = marketData?.TOP_25_DIPS || [];
     return predicciones.filter(a => {
@@ -81,10 +146,22 @@ const Backtesting = () => {
     });
   }, [marketData, cat]);
 
-  const buySignals = activosCat.filter(a => a.Veredicto_V2 === 'BUY');
+  const buySignals = activosCat.filter(a => (a.Veredicto || a.Veredicto_V2) === 'BUY');
   const avgProb = activosCat.length
     ? (activosCat.reduce((s, a) => s + (a['Probabilidad_Exito_%'] || 0), 0) / activosCat.length).toFixed(1)
     : 0;
+
+  const btTrades = useMemo(() => {
+    if (!bt || !bt.trades) return [];
+    return bt.trades.filter(t => {
+      const matchResult = btFilter === 'TODOS' || t.Resultado === btFilter;
+      const matchCat = btCatFilter === 'Todos' || String(t.Categoria || '').toLowerCase().includes(btCatFilter.toLowerCase());
+      return matchResult && matchCat;
+    });
+  }, [bt, btFilter, btCatFilter]);
+
+  const btCats = (bt && bt.resumen_por_categoria) ? Object.keys(bt.resumen_por_categoria) : ['Sweet Spot', 'Cazador Dips', 'Recup. Rapida', 'Cuchillos Cayendo'];
+
 
   return (
     <div style={{ paddingBottom: '60px', maxWidth: '1050px', margin: '0 auto' }}>
@@ -95,16 +172,16 @@ const Backtesting = () => {
           background: 'linear-gradient(135deg, #10b981, #60a5fa)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>
-          📊 Backtesting & Optimizador MLOps V2
+          📊 Backtesting & Optimizador MLOps V3.7
         </h2>
         <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>
-          Parámetros óptimos por categoría · Modelo <strong style={{ color: '#818cf8' }}>LightGBM V2</strong> (219 activos, 14,027 muestras) · Métrica: <strong style={{ color: '#a78bfa' }}>F₀.₅-Score</strong>
+          Parámetros óptimos por categoría · 4 Modelos <strong style={{ color: '#818cf8' }}>LightGBM V3.7 Especializados</strong> (227 activos, 79,935 muestras, 5 años) · Métrica: <strong style={{ color: '#a78bfa' }}>F₀.₅-Score</strong>
         </p>
       </div>
 
       {/* ── Tabs por categoría ──────────────────────────────────────────── */}
       <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '6px', marginBottom: '24px' }}>
-        {MODELO_CATEGORIAS.map(c => (
+        {categoriasDyn.map(c => (
           <button
             key={c.id}
             onClick={() => setSelectedCat(c.id)}
@@ -183,23 +260,23 @@ const Backtesting = () => {
             />
             <StatCard
               label="📅 Confirmación"
-              value={`${cat.confirmacion} Día${cat.confirmacion > 1 ? 's' : ''}`}
+              value={`${cat.confirmacion ?? 1} Día${(cat.confirmacion ?? 1) > 1 ? 's' : ''}`}
               color="#f59e0b"
               tooltip="Días consecutivos en zona de dip para confirmar la entrada (filtro anti-ruido)."
               sub="Filtro anti-ruido"
             />
             <StatCard
               label="📈 Ret. Prom/Trade"
-              value={`+${cat.retornoTrade}%`}
-              color="#a78bfa"
+              value={`${(cat.retornoTrade ?? 0) >= 0 ? '+' : ''}${cat.retornoTrade ?? 0}%`}
+              color={(cat.retornoTrade ?? 0) >= 0 ? '#a78bfa' : '#ef4444'}
               tooltip={`Retorno neto promedio por trade después de fricción ($0.15 USD/orden). Calculado en ${cat.totalTrades} trades OOS.`}
               sub={`${cat.totalTrades} trades OOS`}
             />
             <StatCard
-              label="🚀 CAGR Anualizado"
-              value={`+${cat.cagr}%`}
-              color="#38bdf8"
-              tooltip="Tasa de crecimiento anualizado compuesto (CAGR) basada en la velocidad de rotación del capital con este TP/SL/Días."
+              label="🚀 EA Anualizado"
+              value={`${(cat.ea ?? cat.cagr ?? 0) > 0 ? '+' : ''}${cat.ea ?? cat.cagr ?? 0}%`}
+              color={(cat.ea ?? cat.cagr ?? 0) > 0 ? '#38bdf8' : '#94a3b8'}
+              tooltip="Interés Efectivo Anualizado (EA) basado en la tasa de victorias y velocidad de rotación."
               sub="Ritmo del capital"
             />
           </div>
@@ -261,7 +338,7 @@ const Backtesting = () => {
                   <th style={{ padding: '10px 14px' }}>Precio</th>
                   <th style={{ padding: '10px 14px' }}>Prob. Éxito</th>
                   <th style={{ padding: '10px 14px' }}>Veredicto</th>
-                  <th style={{ padding: '10px 14px' }}>Kelly %</th>
+                  <th style={{ padding: '10px 14px' }}>Take Profit $</th>
                   <th style={{ padding: '10px 14px' }}>Stop Loss ATR</th>
                   <th style={{ padding: '10px 14px' }}>RSI 14D</th>
                   <th style={{ padding: '10px 14px' }}>Drawdown 52W</th>
@@ -273,7 +350,9 @@ const Backtesting = () => {
                 ) : activosCat.map(a => {
                   const prob = a['Probabilidad_Exito_%'] || 0;
                   const probColor = prob >= 60 ? '#10b981' : prob >= 40 ? '#eab308' : '#ef4444';
-                  const isBuy = a.Veredicto_V2 === 'BUY';
+                  const isBuy = (a.Veredicto || a.Veredicto_V2) === 'BUY';
+                  const tpUSD = a.Take_Profit_$ ?? (a.Precio_Actual ? (a.Precio_Actual * 1.10).toFixed(2) : 'N/A');
+                  const stopLossUSD = a.Stop_Loss_ATR_$ ?? a.Stop_Loss_ATR_USD ?? (a.Precio_Actual ? (a.Precio_Actual * 0.96).toFixed(2) : 'N/A');
                   return (
                     <tr key={a.Ticker} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', transition: '0.15s' }}
                       onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
@@ -294,11 +373,11 @@ const Backtesting = () => {
                           color: isBuy ? '#10b981' : '#64748b',
                           border: `1px solid ${isBuy ? 'rgba(16,185,129,0.3)' : 'rgba(100,116,139,0.2)'}`,
                         }}>
-                          {a.Emoji} {a.Veredicto_V2}
+                          {a.Emoji || (isBuy ? '💎' : '⏳')} {a.Veredicto || a.Veredicto_V2}
                         </span>
                       </td>
-                      <td style={{ padding: '12px 14px', color: '#818cf8', fontWeight: 700 }}>{a['Position_Sizing_Kelly_%'] ?? 0}%</td>
-                      <td style={{ padding: '12px 14px', color: '#ef4444', fontWeight: 600 }}>${a.Stop_Loss_ATR_USD}</td>
+                      <td style={{ padding: '12px 14px', color: '#10b981', fontWeight: 700 }}>${tpUSD}</td>
+                      <td style={{ padding: '12px 14px', color: '#ef4444', fontWeight: 600 }}>${stopLossUSD}</td>
                       <td style={{ padding: '12px 14px', color: Number(a.RSI_14D) < 30 ? '#10b981' : Number(a.RSI_14D) > 70 ? '#ef4444' : '#eab308', fontWeight: 600 }}>{a.RSI_14D}</td>
                       <td style={{ padding: '12px 14px', color: Math.abs(a['Drawdown_52W_%'] || 0) > 40 ? '#ef4444' : '#f59e0b', fontWeight: 600 }}>{a['Drawdown_52W_%']}%</td>
                     </tr>
@@ -310,17 +389,168 @@ const Backtesting = () => {
         )}
       </div>
 
+      {/* ── Backtest Real — Últimos 45 Días ─────────────────────────────── */}
+      <div style={{ background: 'rgba(18,26,44,0.7)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', padding: '22px 24px', marginBottom: '28px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '18px' }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#f8fafc' }}>
+              📈 Backtest Real — Últimos 45 Días
+            </h3>
+            <p style={{ margin: '4px 0 0', color: '#475569', fontSize: '0.8rem' }}>
+              Simulación trade-a-trade de cada señal sobre precios reales · Fricción $0.15 USD/orden
+              {bt?.ventana ? ` · Ventana: ${bt.ventana}` : ''}
+            </p>
+          </div>
+        </div>
+
+        {btLoading ? (
+          <div style={{ textAlign: 'center', padding: '30px', color: '#475569', fontSize: '0.85rem' }}>Cargando backtest 45 días…</div>
+        ) : !bt ? (
+          <div style={{ textAlign: 'center', padding: '30px', color: '#475569', fontSize: '0.85rem' }}>
+            No hay datos de backtest 45 días.
+          </div>
+        ) : (
+          <>
+            {/* Métricas globales */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', marginBottom: '20px' }}>
+              <StatCard label="Trades Totales" value={bt.resumen?.total ?? bt.total_activos ?? 0} color="#94a3b8" sub={`${bt.resumen?.buy_signals ?? 0} señales BUY`} />
+              <StatCard label="✅ Wins" value={bt.resumen?.wins ?? bt.wins ?? 0} color="#10b981" tooltip="Señales que alcanzaron el Take Profit" />
+              <StatCard label="❌ Losses" value={bt.resumen?.losses ?? bt.losses ?? 0} color="#ef4444" tooltip="Señales que tocaron el Stop Loss" />
+              <StatCard label="⏱️ Timeouts" value={bt.resumen?.timeouts ?? bt.timeouts ?? 0} color="#f59e0b" tooltip="Señales que agotaron el tiempo máximo sin llegar a TP ni SL" />
+              <StatCard
+                label="Win Rate Real"
+                value={`${bt.resumen?.['win_rate_%'] ?? bt['win_rate_real_%'] ?? 0}%`}
+                color={(bt.resumen?.['win_rate_%'] ?? 0) >= 40 ? '#10b981' : '#ef4444'}
+                tooltip="Wins / total de trades en los últimos 45 días"
+              />
+              <StatCard
+                label="PnL Promedio"
+                value={`${(bt.resumen?.['pnl_promedio_%'] ?? 0) > 0 ? '+' : ''}${bt.resumen?.['pnl_promedio_%'] ?? 0}%`}
+                color={(bt.resumen?.['pnl_promedio_%'] ?? 0) >= 0 ? '#10b981' : '#ef4444'}
+                tooltip="Ganancia/pérdida neta promedio por trade (después de fricción)"
+              />
+            </div>
+
+            {/* Filtros por resultado y categoría */}
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '14px' }}>
+              <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700, marginRight: '4px' }}>RESULTADO:</span>
+              {['TODOS', 'WIN', 'LOSS', 'TIMEOUT'].map(r => {
+                const cfg = RESULT_CFG[r] || { label: 'Todos', color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.3)' };
+                return (
+                  <button key={r} onClick={() => setBtFilter(r)} style={{
+                    padding: '5px 14px', borderRadius: '16px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                    background: btFilter === r ? cfg.bg : 'rgba(22,32,50,0.7)',
+                    color: btFilter === r ? cfg.color : '#64748b',
+                    border: `1px solid ${btFilter === r ? cfg.border : 'rgba(255,255,255,0.07)'}`,
+                    transition: 'all 0.2s',
+                  }}>
+                    {r === 'TODOS' ? 'Todos' : cfg.label}
+                  </button>
+                );
+              })}
+              <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700, margin: '0 4px 0 14px' }}>CATEGORÍA:</span>
+              {['Todos', ...btCats].map(c => (
+                <button key={c} onClick={() => setBtCatFilter(c)} style={{
+                  padding: '5px 14px', borderRadius: '16px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                  background: btCatFilter === c ? 'rgba(99,102,241,0.15)' : 'rgba(22,32,50,0.7)',
+                  color: btCatFilter === c ? '#818cf8' : '#64748b',
+                  border: `1px solid ${btCatFilter === c ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.07)'}`,
+                  transition: 'all 0.2s',
+                }}>{c}</button>
+              ))}
+            </div>
+
+            {/* Tabla de señales */}
+            {btTrades.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#475569', fontSize: '0.85rem' }}>No hay trades que coincidan con los filtros.</div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <thead>
+                    <tr style={{ fontSize: '0.75rem', color: '#475569', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                      <th style={{ padding: '10px 12px' }}>Ticker</th>
+                      <th style={{ padding: '10px 12px' }}>Categoría</th>
+                      <th style={{ padding: '10px 12px' }}>Señal</th>
+                      <th style={{ padding: '10px 12px' }}>Prob.</th>
+                      <th style={{ padding: '10px 12px' }}>Entrada → Salida</th>
+                      <th style={{ padding: '10px 12px' }}>Días / TimeStop</th>
+                      <th style={{ padding: '10px 12px' }}>PnL Neto</th>
+                      <th style={{ padding: '10px 12px' }}>Motivo de Salida</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {btTrades.map((t, i) => {
+                      const catColor = CAT_COLOR[t.Categoria] || { color: '#94a3b8', bg: 'rgba(148,163,184,0.12)' };
+                      const pnl = t['PnL_Neto_%'] ?? t['PnL_%'] ?? 0;
+                      const pnlColor = pnl >= 0 ? '#10b981' : '#ef4444';
+                      const isBuy = (t.Veredicto || t.Veredicto_V2) === 'BUY';
+                      
+                      const tpPct = t['TP_%'] ?? 10;
+                      const slPct = t['SL_%'] ?? 4;
+                      const maxDias = 11;
+                      
+                      const motivoSalida = t.Resultado === 'WIN'
+                        ? { label: `🎯 TP (+${tpPct}%)`, color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.3)' }
+                        : t.Resultado === 'LOSS'
+                        ? { label: `🛑 SL (-${slPct}%)`, color: '#ef4444', bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.3)' }
+                        : { label: `⏱️ Time Stop (${t.Dias_Trade}d)`, color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)' };
+
+                      return (
+                        <tr key={t.Ticker + i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', transition: '0.15s' }}
+                          onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                          onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <td style={{ padding: '11px 12px' }}>
+                            <div style={{ fontWeight: 800, color: '#f8fafc', fontSize: '0.92rem' }}>{t.Ticker}</div>
+                            <div style={{ fontSize: '0.7rem', color: '#475569', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.Nombre || t.Ticker}</div>
+                          </td>
+                          <td style={{ padding: '11px 12px' }}>
+                            <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 700, background: catColor.bg, color: catColor.color, border: '1px solid ' + catColor.color + '44', whiteSpace: 'nowrap' }}>{t.Categoria}</span>
+                          </td>
+                          <td style={{ padding: '11px 12px' }}>
+                            <span style={{
+                              padding: '3px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700,
+                              background: isBuy ? 'rgba(16,185,129,0.15)' : 'rgba(100,116,139,0.12)',
+                              color: isBuy ? '#10b981' : '#64748b',
+                              border: `1px solid ${isBuy ? 'rgba(16,185,129,0.3)' : 'rgba(100,116,139,0.2)'}`,
+                            }}>
+                              {isBuy ? '💎 BUY' : '⏳ HOLD'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '11px 12px', color: (t['Probabilidad_%'] ?? 50) >= 40 ? '#eab308' : '#64748b', fontWeight: 700 }}>{t['Probabilidad_%'] ?? 50}%</td>
+                          <td style={{ padding: '11px 12px', color: '#cbd5e1', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                            {t.Fecha_Entrada}<br />
+                            <span style={{ color: '#64748b' }}>${t.Precio_Entrada_Hist?.toFixed(2)} → ${t.Precio_Salida?.toFixed(2)}</span>
+                          </td>
+                          <td style={{ padding: '11px 12px', color: '#60a5fa', fontWeight: 600, fontSize: '0.82rem' }}>
+                            {t.Dias_Trade}d <span style={{ color: '#475569', fontSize: '0.72rem' }}>/ {maxDias}d máx</span>
+                          </td>
+                          <td style={{ padding: '11px 12px', fontWeight: 800, color: pnlColor }}>{pnl > 0 ? '+' : ''}{pnl}%</td>
+                          <td style={{ padding: '11px 12px' }}>
+                            <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 700, background: motivoSalida.bg, color: motivoSalida.color, border: `1px solid ${motivoSalida.border}`, whiteSpace: 'nowrap' }}>{motivoSalida.label}</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
       {/* ── Comparativa entre categorías ────────────────────────────────── */}
       <div style={{ background: 'rgba(18,26,44,0.7)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', padding: '22px 24px' }}>
         <h3 style={{ margin: '0 0 6px', fontSize: '1.2rem', color: '#f8fafc' }}>
-          🏆 Comparativa entre Categorías (Modelo V2)
+          🏆 Comparativa entre Categorías (Modelo V3.7)
         </h3>
         <p style={{ margin: '0 0 20px', color: '#475569', fontSize: '0.8rem' }}>
-          Todas optimizadas con F₀.₅-Score · Fricción $0.15 USD/trade · Out-of-Sample (datos no vistos)
+          Modelos especializados por categoría optimizados con F₀.₅-Score · Out-of-Sample (5 años OHLCV)
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
-          {MODELO_CATEGORIAS.map(c => (
+          {categoriasDyn.map(c => (
             <motion.div
               key={c.id}
               whileHover={{ y: -3 }}
@@ -337,13 +567,13 @@ const Backtesting = () => {
               <div style={{ fontWeight: 800, color: c.color, fontSize: '0.95rem', marginBottom: '12px' }}>{c.nombre}</div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', marginBottom: '6px' }}>
-                <span>CAGR:</span><span style={{ color: '#38bdf8', fontWeight: 700 }}>+{c.cagr}% / año</span>
+                <span>Frecuencia:</span><span style={{ color: '#38bdf8', fontWeight: 700 }}>{c.frecuencia}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', marginBottom: '6px' }}>
-                <span>Ret./Trade:</span><span style={{ color: '#a78bfa', fontWeight: 700 }}>+{c.retornoTrade}%</span>
+                <span>Expectancia:</span><span style={{ color: c.retornoTrade >= 0 ? '#10b981' : '#ef4444', fontWeight: 700 }}>{c.retornoTrade > 0 ? '+' : ''}{c.retornoTrade}%</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', marginBottom: '6px' }}>
-                <span>Win Rate:</span><span style={{ color: c.color, fontWeight: 700 }}>{c.winRate}%</span>
+                <span>Win Rate OOS:</span><span style={{ color: c.color, fontWeight: 700 }}>{c.winRate}%</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', marginBottom: '10px' }}>
                 <span>Time Stop:</span><span style={{ color: '#60a5fa', fontWeight: 700 }}>{c.limiteDias}d máx</span>

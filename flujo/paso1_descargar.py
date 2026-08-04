@@ -49,35 +49,35 @@ def main():
 
     universe = [
         # --- CRIPTOMONEDAS Y BLOCKCHAIN ---
-        "BTC-USD", "ETH-USD", "SOL-USD", "COIN", "MARA", "RIOT", "MSTR",
-        # ETFs cripto spot (aprobados 2024)
+        "BTC-USD", "ETH-USD", "SOL-USD", "ADA-USD", "AVAX-USD", "LINK-USD", "DOT-USD", "COIN", "MARA", "RIOT", "MSTR", "CLSK", "CIFR", "WULF",
+        # ETFs cripto spot
         "IBIT", "FBTC", "BITB", "ARKB",
 
-        # --- MATERIAS PRIMAS, ORO, URANIO ---
-        "GLD", "URNJ", "TLT", "EMB", "LIT", "REMX", "COPX", "SILJ",
-        "CCJ", "NXE", "UUUU", "URA", "FCX", "SCCO", "BHP", "RIO", "NLR", "CEG",
-        # Commodities agrícolas (gap cubierto)
+        # --- MATERIAS PRIMAS, ORO, PLATA, URANIO ---
+        "GLD", "SLV", "URNJ", "TLT", "EMB", "LIT", "REMX", "COPX", "SILJ", "GDX", "GDXJ",
+        "CCJ", "NXE", "UUUU", "URA", "FCX", "SCCO", "BHP", "RIO", "NLR", "CEG", "NEM", "GOLD", "AEM", "WPM", "FNV", "AG", "PAAS", "HL", "KGC",
+        # Commodities agrícolas
         "DBA", "CORN", "WEAT", "SOYB",
-        # Agua e infraestructura (gap cubierto)
+        # Agua e infraestructura
         "PHO", "FIW", "PAVE", "IFRA",
 
-        # --- TECNOLOGÍA PURA E IA ---
+        # --- TECNOLOGÍA PURA, IA Y SEMICONDUCTORES ---
         "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "AMD",
-        "INTC", "MU", "SMCI", "TSM", "ASML", "ARM", "PLTR",
-        # Tech faltante relevante
-        "DELL", "ORCL", "CRM", "ADBE", "QCOM", "AVGO",
+        "INTC", "MU", "SMCI", "TSM", "ASML", "ARM", "PLTR", "LRCX", "KLAC", "AMAT", "ADI", "TXN", "NXPI", "MRVL", "MCHP", "ON", "MPWR", "WDC", "STX",
+        # Tech software & Hardware
+        "DELL", "ORCL", "CRM", "ADBE", "QCOM", "AVGO", "HPQ", "HPE", "NTAP", "WDC",
 
         # --- CIBERSEGURIDAD, NUBE Y SAAS ---
-        "CRWD", "PANW", "FTNT", "ZS", "NET", "SNOW", "NOW",
-        "OKTA", "DDOG", "S", "HUBS",
+        "CRWD", "PANW", "FTNT", "ZS", "NET", "SNOW", "NOW", "WDAY", "INTU",
+        "OKTA", "DDOG", "S", "HUBS", "DBX", "DOCU", "TWLO", "MDB", "PATH", "TEAM", "MANH", "ANSS", "PTC",
 
         # --- FINTECH Y PAGOS ---
-        "V", "MA", "PYPL", "SOFI", "AFRM", "HOOD", "SQ",
+        "V", "MA", "PYPL", "SOFI", "AFRM", "HOOD", "SQ", "TOST", "BILL", "FOUR", "FIS", "FISV", "GPN",
 
         # --- INNOVACIÓN, ESPACIO Y ROBÓTICA ---
         "ARKK", "BOTZ", "ROBO", "SOXQ", "MOON", "UFO", "ARKG",
-        "BLOK", "DAPP", "RKLB", "ASTS", "JOBY", "SMR", "OKLO",
-        "LUNR", "RDDT", "AI", "PATH",
+        "BLOK", "DAPP", "RKLB", "ASTS", "JOBY", "ACHR", "SMR", "OKLO",
+        "LUNR", "RDDT", "AI", "PATH", "SYM",
 
         # --- LATAM Y MERCADOS EMERGENTES ---
         "MELI", "NU", "PBR", "VALE", "ITUB", "GXG", "ILF", "ECH",
@@ -87,47 +87,43 @@ def main():
         # --- ASIA Y CHINA ---
         "BABA", "JD", "PDD", "BIDU", "NIO", "BYDDY", "TCEHY", "SEA",
         "MCHI", "INDA", "SMIN", "EWY", "EWT", "VNM", "SE", "GRAB",
-        "UMC", "ASX", "INFY", "WIT", "SONY", "HDB",
-        "KWEB", "CQQQ",
+        "UMC", "ASX", "INFY", "WIT", "SONY", "HDB", "KWEB", "CQQQ",
 
-        # --- ENERGÍA LIMPIA Y SOLAR ---
+        # --- ENERGÍA LIMPIA Y UTILITIES ---
         "FSLR", "ENPH", "RUN", "SEDG", "BEP", "NEE", "ICLN", "TAN", "FAN", "CWEN",
-        "PLUG", "BLNK", "CHPT",
+        "PLUG", "BLNK", "CHPT", "VST", "GEV", "HASI", "AEE", "CMS", "ED", "EIX", "ES", "FE", "WEC", "XEL",
 
-        # --- DEFENSA Y AEROESPACIAL (ampliado) ---
-        "LMT", "RTX", "GD", "NOC",
-        "HII", "BA", "AXON", "CACI", "HEI",
+        # --- DEFENSA Y AEROESPACIAL ---
+        "LMT", "RTX", "GD", "NOC", "HII", "BA", "AXON", "CACI", "HEI", "GE", "HON", "TDG", "LDOS",
 
         # --- BIOTECNOLOGÍA Y SALUD ---
         "XBI", "CRSP", "EDIT", "NTLA", "PACB", "LLY", "ABBV", "PFE",
         "MRK", "JNJ", "BMY", "UNH", "CVS", "ISRG", "TMO", "DHR",
-        "MRNA", "REGN", "GILD", "VRTX", "BIIB",
+        "MRNA", "REGN", "GILD", "VRTX", "BIIB", "SYK", "BSX", "MDT", "ABT", "EW", "DXCM", "PODD", "ALGN", "IDXX", "ZTS", "GEHC", "RMD",
 
         # --- BIENES RAÍCES (REITs) ---
-        "O", "PLD", "AMT", "CCI", "EQIX", "SPG",
-        "VICI", "IRM", "PSA", "DLR",
+        "O", "PLD", "AMT", "CCI", "EQIX", "SPG", "VICI", "IRM", "PSA", "DLR", "SBAC", "WY", "EXR", "MAA",
 
-        # --- CONSUMO, TURISMO Y BANCA ---
-        "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP",
-        "WMT", "SBUX", "GS", "MS", "AXP", "BLK", "DAL", "UAL",
-        "JPM", "BAC", "WFC", "C", "NKE", "DIS",
-        "RACE", "LVS", "MAR", "HLT",
+        # --- CONSUMO, TURISMO, RETAIL Y BANCA ---
+        "UBER", "ABNB", "COST", "TGT", "HD", "MCD", "KO", "PEP", "NKE", "SBUX", "LULU", "ULTA", "CMG", "DPZ", "YUM", "BKNG", "EXPE", "MAR", "HLT", "RCL", "CCL", "NCLH", "ROST", "TJX", "DG", "DLTR",
+        "WMT", "GS", "MS", "AXP", "BLK", "DAL", "UAL", "JPM", "BAC", "WFC", "C", "DIS",
+        "RACE", "LVS", "BRK-B", "PGR", "ALL", "TRV", "MET", "PRU",
+
+        # --- INDUSTRIAL Y MAQUINARIA ---
+        "CAT", "DE", "EMR", "ETN", "ROK", "ITW", "PH", "CMI", "TT", "JCI", "CARR", "OTIS", "PWR", "IR", "AME", "FAST",
 
         # --- ENERGÍA FÓSIL ---
-        "XOM", "CVX", "COP", "SLB", "OXY",
-        "MPC", "VLO", "PSX",
+        "XOM", "CVX", "COP", "SLB", "OXY", "MPC", "VLO", "PSX", "HAL", "BKR", "KMI", "WMB", "OKE",
 
-        # --- VOLATILIDAD Y HEDGE (gap cubierto) ---
+        # --- VOLATILIDAD Y HEDGE ---
         "UVXY", "VIXY", "SQQQ", "PSQ",
 
         # --- BONOS ---
-        "EMB", "VWOB", "EMLC", "PCY", "BND", "AGG", "LQD", "HYG", "JNK",
-        "TIPS", "SHY", "IEF",
+        "EMB", "VWOB", "EMLC", "PCY", "BND", "AGG", "LQD", "HYG", "JNK", "TIPS", "SHY", "IEF",
 
         # --- ETFs GENERALES Y DIVIDENDOS ---
         "SPY", "QQQ", "QQQM", "VTI", "VEA", "VWO", "SCHD", "JEPI",
-        "^TNX", "VDE", "XLV", "XLF", "XLC", "XLY", "XLP", "XLI",
-        "XLB", "XLRE", "XLU",
+        "VDE", "XLV", "XLF", "XLC", "XLY", "XLP", "XLI", "XLB", "XLRE", "XLU",
         "NOBL", "HDV", "VIG", "DGRO"
     ]
     

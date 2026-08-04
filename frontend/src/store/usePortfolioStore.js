@@ -12,11 +12,19 @@ export const calcularResumenPosicion = (lotes) => {
   return { precioPromedio, cantidadTotal, totalInvertido };
 };
 
-// ─── Seed de posiciones reales del usuario (a partir de UFO en adelante) ─────
+// ─── Seed de posiciones reales del usuario ──────────────────────────────────
 const buildSeed = () => [
   {
     position: { id: uuidv4(), ticker: 'UFO', nombre: 'Procure Space ETF', categoria: '🎯 Sweet Spot' },
     lotes: [{ id: uuidv4(), precioCompra: 43.4685, cantidad: 2.29476, fechaCompra: '2026-07-30', nota: 'Trii/Hapi' }],
+  },
+  {
+    position: { id: uuidv4(), ticker: 'QCOM', nombre: 'Qualcomm Inc.', categoria: '⚡ Recup. Rápida' },
+    lotes: [{ id: uuidv4(), precioCompra: 151.26, cantidad: 0.82537, fechaCompra: '2026-08-03', nota: 'Compra $125.00 USD ($0.15 fee)' }],
+  },
+  {
+    position: { id: uuidv4(), ticker: 'ENPH', nombre: 'Enphase Energy Inc.', categoria: '🎯 Sweet Spot' },
+    lotes: [{ id: uuidv4(), precioCompra: 39.37, cantidad: 3.17438, fechaCompra: '2026-08-03', nota: 'Compra $125.15 USD ($0.15 fee)' }],
   },
 ];
 
@@ -31,8 +39,15 @@ const load = () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // Validar estructura esperada
       if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.position && parsed[0]?.lotes) {
+        // Garantizar que QCOM y ENPH estén presentes en el portafolio cargado
+        const seed = buildSeed();
+        seed.forEach(sItem => {
+          const exists = parsed.find(p => p.position.ticker === sItem.position.ticker);
+          if (!exists) {
+            parsed.push(sItem);
+          }
+        });
         return parsed;
       }
     }

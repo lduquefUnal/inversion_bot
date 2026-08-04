@@ -1,28 +1,31 @@
 #!/usr/bin/env python3
 """
-Etapa 4: Inferencia en Vivo V2 (Oráculo MLOps + Métricas Cuantitativas & Fundamentales)
+Etapa 4: Inferencia en Vivo V3.7 (Oráculo MLOps con Modelos Especializados)
 ---------------------------------------------------------------------------------------
 Genera 'flujo_datos/predicciones_v2.json' ordenado descendentemente por 'Probabilidad_Exito_%'.
-Incluye:
-  - Veredicto V2, Kelly Position Sizing, Stop Loss ATR $, Trailing Stop $.
-  - Drawdown 52W %, RSI 2D / 14D, FCF, P/E Ratio, Beta.
+Consume los modelos especializados V3.7 (lightgbm_cat_*.pkl) y la metadata modelo_metadata_v3_cat.json.
+Sincroniza el resultado con 'frontend/public/predicciones_v2.json'.
 """
 
 import os
 import re
+import sys
 import json
-import pandas as pd
-import numpy as np
 import joblib
+import numpy as np
+import pandas as pd
 
-MODELOS_DIR = os.path.join(os.path.dirname(__file__), "..", "Modelos")
-FLUJO_DATOS_DIR = os.path.join(os.path.dirname(__file__), "..", "flujo_datos")
+sys.path.insert(0, os.path.dirname(__file__))
+from bt_honesto import (compute_features, enrich_derived, enrich_fundamentals,
+                        FULL_FEATURES, CAT_PARAMS, CACHE, MODELOS, ROOT,
+                        asignar_categoria, parse_fcf)
+
+FLUJO_DATOS_DIR = os.path.join(ROOT, "flujo_datos")
 MERCADO_JSON_PATH = os.path.join(FLUJO_DATOS_DIR, "mercado.json")
 PREDICCIONES_JSON_PATH = os.path.join(FLUJO_DATOS_DIR, "predicciones_v2.json")
-FRONTEND_PUBLIC_PATH = os.path.join(os.path.dirname(__file__), "..", "frontend", "public", "predicciones_v2.json")
+FRONTEND_PUBLIC_PATH = os.path.join(ROOT, "frontend", "public", "predicciones_v2.json")
+METADATA_CAT_PATH = os.path.join(MODELOS, "modelo_metadata_v3_cat.json")
 
-MODEL_PATH = os.path.join(MODELOS_DIR, "lightgbm_v2.pkl")
-METADATA_PATH = os.path.join(MODELOS_DIR, "modelo_metadata.json")
 
 def limpiar_float(val, default=0.0):
     if val is None:
@@ -34,17 +37,8 @@ def limpiar_float(val, default=0.0):
         return float(match.group())
     return default
 
-def asignar_categoria(drawdown_52w, rsi14, tendencia_sana):
-    if drawdown_52w < -35 and rsi14 < 32:
-        return "Cazador Dips"
-    elif tendencia_sana and drawdown_52w <= -20:
-        return "Sweet Spot"
-    elif tendencia_sana:
-        return "Recup. Rapida"
-    else:
-        return "Cuchillos Cayendo"
 
-def calcular_position_sizing_kelly(prob, benefit_risk_ratio=1.8):
+def calcular_position_sizing_kelly(prob, benefit_risk_ratio=2.0):
     p = prob
     q = 1.0 - p
     b = benefit_risk_ratio
@@ -52,30 +46,43 @@ def calcular_position_sizing_kelly(prob, benefit_risk_ratio=1.8):
     half_kelly = max(0.0, f_star / 2.0)
     return round(min(0.25, half_kelly) * 100, 1)
 
+
 def ejecutar_inferencia():
-    if not os.path.exists(MODEL_PATH) or not os.path.exists(MERCADO_JSON_PATH):
-        print("❌ Error: Faltan archivos necesarios (modelo o mercado.json).")
+    if not os.path.exists(METADATA_CAT_PATH) or not os.path.exists(MERCADO_JSON_PATH):
+        print("❌ Error: Faltan archivos necesarios (metadata_v3_cat o mercado.json).")
         return
 
-    print("🔮 [1/3] Cargando modelo Algoritmo V2 (200+ Activos)...")
-    model = joblib.load(MODEL_PATH)
+    print("🔮 [1/3] Cargando modelos especializados por categoría V3.7...")
+    metadata_cat = json.load(open(METADATA_CAT_PATH, "r", encoding="utf-8"))
+    
+    cat_models = {}
+    cat_thresholds = {}
+    for cat in ["Sweet Spot", "Cazador Dips", "Recup. Rapida", "Cuchillos Cayendo"]:
+        slug = cat.lower().replace(".", "").replace(" ", "_")
+        m_file = os.path.join(MODELOS, f"lightgbm_cat_{slug}.pkl")
+        if os.path.exists(m_file):
+            cat_models[cat] = joblib.load(m_file)
+            cat_thresholds[cat] = metadata_cat[cat]["th_optimo"]
+        else:
+            print(f"⚠️ Modelo {m_file} no encontrado.")
 
-    with open(METADATA_PATH, "r", encoding="utf-8") as f:
-        meta = json.load(f)
+    mercado_data = json.load(open(MERCADO_JSON_PATH, "r", encoding="utf-8"))
+    ohlcv = pd.read_csv(CACHE, parse_dates=["Date"]) if os.path.exists(CACHE) else None
 
-    with open(MERCADO_JSON_PATH, "r", encoding="utf-8") as f:
-        mercado_data = json.load(f)
+    if ohlcv is None:
+        print("❌ Error: ohclv_cache.csv no existe para inferencia.")
+        return
 
-    features = meta["features"]
-    umbral = meta["umbral_optimo"]
-    win_rate_test = meta.get("precision_%", 80.0)
+    print("📡 [2/3] Calculando features V3 y ejecutando inferencia por micro-régimen...")
+    
+    feat_all = compute_features(ohlcv)
+    feat_all = enrich_derived(feat_all)
+    feat_all = enrich_fundamentals(feat_all)
+
+    # Último vector de cada ticker
+    latest_feats = feat_all.groupby("Ticker").last().reset_index()
 
     activos = mercado_data.get("TOP_25_DIPS", []) + mercado_data.get("TOP_50_DIPS", [])
-    if not activos:
-        print("⚠️ No hay activos disponibles en mercado.json.")
-        return
-
-    # Deduplicar activos por Ticker
     seen_tickers = set()
     unique_activos = []
     for a in activos:
@@ -84,88 +91,80 @@ def ejecutar_inferencia():
             seen_tickers.add(tk)
             unique_activos.append(a)
 
-    print(f"📡 [2/3] Calculando Probabilidades, Position Sizing y Métricas para {len(unique_activos)} activos...")
     resultados = []
 
     for a in unique_activos:
         ticker = a.get("Ticker")
         precio_actual = limpiar_float(a.get("Precio Actual"), 100.0)
 
-        rsi_14 = limpiar_float(a.get("RSI 14D"), 50.0)
-        rsi_2 = limpiar_float(a.get("RSI 7D"), rsi_14 * 0.7)
-        dist_sma200 = limpiar_float(a.get("Distancia a SMA200"), 0.0)
-        dist_sma50 = limpiar_float(a.get("Distancia a SMA50"), 0.0)
-        dist_ema20 = limpiar_float(a.get("Distancia a EMA20"), 0.0)
-        atr_pct = limpiar_float(a.get("ATR_%"), 2.5)
-        dd_52w = limpiar_float(a.get("Drawdown 52W %"), -10.0)
+        # Buscar fila de features
+        row = latest_feats[latest_feats["Ticker"] == ticker]
+        if row.empty:
+            continue
+        r = row.iloc[0]
 
-        # Fundamentales & Volatilidad
-        fcf = a.get("FCF", a.get("Free Cash Flow", "N/A"))
-        pe_ratio = a.get("P/E Ratio", a.get("PER", "N/A"))
-        beta = a.get("Beta", a.get("Beta (Volatilidad)", "N/A"))
+        cat = r["Categoria"] if pd.notna(r["Categoria"]) else "Sweet Spot"
+        model = cat_models.get(cat, list(cat_models.values())[0])
+        th_optimo = cat_thresholds.get(cat, 0.50)
+        params = CAT_PARAMS.get(cat, {"tp": 0.10, "sl": 0.04, "limite_dias": 11})
 
-        tendencia_sana = 1 if (dist_sma200 >= 0 and dist_ema20 >= dist_sma50) else 0
-        cat = asignar_categoria(dd_52w, rsi_14, tendencia_sana == 1)
-
-        feat_vector = pd.DataFrame([{
-            "Cat_Sweet_Spot": 1 if cat == "Sweet Spot" else 0,
-            "Cat_Cazador_Dips": 1 if cat == "Cazador Dips" else 0,
-            "Cat_Recup_Rapida": 1 if cat == "Recup. Rapida" else 0,
-            "Cat_Cuchillos_Cayendo": 1 if cat == "Cuchillos Cayendo" else 0,
-            "RSI_2": rsi_2,
-            "RSI_14": rsi_14,
-            "ATR_%": atr_pct,
-            "Tendencia_Sana": tendencia_sana,
-            "Drawdown_52W_%": dd_52w
-        }])[features]
-
+        feat_vector = pd.DataFrame([r[FULL_FEATURES]])
         prob = float(model.predict_proba(feat_vector)[0, 1])
-        prob_pct = round(prob * 100, 1)
+        prob_pct = round(prob * 100.0, 1)
 
-        position_size_pct = calcular_position_sizing_kelly(prob)
+        position_size_pct = calcular_position_sizing_kelly(prob, benefit_risk_ratio=params["tp"]/params["sl"])
+        atr_pct = float(r["ATR_%"])
         atr_valor = precio_actual * (atr_pct / 100.0)
-        stop_loss_atr_precio = round(max(0.01, precio_actual - (2.0 * atr_valor)), 2)
-        trailing_stop_precio = round(max(0.01, precio_actual - (1.5 * atr_valor)), 2)
+        stop_loss_atr_precio = round(max(0.01, precio_actual * (1.0 - params["sl"])), 2)
+        take_profit_precio = round(precio_actual * (1.0 + params["tp"]), 2)
 
-        if prob >= umbral:
+        if prob >= th_optimo:
             veredicto = "BUY"
             emoji = "💎"
-        elif prob >= (umbral - 0.15):
+        elif prob >= (th_optimo - 0.10):
             veredicto = "WATCH"
-            emoji = "🟡"
+            emoji = "👀"
         else:
             veredicto = "HOLD"
-            emoji = "🟢"
+            emoji = "⏳"
 
-        res = {
+        pe_raw = a.get("Valor Mercado (P/E Ratio)", a.get("P/E Ratio", a.get("PER", "N/A")))
+        pe_ratio = pe_raw if pe_raw not in (None, "", "N/A") else "N/A"
+        fcf = a.get("FCF", a.get("Free Cash Flow", "N/A"))
+        beta = a.get("Beta", a.get("Beta (Volatilidad)", "N/A"))
+
+        resultados.append({
             "Ticker": ticker,
             "Nombre": a.get("Nombre", ticker),
             "Categoria": cat,
             "Precio_Actual": precio_actual,
             "Probabilidad_Exito_%": prob_pct,
-            "Umbral_Requerido_%": round(umbral * 100, 1),
-            "Veredicto_V2": veredicto,
+            "Veredicto": veredicto,
             "Emoji": emoji,
             "Position_Sizing_Kelly_%": position_size_pct,
-            "Stop_Loss_ATR_USD": stop_loss_atr_precio,
-            "Trailing_Stop_USD": trailing_stop_precio,
-            "WinRate_Modelo_%": win_rate_test,
-            "Drawdown_52W_%": dd_52w,
-            "RSI_14D": rsi_14,
-            "RSI_2D": round(rsi_2, 1),
+            "Take_Profit_%": params["tp"] * 100.0,
+            "Take_Profit_$": take_profit_precio,
+            "Stop_Loss_%": params["sl"] * 100.0,
+            "Stop_Loss_ATR_$": stop_loss_atr_precio,
+            "Limite_Dias": params["limite_dias"],
+            "Umbral_Optimo_%": round(th_optimo * 100.0, 1),
+            "Drawdown_52W_%": round(float(r["Drawdown_52W_%"]), 1),
+            "RSI_2D": round(float(r["RSI_2"]), 1),
+            "RSI_14D": round(float(r["RSI_14"]), 1),
+            "ATR_%": round(atr_pct, 2),
+            "Dist_SMA200_%": round(float(r["Dist_SMA200_%"]), 1),
+            "Tendencia_Sana": int(r["Tendencia_Sana"]),
             "FCF": fcf,
             "PE_Ratio": pe_ratio,
-            "Beta": beta
-        }
-        resultados.append(res)
+            "Beta": beta,
+        })
 
-    # Ordenar descendentemente por Probabilidad_Exito_%
     resultados = sorted(resultados, key=lambda x: x["Probabilidad_Exito_%"], reverse=True)
 
     payload = {
         "fecha_inferencia": pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "total_activos_evaluados": len(resultados),
-        "umbral_corte_%": round(umbral * 100, 1),
+        "total_analizados": len(resultados),
+        "total_buys": len([x for x in resultados if x["Veredicto"] == "BUY"]),
         "predicciones": resultados
     }
 
@@ -176,7 +175,9 @@ def ejecutar_inferencia():
         with open(FRONTEND_PUBLIC_PATH, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ [3/3] Inferencia V2 completada. Ordenada por Probabilidad_Exito_% ({len(resultados)} activos).")
+    print(f"✅ [3/3] Inferencia completada: {len(resultados)} predichos · {payload['total_buys']} señales BUY.")
+    print(f"   Saved to: {PREDICCIONES_JSON_PATH} & {FRONTEND_PUBLIC_PATH}")
+
 
 if __name__ == "__main__":
     ejecutar_inferencia()

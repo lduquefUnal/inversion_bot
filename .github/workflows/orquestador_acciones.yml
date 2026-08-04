@@ -29,10 +29,15 @@ jobs:
       - name: Paso 1 - Agente de Extracción de Datos de Mercado
         run: python flujo/paso1_descargar.py
 
-      - name: Paso 2 - Inferencia en Tiempo Real Modelo V2 (lightgbm_v2.pkl)
+      - name: Paso 2 - Inferencia en Tiempo Real Modelo V3.7 (Modelos Especializados por Categoría)
         run: python flujo_ml/4_inferencia_oraculo.py
 
-      - name: Paso 3 - Agente Analista (Gemini IA)
+      - name: Paso 3 - Sincronización a Frontend Public
+        run: |
+          cp flujo_datos/predicciones_v2.json frontend/public/predicciones_v2.json || true
+          cp Modelos/v3_backtest_reporte_consolidado.json Modelos/modelo_metadata_v3_cat.json Modelos/v3_thresholds_optimos.json Modelos/v3_shap_importances.json Modelos/feature_importance_shap.png frontend/public/ || true
+
+      - name: Paso 4 - Agente Analista (Gemini IA)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python flujo/paso2_analizar.py || echo "Ignorando si Gemini API no está configurado"
@@ -41,6 +46,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
-          git add flujo_datos/ Modelos/
-          git commit -m "🤖 MLOps: Inferencia Diaria Modelo V2 y Actualización Web Vercel" || echo "No hay cambios para hacer commit"
+          git add flujo_datos/ Modelos/ frontend/public/
+          git commit -m "🤖 MLOps: Inferencia Diaria Modelo V3.7 y Actualización Web Vercel" || echo "No hay cambios para hacer commit"
           git push
+

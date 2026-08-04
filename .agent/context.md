@@ -61,8 +61,15 @@ El portafolio real del usuario cuenta con los siguientes movimientos y posicione
 ## Distribución de Archivos y Carpetas Central
 - `.github/workflows/orquestador_acciones.yml`: Cronjob central de background que extrae la información a diario.
 - `/flujo`: Core de lógica en Python (matemáticas de los activos).
-- `/flujo_datos`: Almacén que funciona como DB json interactiva. 
+- `/flujo_ml/bt_honesto.py`: **SSOT del pipeline ML** — `compute_features`, `build_dataset`, `simulate_signals`, `CAT_PARAMS`, `FULL_FEATURES` (21 vars). Ver `MLOPS_INVERSION_SKILL.md`.
+- `/flujo_ml/v3_*.py`: Familia V3 — dataset, entrenamiento, grid, finetune, validación, backtest (sesión V3.5→V3.6).
+- `/flujo_datos`: Almacén que funciona como DB json interactiva (`mercado.json`, `predicciones_v2.json`, `backtest_45d.json`).
 - `/api/index.py`: Backend en Vercel para servir o modificar reglas.
 - `/frontend`: Base de la Interfaz web interactiva del usuario (Dashboard completo y Settings de IA).
-- `.agent/`: Prompts y directrices intocables de IA, preparadas para absorber funciones "Operativas" de compra en cuanto se programen las conexiones de Broker.
+- `.agent/`: Skills y directrices de IA del proyecto:
+  - `MLOPS_INVERSION_SKILL.md` — Pipeline ML completo, CAT_PARAMS validados, métricas, reglas de mantenimiento.
+  - `SWING_TRADING_SKILL.md` — Marco teórico 4 categorías + combos validados OOS V3.6.
+  - `QUANT_RISK_SKILL.md` — Kelly, ATR sizing, métricas financieras.
+  - `PONYTAIL_SKILL.md` — Filosofía de código conciso y pragmático.
+  - `references/PROMPTS_INVESTIGACION.md` — Prompts de investigación de referencia.
 

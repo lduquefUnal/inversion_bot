@@ -1,0 +1,229 @@
+{
+  "global_top_features": [
+    {
+      "feature": "Dist_SMA200_%",
+      "gain": 3747.53,
+      "pct": 12.51
+    },
+    {
+      "feature": "ATR_%",
+      "gain": 3519.32,
+      "pct": 11.75
+    },
+    {
+      "feature": "RSI_7",
+      "gain": 2830.46,
+      "pct": 9.45
+    },
+    {
+      "feature": "Return_5D_%",
+      "gain": 2544.85,
+      "pct": 8.5
+    },
+    {
+      "feature": "Drawdown_52W_%",
+      "gain": 2464.7,
+      "pct": 8.23
+    },
+    {
+      "feature": "RVOL_5D",
+      "gain": 2430.48,
+      "pct": 8.11
+    },
+    {
+      "feature": "Abs_Drawdown",
+      "gain": 2383.51,
+      "pct": 7.96
+    },
+    {
+      "feature": "RSI_14",
+      "gain": 2022.26,
+      "pct": 6.75
+    },
+    {
+      "feature": "RSI2_RSI14",
+      "gain": 1936.51,
+      "pct": 6.46
+    },
+    {
+      "feature": "TP_ATR",
+      "gain": 1860.03,
+      "pct": 6.21
+    },
+    {
+      "feature": "FCF_log",
+      "gain": 1300.46,
+      "pct": 4.34
+    },
+    {
+      "feature": "Beta",
+      "gain": 1242.58,
+      "pct": 4.15
+    },
+    {
+      "feature": "ATR_Risk_Pct",
+      "gain": 597.5,
+      "pct": 1.99
+    },
+    {
+      "feature": "RSI_2",
+      "gain": 572.53,
+      "pct": 1.91
+    },
+    {
+      "feature": "RSI2_DD",
+      "gain": 495.5,
+      "pct": 1.65
+    }
+  ],
+  "category_top_features": {
+    "Sweet Spot": [
+      {
+        "feature": "Dist_SMA200_%",
+        "gain": 458.7,
+        "importance_pct": 11.1
+      },
+      {
+        "feature": "ATR_%",
+        "gain": 379.63,
+        "importance_pct": 9.2
+      },
+      {
+        "feature": "Drawdown_52W_%",
+        "gain": 373.97,
+        "importance_pct": 9.0
+      },
+      {
+        "feature": "RSI_7",
+        "gain": 352.77,
+        "importance_pct": 8.5
+      },
+      {
+        "feature": "RSI_14",
+        "gain": 350.34,
+        "importance_pct": 8.5
+      },
+      {
+        "feature": "FCF_log",
+        "gain": 319.95,
+        "importance_pct": 7.7
+      },
+      {
+        "feature": "Return_5D_%",
+        "gain": 302.33,
+        "importance_pct": 7.3
+      }
+    ],
+    "Cazador Dips": [
+      {
+        "feature": "Dist_SMA200_%",
+        "gain": 780.64,
+        "importance_pct": 12.3
+      },
+      {
+        "feature": "ATR_%",
+        "gain": 694.41,
+        "importance_pct": 10.9
+      },
+      {
+        "feature": "RVOL_5D",
+        "gain": 628.51,
+        "importance_pct": 9.9
+      },
+      {
+        "feature": "Return_5D_%",
+        "gain": 559.73,
+        "importance_pct": 8.8
+      },
+      {
+        "feature": "Drawdown_52W_%",
+        "gain": 557.82,
+        "importance_pct": 8.8
+      },
+      {
+        "feature": "RSI_7",
+        "gain": 553.18,
+        "importance_pct": 8.7
+      },
+      {
+        "feature": "Abs_Drawdown",
+        "gain": 435.0,
+        "importance_pct": 6.8
+      }
+    ],
+    "Recup. Rapida": [
+      {
+        "feature": "ATR_%",
+        "gain": 1450.39,
+        "importance_pct": 17.1
+      },
+      {
+        "feature": "Dist_SMA200_%",
+        "gain": 1059.84,
+        "importance_pct": 12.5
+      },
+      {
+        "feature": "RSI_7",
+        "gain": 783.65,
+        "importance_pct": 9.2
+      },
+      {
+        "feature": "RSI2_RSI14",
+        "gain": 719.05,
+        "importance_pct": 8.5
+      },
+      {
+        "feature": "RVOL_5D",
+        "gain": 709.6,
+        "importance_pct": 8.4
+      },
+      {
+        "feature": "Return_5D_%",
+        "gain": 638.98,
+        "importance_pct": 7.5
+      },
+      {
+        "feature": "RSI_14",
+        "gain": 568.4,
+        "importance_pct": 6.7
+      }
+    ],
+    "Cuchillos Cayendo": [
+      {
+        "feature": "Dist_SMA200_%",
+        "gain": 1448.35,
+        "importance_pct": 13.2
+      },
+      {
+        "feature": "Abs_Drawdown",
+        "gain": 1224.16,
+        "importance_pct": 11.2
+      },
+      {
+        "feature": "RSI_7",
+        "gain": 1140.86,
+        "importance_pct": 10.4
+      },
+      {
+        "feature": "Return_5D_%",
+        "gain": 1043.81,
+        "importance_pct": 9.5
+      },
+      {
+        "feature": "Drawdown_52W_%",
+        "gain": 996.36,
+        "importance_pct": 9.1
+      },
+      {
+        "feature": "ATR_%",
+        "gain": 994.89,
+        "importance_pct": 9.1
+      },
+      {
+        "feature": "RVOL_5D",
+        "gain": 811.25,
+        "importance_pct": 7.4
+      }
+    ]
+  }
+}

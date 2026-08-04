@@ -109,20 +109,62 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
   const chartPoints = useMemo(() => {
     if (!resumen || resumen.totalInvertido <= 0) return [];
     
+    // Extraer todos los lotes reales ordenados cronológicamente por fecha de compra
+    const allLotes = [];
+    (entriesConOraculo || []).forEach(({ entry, precioActual }) => {
+      (entry.lotes || []).forEach(l => {
+        const cost = Number(l.precioCompra) * Number(l.cantidad);
+        const valNow = (precioActual ? Number(precioActual) : Number(l.precioCompra)) * Number(l.cantidad);
+        allLotes.push({
+          date: l.fechaCompra || new Date().toISOString().split('T')[0],
+          cost,
+          valNow,
+          ticker: entry.position.ticker,
+        });
+      });
+    });
+
+    if (allLotes.length === 0) return [];
+    allLotes.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const startDate = new Date(allLotes[0].date);
+    const endDate = new Date();
+    const totalDays = Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)));
+    const numPoints = Math.min(14, Math.max(5, totalDays + 1));
     const points = [];
-    const numPoints = 14;
-    
+
+    // Incluir un punto inicial en cero justo un día antes del primer lote
+    const prevDay = new Date(startDate.getTime() - 86400000);
+    const prevDayStr = prevDay.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+    points.push({ date: prevDayStr, value: 0 });
+
     for (let i = 0; i < numPoints; i++) {
-      const progress = i / (numPoints - 1);
-      const baseValue = resumen.totalInvertido + (resumen.pnl * Math.pow(progress, 1.2));
-      const noise = (i > 0 && i < numPoints - 1) ? (Math.sin(i * 1.5) * (resumen.totalInvertido * 0.006)) : 0;
-      const val = Math.max(resumen.totalInvertido * 0.5, baseValue + noise);
-      
-      const dateStr = new Date(Date.now() - (13 - i) * 86400000).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-      points.push({ date: dateStr, value: val });
+      const pRatio = i / (numPoints - 1);
+      const currentTimeMs = startDate.getTime() + pRatio * (endDate.getTime() - startDate.getTime());
+      const currentDate = new Date(currentTimeMs);
+
+      // Sumar lotes comprados hasta esta fecha
+      let totalCostAtDate = 0;
+      let totalValAtDate = 0;
+
+      allLotes.forEach(l => {
+        const lDate = new Date(l.date);
+        if (lDate <= currentDate) {
+          totalCostAtDate += l.cost;
+          // Interpolación suave del valor del activo desde su costo de compra hasta su precio actual hoy
+          const activeDays = Math.max(1, (endDate - lDate) / (1000 * 60 * 60 * 24));
+          const elapsedDays = Math.max(0, (currentDate - lDate) / (1000 * 60 * 60 * 24));
+          const progress = Math.min(1, elapsedDays / activeDays);
+          totalValAtDate += l.cost + (l.valNow - l.cost) * progress;
+        }
+      });
+
+      const dateStr = currentDate.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+      points.push({ date: dateStr, value: totalValAtDate });
     }
+
     return points;
-  }, [resumen]);
+  }, [entriesConOraculo, resumen]);
 
   if (chartPoints.length === 0) return null;
 
@@ -313,8 +355,9 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
   const [loteModal, setLoteModal] = useState(null);
 
   const valorActual = precioActual ? precioActual * cantidadTotal : null;
-  const pnlDol = precioActual ? (precioActual - precioPromedio) * cantidadTotal : null;
-  const pnlPorc = oraculo.gananciaPorc;
+  const pnlCalcPct = (precioActual && precioPromedio) ? ((precioActual - precioPromedio) / precioPromedio * 100) : (oraculo.gananciaPorc ?? 0);
+  const pnlCalcDol = (precioActual && precioPromedio) ? ((precioActual - precioPromedio) * cantidadTotal) : (oraculo.gananciaDol ?? 0);
+  const isPosPnl = pnlCalcPct >= 0;
 
   const handleSaveLote = useCallback((data) => {
     if (data.id) updateLote(position.id, data.id, data);
@@ -351,15 +394,25 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
 
         {/* Col 4: Precio Compra */}
         <td className="col-precio-compra">
-          <span className="cell-number font-mono">${precioPromedio.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</span>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span className="cell-number font-mono" style={{ color: '#cbd5e1', fontWeight: 700 }}>
+              ${precioPromedio.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+            <span style={{ fontSize: '0.65rem', color: '#64748b' }}>costo prom.</span>
+          </div>
         </td>
 
         {/* Col 5: Precio Actual */}
         <td className="col-precio-actual">
           {precioActual ? (
-            <span className="cell-number font-mono text-live">
-              ${precioActual.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
-            </span>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span className="cell-number font-mono text-live" style={{ color: isPosPnl ? '#10b981' : '#ef4444', fontWeight: 800 }}>
+                ${precioActual.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+              <span style={{ fontSize: '0.65rem', color: isPosPnl ? '#059669' : '#dc2626', fontWeight: 700 }}>
+                {isPosPnl ? '▲' : '▼'} {isPosPnl ? '+' : ''}{(precioActual - precioPromedio).toFixed(2)} USD
+              </span>
+            </div>
           ) : (
             <span className="loading-dot">···</span>
           )}
@@ -375,10 +428,12 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
 
         {/* Col 7: Retorno P&L (% y USD) */}
         <td className="col-pnl">
-          {pnlPorc != null ? (
-            <span className={`pnl-pill ${pnlPorc >= 0 ? 'pos' : 'neg'}`}>
-              {pnlPorc >= 0 ? '+' : ''}{pnlPorc.toFixed(2)}%
-              <small>({pnlDol >= 0 ? '+' : ''}${pnlDol?.toFixed(2)})</small>
+          {precioActual != null ? (
+            <span className={`pnl-pill ${isPosPnl ? 'pos' : 'neg'}`} style={{ padding: '4px 10px', borderRadius: '12px', fontWeight: 800 }}>
+              {isPosPnl ? '▲ +' : '▼ '}{pnlCalcPct.toFixed(2)}%
+              <small style={{ display: 'block', fontSize: '0.68rem', opacity: 0.9 }}>
+                ({isPosPnl ? '+' : ''}${pnlCalcDol.toFixed(2)})
+              </small>
             </span>
           ) : '—'}
         </td>
@@ -410,11 +465,10 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
 
         {/* Col 11: Acciones */}
         <td className="col-acciones">
-          <div className="action-buttons">
-            <button className="icon-btn" onClick={() => setExpanded(e => !e)} title="Ver Lotes">
-              {expanded ? '▲' : '📋'}
+          <div className="row-actions">
+            <button className="icon-btn" onClick={() => setExpanded(!expanded)} title="Ver Lotes">
+              {expanded ? '▲' : '▼'}
             </button>
-            <button className="icon-btn" onClick={() => setLoteModal('new')} title="+ Compra">➕</button>
             <button className="icon-btn delete" onClick={() => onRemovePosition(position.id)} title="Eliminar">🗑️</button>
           </div>
         </td>
@@ -431,15 +485,18 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
               </div>
               <div className="lotes-mini-table">
                 <div className="lotes-mini-row header">
-                  <span>Fecha</span><span>Precio Compra</span><span>Cantidad</span><span>P&L</span><span>Nota</span><span>Acciones</span>
+                  <span>Fecha</span><span>Compra → Actual</span><span>Cantidad</span><span>Crecimiento %</span><span>Nota</span><span>Acciones</span>
                 </div>
                 {lotes.map(lote => {
                   const lotePnl = precioActual ? ((precioActual - lote.precioCompra) / lote.precioCompra * 100) : null;
                   const loteDol = precioActual ? ((precioActual - lote.precioCompra) * lote.cantidad) : null;
+                  const isLotePos = (lotePnl ?? 0) >= 0;
                   return (
                     <div key={lote.id} className="lotes-mini-row">
                       <span className="font-mono">{lote.fechaCompra}</span>
-                      <span className="font-mono">${lote.precioCompra.toFixed(4)}</span>
+                      <span className="font-mono" style={{ fontSize: '0.82rem' }}>
+                        ${lote.precioCompra.toFixed(2)} → <span style={{ color: precioActual ? (isLotePos ? '#10b981' : '#ef4444') : '#cbd5e1', fontWeight: 800 }}>${precioActual ? precioActual.toFixed(2) : '—'}</span>
+                      </span>
                       <span className="font-mono">{lote.cantidad}</span>
                       <span className={`font-mono ${lotePnl >= 0 ? 'pos' : 'neg'}`}>
                         {lotePnl != null ? `${lotePnl >= 0 ? '+' : ''}${lotePnl.toFixed(1)}% (${loteDol >= 0 ? '+' : ''}$${loteDol.toFixed(2)})` : '—'}

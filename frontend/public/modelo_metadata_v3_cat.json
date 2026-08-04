@@ -1,0 +1,42 @@
+{
+  "Sweet Spot": {
+    "model_path": "/home/lduque/Documentos/proyectos/repositorios/inversion_bot/flujo_ml/../Modelos/lightgbm_cat_sweet_spot.pkl",
+    "th_optimo": 0.36,
+    "f05_score": 0.2941,
+    "metrics": {
+      "n": 12,
+      "wr_%": 33.3,
+      "f05": 0.2941
+    }
+  },
+  "Cazador Dips": {
+    "model_path": "/home/lduque/Documentos/proyectos/repositorios/inversion_bot/flujo_ml/../Modelos/lightgbm_cat_cazador_dips.pkl",
+    "th_optimo": 0.51,
+    "f05_score": 0.3906,
+    "metrics": {
+      "n": 11,
+      "wr_%": 45.5,
+      "f05": 0.3906
+    }
+  },
+  "Recup. Rapida": {
+    "model_path": "/home/lduque/Documentos/proyectos/repositorios/inversion_bot/flujo_ml/../Modelos/lightgbm_cat_recup_rapida.pkl",
+    "th_optimo": 0.4,
+    "f05_score": 0.4514,
+    "metrics": {
+      "n": 31,
+      "wr_%": 41.9,
+      "f05": 0.4514
+    }
+  },
+  "Cuchillos Cayendo": {
+    "model_path": "/home/lduque/Documentos/proyectos/repositorios/inversion_bot/flujo_ml/../Modelos/lightgbm_cat_cuchillos_cayendo.pkl",
+    "th_optimo": 0.37,
+    "f05_score": 0.5189,
+    "metrics": {
+      "n": 48,
+      "wr_%": 45.8,
+      "f05": 0.5189
+    }
+  }
+}

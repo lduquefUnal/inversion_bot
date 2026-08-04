@@ -7,8 +7,20 @@ import { useAuth } from '../../store/AuthContext';
 const Header = () => {
   const { data } = useMarketData();
   const { isAuthenticated, logout } = useAuth();
+  const [copRate, setCopRate] = React.useState('4,180');
+  
   const vix = data?.MACRO?.VIX || '18.3';
-  const usdop = data?.MACRO?.['USD/COP'] || '3580';
+
+  React.useEffect(() => {
+    fetch('https://open.er-api.com/v6/latest/USD')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d && d.rates && d.rates.COP) {
+          setCopRate(Math.round(d.rates.COP).toLocaleString('es-CO'));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <header style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)' }}>
@@ -30,8 +42,8 @@ const Header = () => {
             <span style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981', padding: '5px 12px', borderRadius: '20px', border: '1px solid rgba(16,185,129,0.3)', fontWeight: 'bold' }}>
               VIX: {vix} ⚡
             </span>
-            <span style={{ background: 'rgba(59,130,246,0.1)', color: '#60a5fa', padding: '5px 12px', borderRadius: '20px', border: '1px solid rgba(59,130,246,0.3)' }}>
-              COP: ${usdop} 🇨🇴
+            <span style={{ background: 'rgba(59,130,246,0.1)', color: '#60a5fa', padding: '5px 12px', borderRadius: '20px', border: '1px solid rgba(59,130,246,0.3)', fontWeight: 'bold' }}>
+              COP: ${copRate} 🇨🇴
             </span>
           </div>
 

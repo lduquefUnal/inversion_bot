@@ -1,0 +1,171 @@
+{
+  "fecha": "2026-08-01 00:48:39",
+  "t_duration_s": 243.6,
+  "test_start": "2026-06-16",
+  "test_end": "2026-07-31",
+  "features": [
+    "Cat_Sweet_Spot",
+    "Cat_Cazador_Dips",
+    "Cat_Recup_Rapida",
+    "Cat_Cuchillos_Cayendo",
+    "RSI_2",
+    "RSI_7",
+    "RSI_14",
+    "ATR_%",
+    "Dist_SMA200_%",
+    "RVOL_5D",
+    "Return_5D_%",
+    "Tendencia_Sana",
+    "Drawdown_52W_%",
+    "RR_Ratio",
+    "ATR_Risk_Pct",
+    "TP_ATR",
+    "Abs_Drawdown",
+    "RSI2_DD",
+    "RSI2_RSI14",
+    "FCF_log",
+    "Beta"
+  ],
+  "best_params": {
+    "n_estimators": 150,
+    "learning_rate": 0.030029144970601516,
+    "num_leaves": 56,
+    "min_child_samples": 187,
+    "subsample": 0.8805211058824393,
+    "colsample_bytree": 0.5722493405644511,
+    "reg_lambda": 0.296824475516522,
+    "random_state": 42
+  },
+  "calibracion_oos_raw": {
+    "nombre": "oos raw",
+    "n": 8673,
+    "ece": 0.0584,
+    "brier": 0.1738,
+    "auc": 0.578,
+    "pearson": 0.106,
+    "spearman": 0.112,
+    "buckets": [
+      {
+        "bucket": "0.00-0.10",
+        "n": 1298,
+        "prob_prom": 0.063,
+        "wr_real": 0.129
+      },
+      {
+        "bucket": "0.10-0.20",
+        "n": 3824,
+        "prob_prom": 0.146,
+        "wr_real": 0.207
+      },
+      {
+        "bucket": "0.20-0.30",
+        "n": 1867,
+        "prob_prom": 0.246,
+        "wr_real": 0.26
+      },
+      {
+        "bucket": "0.30-0.40",
+        "n": 1234,
+        "prob_prom": 0.343,
+        "wr_real": 0.276
+      },
+      {
+        "bucket": "0.40-0.50",
+        "n": 420,
+        "prob_prom": 0.434,
+        "wr_real": 0.26
+      },
+      {
+        "bucket": "0.50-0.60",
+        "n": 29,
+        "prob_prom": 0.52,
+        "wr_real": 0.379
+      },
+      {
+        "bucket": "0.60-0.70",
+        "n": 1,
+        "prob_prom": 0.601,
+        "wr_real": 0.0
+      }
+    ]
+  },
+  "calibracion_oos_recal": {
+    "nombre": "oos recal",
+    "n": 8673,
+    "ece": 0.0,
+    "brier": 0.1682,
+    "auc": 0.585,
+    "pearson": 0.139,
+    "spearman": 0.124,
+    "buckets": [
+      {
+        "bucket": "0.00-0.10",
+        "n": 327,
+        "prob_prom": 0.034,
+        "wr_real": 0.034
+      },
+      {
+        "bucket": "0.10-0.20",
+        "n": 1210,
+        "prob_prom": 0.155,
+        "wr_real": 0.155
+      },
+      {
+        "bucket": "0.20-0.30",
+        "n": 7117,
+        "prob_prom": 0.239,
+        "wr_real": 0.239
+      },
+      {
+        "bucket": "0.30-0.40",
+        "n": 8,
+        "prob_prom": 0.375,
+        "wr_real": 0.375
+      },
+      {
+        "bucket": "0.50-0.60",
+        "n": 11,
+        "prob_prom": 0.545,
+        "wr_real": 0.545
+      }
+    ]
+  },
+  "resumen_umbral": {
+    "0.3": {
+      "total": 126,
+      "wins": 20,
+      "losses": 106,
+      "timeouts": 0,
+      "win_rate_%": 15.9,
+      "pnl_promedio_%": -2.37,
+      "buy_signals": 126
+    },
+    "0.4": {
+      "total": 67,
+      "wins": 16,
+      "losses": 50,
+      "timeouts": 1,
+      "win_rate_%": 23.9,
+      "pnl_promedio_%": -1.07,
+      "buy_signals": 67
+    },
+    "0.45": {
+      "total": 35,
+      "wins": 7,
+      "losses": 27,
+      "timeouts": 1,
+      "win_rate_%": 20.0,
+      "pnl_promedio_%": -1.48,
+      "buy_signals": 35
+    },
+    "0.5": {
+      "total": 11,
+      "wins": 4,
+      "losses": 7,
+      "timeouts": 0,
+      "win_rate_%": 36.4,
+      "pnl_promedio_%": 1.16,
+      "buy_signals": 11
+    }
+  }
+}

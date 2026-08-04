@@ -6,8 +6,8 @@ Este documento refleja la configuración optimizada del **Algoritmo V2**, ajusta
 
 ## 🎯 Nuevos Parámetros y Ajustes de Arquitectura
 
-1. **Universo de 100 Activos Diversificados:**
-   - Inclusión de 100 tickers globales abarcando: tecnología, semiconductores, energía limpia, aeroespacial, salud, cripto, oro/commodities y ETFs temáticos.
+1. **Universo de aprox 300 Activos Diversificados:**
+   - Inclusión de 300 tickers globales abarcando: tecnología, semiconductores, energía limpia, aeroespacial, salud, cripto, oro/commodities y ETFs temáticos.
 2. **Horizonte de 1 Año con Ventanas Deslizantes (Rolling Windows):**
    - Reducción de la ventana histórica a **1 año** para capturar con máxima frescura la dinámica del mercado actual.
    - Entrenamiento con **Walk-Forward Rolling Windows** (ventanas deslizantes de 90 días de entrenamiento desplazándose mes a mes) para simular la evolución real del bot.
