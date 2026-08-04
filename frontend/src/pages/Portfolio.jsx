@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { usePortfolioStore, calcularResumenPosicion } from '../store/usePortfolioStore';
 import { useMarketData } from '../hooks/useMarketData';
 import { useLivePrice } from '../hooks/useLivePrice';
+import { AuthModal } from '../components/AuthModal';
 import './Portfolio.css';
 
 // ─── Oráculo: métricas y umbrales ──────────────────────────────────────────
@@ -120,7 +121,7 @@ const VEREDICTO_TOOLTIP = {
   SIN_DATA: 'Sin información suficiente en el escáner.'
 };
 
-// ─── Componente Gráfica Global de Rendimiento ──────────────────────────────
+// ─── Componente Gráfica Global de Rendimiento (Alta Resolución 5 pts/día) ───
 const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
   const [windowKey, setWindowKey] = useState('TODO');
 
@@ -154,7 +155,8 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
     }
 
     const totalDays = Math.max(1, Math.ceil((endDate - startDate) / 86400000));
-    const numPoints = Math.min(24, Math.max(8, totalDays + 1));
+    // Alta resolución: 5 puntos por día (mínimo 50 puntos para curva suave)
+    const numPoints = Math.max(50, totalDays * 5);
     const points = [];
 
     for (let i = 0; i < numPoints; i++) {
@@ -210,7 +212,6 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
   }).join(' ');
 
   const areaD = `${pathD} L ${svgWidth - padding} ${svgHeight} L ${padding} ${svgHeight} Z`;
-  const isPos = resumen.pnl >= 0;
   const isWindowPos = windowPnl >= 0;
   const strokeColor = isWindowPos ? '#10b981' : '#ef4444';
   const gradId = isWindowPos ? 'grad-pos' : 'grad-neg';
@@ -219,8 +220,8 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
     <div className="portfolio-global-chart-card">
       <div className="chart-card-header">
         <div>
-          <h3>📈 Comportamiento Global del Portafolio</h3>
-          <p className="chart-sub">Valor de mercado conjunto y trayectoria por ventanas temporales</p>
+          <h3>📈 Comportamiento Global del Portafolio (Alta Resolución)</h3>
+          <p className="chart-sub">Trayectoria del patrimonio con resolución de 5 muestreos por día</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
           <div className="chart-window-controls">
@@ -265,11 +266,12 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
           <path d={areaD} fill={`url(#${gradId})`} />
           <path d={pathD} fill="none" stroke={strokeColor} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           
-          {chartPoints.map((p, idx) => {
-            const x = padding + (idx / (chartPoints.length - 1)) * (svgWidth - padding * 2);
+          {chartPoints.filter((_, idx) => idx % Math.max(1, Math.floor(chartPoints.length / 12)) === 0).map((p, idx) => {
+            const originalIdx = idx * Math.max(1, Math.floor(chartPoints.length / 12));
+            const x = padding + (originalIdx / (chartPoints.length - 1)) * (svgWidth - padding * 2);
             const y = svgHeight - padding - ((p.value - minVal) / range) * (svgHeight - padding * 2);
             return (
-              <circle key={idx} cx={x} cy={y} r={idx === chartPoints.length - 1 ? "5" : "3"} fill={strokeColor} />
+              <circle key={originalIdx} cx={x} cy={y} r="3.5" fill={strokeColor} />
             );
           })}
         </svg>
@@ -400,6 +402,19 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
   const pnlCalcDol = (precioActual && precioPromedio) ? ((precioActual - precioPromedio) * cantidadTotal) : (oraculo.gananciaDol ?? 0);
   const isPosPnl = pnlCalcPct >= 0;
 
+  // Parámetros de Estrategia (ML / Backtesting)
+  const tpPct = oraculo.params?.tpPct || 15;
+  const slPct = oraculo.params?.slPct || 8;
+  const maxDays = oraculo.params?.maxDays || 14;
+
+  const precioTP = precioPromedio ? precioPromedio * (1 + tpPct / 100) : 0;
+  const precioSL = precioPromedio ? precioPromedio * (1 - slPct / 100) : 0;
+
+  const hoy = new Date();
+  const fechaComp = lotes[0]?.fechaCompra ? new Date(lotes[0].fechaCompra) : hoy;
+  const diasTranscurridos = Math.max(0, Math.floor((hoy - fechaComp) / (1000 * 60 * 60 * 24)));
+  const diasRestantes = Math.max(0, maxDays - diasTranscurridos);
+
   const handleSaveLote = useCallback((data) => {
     if (data.id) updateLote(position.id, data.id, data);
     else addLote(position.id, data);
@@ -479,7 +494,22 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
           ) : '—'}
         </td>
 
-        {/* Col 8: RSI 14D */}
+        {/* Col 8: Metas Estrategia ML (TP, SL & Tiempo) */}
+        <td className="col-estrategia">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', fontSize: '0.75rem' }}>
+            <span style={{ color: '#10b981', fontWeight: 600 }}>
+              🎯 TP +{tpPct}% (${precioTP.toFixed(2)})
+            </span>
+            <span style={{ color: '#ef4444', fontWeight: 600 }}>
+              🛑 SL -{slPct}% (${precioSL.toFixed(2)})
+            </span>
+            <span style={{ color: diasRestantes <= 2 ? '#f59e0b' : '#94a3b8', fontSize: '0.7rem' }}>
+              ⏱️ Día {diasTranscurridos}/{maxDays}d ({diasRestantes}d rest)
+            </span>
+          </div>
+        </td>
+
+        {/* Col 9: RSI 14D */}
         <td className="col-rsi">
           {oraculo.rsiNum != null && !isNaN(oraculo.rsiNum) ? (
             <span
@@ -491,7 +521,7 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
           ) : '—'}
         </td>
 
-        {/* Col 9: Score Bot */}
+        {/* Col 10: Score Bot */}
         <td className="col-score">
           {oraculo.score != null && oraculo.score !== 'N/A' ? (
             <span className={`score-badge ${oraculo.score >= 65 ? 'score-high' : oraculo.score < 50 ? 'score-low' : 'score-mid'}`}>
@@ -500,7 +530,7 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
           ) : '—'}
         </td>
 
-        {/* Col 10: Veredicto Oráculo */}
+        {/* Col 11: Veredicto Oráculo */}
         <td className="col-oraculo">
           <span
             className={`oracle-pill oracle-${oraculo.color}`}
@@ -511,7 +541,7 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
           </span>
         </td>
 
-        {/* Col 11: Acciones */}
+        {/* Col 12: Acciones */}
         <td className="col-acciones">
           <div className="row-actions">
             <button className="icon-btn" onClick={() => setExpanded(!expanded)} title="Ver Lotes">
@@ -525,7 +555,7 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
       {/* Lotes Desplegables */}
       {expanded && (
         <tr className="expanded-lotes-row">
-          <td colSpan="11">
+          <td colSpan="12">
             <div className="lotes-expanded-container">
               <div className="lotes-header">
                 <span>📋 Historial de Lotes de Compra — {position.ticker} ({lotes.length})</span>
@@ -580,11 +610,21 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
 
 // ─── Página Principal ───────────────────────────────────────────────────────
 const Portfolio = () => {
-  const { entries, addPosition, removePosition, addLote, updateLote, removeLote, resetPortafolio, limpiarPortafolio, exportToJson, importFromJson } = usePortfolioStore();
+  const {
+    entries, addPosition, removePosition, addLote, updateLote, removeLote,
+    resetPortafolio, exportToJson, importFromJson, initAuthListener, uploadLocalToSupabase,
+    user, isDemoMode, setUserSession, setDemoMode, signOut
+  } = usePortfolioStore();
+
   const { data: marketData, isLoading: mdLoading } = useMarketData();
   const [nuevoModal, setNuevoModal] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [importError, setImportError] = useState('');
+
+  React.useEffect(() => {
+    initAuthListener();
+  }, [initAuthListener]);
 
   const activos = marketData?.TOP_25_DIPS || marketData?.TOP_50_DIPS || [];
   const tickersList = activos.map(a => a.Ticker);
@@ -657,10 +697,36 @@ const Portfolio = () => {
 
   return (
     <div className="portfolio-container">
-      {/* Header */}
+      {/* Header Integrado */}
       <header className="portfolio-header">
         <div className="header-info">
-          <h1>🔮 El Oráculo — Portafolio</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <h1 style={{ margin: 0 }}>🔮 El Oráculo — Portafolio</h1>
+            {user ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', padding: '4px 6px 4px 12px', borderRadius: '20px' }}>
+                <span style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 600 }}>👤 {user.email}</span>
+                <button
+                  onClick={signOut}
+                  style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.4)', padding: '3px 10px', borderRadius: '12px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold' }}
+                >
+                  🚪 Salir
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="cat-badge" style={{ background: 'rgba(234,179,8,0.15)', color: '#eab308', border: '1px solid rgba(234,179,8,0.3)', padding: '5px 12px', fontSize: '0.82rem', borderRadius: '16px' }}>
+                  ⚡ Modo Demo (Invitado)
+                </span>
+                <button
+                  className="add-asset-btn"
+                  style={{ padding: '6px 14px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #2563eb, #7c3aed)' }}
+                  onClick={() => setAuthModalOpen(true)}
+                >
+                  🔑 Iniciar Sesión / Crear Cuenta
+                </button>
+              </div>
+            )}
+          </div>
           <p className="subtitle">Seguimiento de compras y gestión táctica de posiciones reales</p>
           {marketData?.fecha_generacion && (
             <p className="data-date">
@@ -669,6 +735,7 @@ const Portfolio = () => {
             </p>
           )}
         </div>
+
         <div className="summary-cards">
           <div className="summary-card">
             <span className="label">Capital Invertido</span>
@@ -688,14 +755,16 @@ const Portfolio = () => {
         </div>
       </header>
 
-      {/* Gráfica Global de Rendimiento (Parte Superior) */}
+      {/* Gráfica Global de Rendimiento (Alta Resolución 5 pts/día) */}
       <PortfolioPerformanceChart entriesConOraculo={entriesConOraculo} resumen={resumen} />
 
       {/* Acciones */}
-      <section className="portfolio-actions">
-        <button className="add-asset-btn" onClick={() => setNuevoModal(true)}>+ Nueva Posición</button>
-        <button className="btn-config" onClick={() => setShowConfig(s => !s)} title="Configuración">⚙️</button>
-        {mdLoading && <span className="status-chip loading">⏳ Cargando datos...</span>}
+      <section className="portfolio-actions" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button className="add-asset-btn" onClick={() => setNuevoModal(true)}>+ Nueva Posición</button>
+          <button className="btn-config" onClick={() => setShowConfig(s => !s)} title="Configuración">⚙️</button>
+          {mdLoading && <span className="status-chip loading">⏳ Cargando datos...</span>}
+        </div>
       </section>
 
       {/* Panel de Configuración */}
@@ -715,6 +784,7 @@ const Portfolio = () => {
               <h4>💾 Persistencia y Backups</h4>
               <div className="backup-actions">
                 <button className="btn-save" onClick={handleExport}>⬇️ Exportar Backup</button>
+                <button className="btn-save" style={{ background: '#2563eb' }} onClick={() => uploadLocalToSupabase()}>☁️ Sincronizar con Supabase</button>
                 <div className="import-wrapper">
                   <label htmlFor="import-json" className="btn-cancel" style={{cursor: 'pointer', display: 'inline-block'}}>⬆️ Importar Backup</label>
                   <input id="import-json" type="file" accept=".json" onChange={handleImport} style={{display: 'none'}} />
@@ -727,7 +797,7 @@ const Portfolio = () => {
         )}
       </AnimatePresence>
 
-      {/* Tabla Monorenglón de Posiciones / Transacciones */}
+      {/* Tabla Monorenglón de Posiciones / Transacciones con Metas Estrategia ML */}
       <div className="portfolio-table-wrapper">
         <table className="portfolio-monorenglon-table">
           <thead>
@@ -739,6 +809,7 @@ const Portfolio = () => {
               <th>P. Actual</th>
               <th>Inversión → Mercado</th>
               <th>Retorno P&L</th>
+              <th>Estrategia ML (TP / SL / Días)</th>
               <th title="RSI (Índice de Fuerza Relativa 14 días): Medida de velocidad y cambio de precio. <35 indica zona de acumulación/dip, >70 sobrecompra.">RSI 14D ℹ️</th>
               <th>Score</th>
               <th title="Veredicto Táctico del Algoritmo: DCA (Acumular), HOLD (Mantener), WATCH (Vigilar), SELL (Vender).">Oráculo ℹ️</th>
@@ -761,8 +832,10 @@ const Portfolio = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="11" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                  No hay operaciones registradas desde la compra de UFO en adelante. Haz clic en "+ Nueva Posición" para añadir una.
+                <td colSpan="12" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                  {user
+                    ? 'No tienes posiciones registradas en tu cuenta personal. Haz clic en "+ Nueva Posición" para añadir una.'
+                    : 'Modo Demo. Puedes agregar posiciones de prueba o hacer clic en "Iniciar Sesión" para acceder a tu cuenta personal.'}
                 </td>
               </tr>
             )}
@@ -780,6 +853,13 @@ const Portfolio = () => {
           />
         )}
       </AnimatePresence>
+
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onAuthSuccess={(u) => setUserSession(u)}
+        onDemoMode={() => setDemoMode()}
+      />
     </div>
   );
 };

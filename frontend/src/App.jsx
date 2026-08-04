@@ -33,15 +33,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/backtesting" element={<Backtesting />} />
-          <Route path="/login" element={<Login />} />
-          <Route 
-            path="/portfolio" 
-            element={
-              <PrivateRoute>
-                <Portfolio />
-              </PrivateRoute>
-            } 
-          />
+          <Route path="/login" element={<Navigate to="/portfolio" replace />} />
+          <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/activo/:ticker" element={<AssetDetail />} />
         </Routes>
       </main>
