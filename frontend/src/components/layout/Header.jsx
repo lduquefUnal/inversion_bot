@@ -6,12 +6,12 @@ import { useAuth } from '../../store/AuthContext';
 const Header = () => {
   const { data } = useMarketData();
   const { isAuthenticated, logout } = useAuth();
-  const [copRate, setCopRate] = React.useState('3,230.44');
+  const [copRate, setCopRate] = React.useState('3.230,44');
   
   const vix = data?.MACRO?.VIX || '18.3';
 
   React.useEffect(() => {
-    // Consulta de TRM Oficial de Colombia (dolar-colombia.com) en vivo
+    // Consulta TRM Oficial de Colombia en vivo desde dolar-colombia.com
     const fetchTrmOficial = async () => {
       try {
         const targetUrl = 'https://www.dolar-colombia.com/';
@@ -20,28 +20,15 @@ const Header = () => {
         if (res.ok) {
           const wrapper = await res.json();
           if (wrapper?.contents) {
-            const match = wrapper.contents.match(/exchange-rate_up[^">]*>.*?([\d\.,]+)<\/span>/) ||
-                          wrapper.contents.match(/3,[\d\.,]+/);
+            const match = wrapper.contents.match(/<span class="exchange-rate[^">]*>.*?([\d\.,]+)<\/span>/);
             if (match && match[1]) {
               setCopRate(match[1]);
-              return;
             }
           }
         }
       } catch (e) {
-        console.warn('[TRM Colombia] Fallback a API global');
+        // Mantener valor oficial TRM Colombia ($3.230,44) sin sobreescribir con APIs externas desfasadas
       }
-
-      // Fallback a API global de tipos de cambio
-      try {
-        const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        if (res.ok) {
-          const d = await res.json();
-          if (d?.rates?.COP) {
-            setCopRate(Number(d.rates.COP).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-          }
-        }
-      } catch (e) {}
     };
 
     fetchTrmOficial();
