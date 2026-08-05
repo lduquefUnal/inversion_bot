@@ -1,9 +1,18 @@
-# Excluir archivos pesados de entrenamiento local para no exceder el límite de Vercel (500MB)
-Modelos/*.csv
-Modelos/*.pkl
+# Excluir archivos y carpetas pesadas para mantener las Serverless Functions de Vercel por debajo de 10MB (Límite max: 500MB)
+frontend/
+Modelos/
 flujo_ml/
-.pytest_cache/
-*.log
+flujo/
+supabase/
+.agent/
 .git/
+.pytest_cache/
 node_modules/
-frontend/node_modules/
+*.log
+*.csv
+*.pkl
+*.joblib
+*.png
+*.jpg
+*.jpeg
+*.svg
