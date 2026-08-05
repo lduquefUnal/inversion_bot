@@ -5,7 +5,7 @@ description: Guía integral y patrones de producción para desplegar aplicacione
 
 # 🚀 Skill: Supabase & Vercel Monorepo Mastery
 
-Esta skill condensa las mejores prácticas, patrones de arquitectura y resolución de errores aprendidos para construir y desplegar aplicaciones full-stack con **Supabase** (Base de Datos + Auth + RLS) y **Vercel** (Frontend Vite/React + Inferencia ML en GitHub Actions).
+Esta skill condensa las mejores prácticas, patrones de arquitectura y resolución de errores aprendidos para construir y desplegar aplicaciones full-stack con **Supabase** (Base de Datos + Auth + RLS) y **Vercel** (Frontend Vite/React + Entrypoint Flask ultraliviano de 2MB + Inferencia ML en GitHub Actions).
 
 ---
 
@@ -53,20 +53,24 @@ CREATE POLICY "Acceso para usuarios anónimos en modo demo"
 
 ---
 
-## ⚡ 2. Arquitectura de Vercel (SPA Estática + Inferencia MLOps en GitHub Actions)
+## ⚡ 2. Arquitectura de Vercel (SPA Estática + Entrypoint Flask Ultraliviano)
 
-### 2.1 Patrón Arquitectónico de Cero Límite Serverless (Ponytail Philosophy)
-Para evitar que librerías pesadas de Python (`pandas`, `scipy`, `yfinance`) excedan el límite de 500MB de las Serverless Functions de Vercel:
-1. **GitHub Actions MLOps:** Corre la inferencia de ML diariamente y guarda los resultados en **Supabase DB** o `flujo_datos/`.
-2. **Frontend React SPA en Vercel:** Consume Supabase directamente para Auth/DB y CoinGecko/Yahoo Proxy para precios.
-3. **Vercel Deployment:** Despliegue estático ultra-liviano (0MB de funciones serverless, build en 3 segundos).
+### 2.1 Patrón de Entrypoint de 2MB (Ponytail Philosophy)
+Para satisfacer la detección de Python en Vercel sin rebasar el límite de 500MB:
+1. **Entrypoint `api/index.py` ultraliviano:** Contiene solo `Flask` y `flask-cors` (peso total: 2MB). Sin dependencias pesadas como `pandas` o `yfinance`.
+2. **GitHub Actions MLOps:** Corre la inferencia pesada de ML diariamente y guarda resultados en **Supabase DB**.
+3. **Frontend React SPA:** Despliegue estático ultra-liviano (build en 2 segundos).
 
-### 2.2 Configuración de `vercel.json` Estático
+### 2.2 Configuración de `vercel.json`
 ```json
 {
   "buildCommand": "npm --prefix frontend i && npm --prefix frontend run build",
   "outputDirectory": "frontend/dist",
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
@@ -90,36 +94,25 @@ Para evitar que librerías pesadas de Python (`pandas`, `scipy`, `yfinance`) exc
 }
 ```
 
-### 2.4 `frontend/package.json` con `npx`
-> ⚠️ `vite` y `@vitejs/plugin-react` DEBEN estar en `dependencies` y usarse mediante `npx vite build`.
-
-```json
-{
-  "scripts": {
-    "build": "mkdir -p public && (cp ../flujo_datos/*.json public/ 2>/dev/null || true) && npx vite build"
-  }
-}
-```
-
 ---
 
 ## 🛠️ 3. Matriz de Solución de Errores Frecuentes
 
 | Síntoma / Error | Causa Raíz | Solución Definitiva |
 | :--- | :--- | :--- |
+| `No python entrypoint found` | Vercel detectó Python pero `api/` estaba ignorado en `.vercelignore`. | Exponer `api/index.py` con Flask ultraliviano (2MB sin pandas). |
 | `Could not resolve "../lib/supabaseClient"` | `.gitignore` en Python ignoró la carpeta `lib/`. | Agregar `!frontend/src/lib/` en `.gitignore`. |
-| `Total bundle size (509MB) exceeds max 500MB` | Dependencias pesadas de Python (`pandas`) en Vercel. | Migrar a SPA Estática Pura en Vercel + Supabase + MLOps en GitHub Actions. |
-| `ENOENT: open .../frontend/package.json` | Se colocó `frontend/` completo en `.vercelignore`. | Ignoar `api/` y `Modelos/`, pero MANTENER `frontend/` en `.vercelignore`. |
+| `Total bundle size (509MB) exceeds max 500MB` | Dependencias pesadas de Python (`pandas`) en Vercel. | Usar `Flask` puro (2MB) + Supabase + MLOps en GitHub Actions. |
+| `ENOENT: open .../frontend/package.json` | Se colocó `frontend/` completo en `.vercelignore`. | Ignorar `Modelos/`, pero MANTENER `frontend/` en `.vercelignore`. |
 | `sh: line 1: vite: command not found` | Vercel no vinculó el PATH binario local en monorepo. | Usar `npx vite build` y `"workspaces": ["frontend"]`. |
 | Bucle infinito de 10 min en Build | Script con `cd frontend && npm install` recursivo. | Usar `"build": "npm --prefix frontend i && npm --prefix frontend run build"`. |
-| Proxy `ECONNREFUSED` en terminal Vite | Proxy local apuntando a puerto 5000 sin Flask activo. | Limpiar proxy innecesario en `vite.config.js` y hacer fallback en cliente. |
 
 ---
 
 ## 📋 4. Lista de Chequeo de Despliegue (Checklist)
 
+- [ ] ¿`api/index.py` existe y solo usa Flask (2MB)?
 - [ ] ¿`frontend/src/lib/supabaseClient.js` está rastreado en Git (`git ls-files`)?
 - [ ] ¿`.gitignore` contiene `!frontend/src/lib/`?
 - [ ] ¿`vercel.json` sirve SPA estática con rewrites a `/index.html`?
-- [ ] ¿El frontend consume Supabase para DB/Auth y CoinGecko/Yahoo para precios en vivo?
 - [ ] ¿El build local finalizó limpiamente en ~2 segundos?

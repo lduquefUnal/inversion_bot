@@ -1,10 +1,11 @@
-api/
 Modelos/
 flujo_ml/
 flujo/
 .agent/
 .git/
 .pytest_cache/
+node_modules/
+frontend/node_modules/
 *.log
 *.png
 *.jpg
