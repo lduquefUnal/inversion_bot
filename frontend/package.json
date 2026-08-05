@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "mkdir -p public && (cp ../flujo_datos/*.json public/ 2>/dev/null || true) && vite build",
+    "build": "mkdir -p public && (cp ../flujo_datos/*.json public/ 2>/dev/null || true) && npx vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
