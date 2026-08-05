@@ -1,21 +1,7 @@
 {
   "buildCommand": "npm --prefix frontend i && npm --prefix frontend run build",
   "outputDirectory": "frontend/dist",
-  "functions": {
-    "api/*.py": {
-      "includeFiles": "flujo_datos/**",
-      "excludeFiles": "{frontend/**,Modelos/**,flujo_ml/**,flujo/**,.agent/**,.git/**,node_modules/**}"
-    }
-  },
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/imagen/(.*)",
-      "destination": "/api/index.py"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

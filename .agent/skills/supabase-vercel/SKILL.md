@@ -1,11 +1,11 @@
 ---
 name: supabase-vercel-deploy
-description: Guía integral y patrones de producción para desplegar aplicaciones monorepo con Supabase (Auth, RLS, PostgreSQL) y Vercel (Vite React SPA + Python Serverless Functions). Usa esta skill siempre que el usuario trabaje con Supabase, Vercel, configure RLS, resuelva errores de Vercel Build (como 500MB bundle size, vite command not found, proxy ECONNREFUSED, SPA routing /index.html, o bucles en npm install).
+description: Guía integral y patrones de producción para desplegar aplicaciones monorepo con Supabase (Auth, RLS, PostgreSQL) y Vercel (Vite React SPA + Python Serverless Functions / Static SPA). Usa esta skill siempre que el usuario trabaje con Supabase, Vercel, configure RLS, resuelva errores de Vercel Build (como 500MB bundle size, vite command not found, proxy ECONNREFUSED, SPA routing /index.html, o bucles en npm install).
 ---
 
 # 🚀 Skill: Supabase & Vercel Monorepo Mastery
 
-Esta skill condensa las mejores prácticas, patrones de arquitectura y resolución de errores aprendidos para construir y desplegar aplicaciones full-stack con **Supabase** (Base de Datos + Auth + RLS) y **Vercel** (Frontend Vite/React + API Serverless Python).
+Esta skill condensa las mejores prácticas, patrones de arquitectura y resolución de errores aprendidos para construir y desplegar aplicaciones full-stack con **Supabase** (Base de Datos + Auth + RLS) y **Vercel** (Frontend Vite/React + Inferencia ML en GitHub Actions).
 
 ---
 
@@ -53,24 +53,20 @@ CREATE POLICY "Acceso para usuarios anónimos en modo demo"
 
 ---
 
-## ⚡ 2. Arquitectura de Vercel Monorepo (Vite React + Python API)
+## ⚡ 2. Arquitectura de Vercel (SPA Estática + Inferencia MLOps en GitHub Actions)
 
-### 2.1 Configuración Moderna de `vercel.json` (Sin `builds` Obsoletos)
-> ⚠️ **NUNCA uses la propiedad deprecada `"builds": [...]`**. Genera advertencias y bucles de compilación.
+### 2.1 Patrón Arquitectónico de Cero Límite Serverless (Ponytail Philosophy)
+Para evitar que librerías pesadas de Python (`pandas`, `scipy`, `yfinance`) excedan el límite de 500MB de las Serverless Functions de Vercel:
+1. **GitHub Actions MLOps:** Corre la inferencia de ML diariamente y guarda los resultados en **Supabase DB** o `flujo_datos/`.
+2. **Frontend React SPA en Vercel:** Consume Supabase directamente para Auth/DB y CoinGecko/Yahoo Proxy para precios.
+3. **Vercel Deployment:** Despliegue estático ultra-liviano (0MB de funciones serverless, build en 3 segundos).
 
+### 2.2 Configuración de `vercel.json` Estático
 ```json
 {
-  "buildCommand": "npm --prefix frontend run build",
+  "buildCommand": "npm --prefix frontend i && npm --prefix frontend run build",
   "outputDirectory": "frontend/dist",
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/imagen/(.*)",
-      "destination": "/api/index.py"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
@@ -79,87 +75,51 @@ CREATE POLICY "Acceso para usuarios anónimos en modo demo"
 }
 ```
 
-### 2.2 Root `package.json` de Orquestación
-Evita bucles de instalación recursivos usando `npm --prefix`:
-
+### 2.3 Root `package.json` de Orquestación
 ```json
 {
   "name": "inversion-bot",
   "private": true,
   "version": "1.0.0",
+  "workspaces": [
+    "frontend"
+  ],
   "scripts": {
-    "build": "npm --prefix frontend run build"
+    "build": "npm --prefix frontend i && npm --prefix frontend run build"
   }
 }
 ```
 
-### 2.3 `package.json` del Frontend (`frontend/package.json`)
-> ⚠️ **CRÍTICO PARA VERCEL:** `vite` y `@vitejs/plugin-react` DEBEN estar en `dependencies` (no en `devDependencies`), de lo contrario Vercel `npm install` omitirá Vite durante el build de producción (`command not found`).
+### 2.4 `frontend/package.json` con `npx`
+> ⚠️ `vite` y `@vitejs/plugin-react` DEBEN estar en `dependencies` y usarse mediante `npx vite build`.
 
 ```json
 {
-  "dependencies": {
-    "@supabase/supabase-js": "^2.109.0",
-    "@tanstack/react-query": "^5.99.0",
-    "@vitejs/plugin-react": "^4.7.0",
-    "framer-motion": "^12.38.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-router-dom": "^7.14.1",
-    "vite": "^5.4.21",
-    "zustand": "^5.0.12"
+  "scripts": {
+    "build": "mkdir -p public && (cp ../flujo_datos/*.json public/ 2>/dev/null || true) && npx vite build"
   }
 }
 ```
 
 ---
 
-## 📦 3. Optimización del Límite de 500MB en Serverless Functions (`.vercelignore`)
-
-Vercel empaqueta todo el directorio raíz en el ZIP de la función Serverless de Python a menos que se excluya en `.vercelignore`. 
-
-### `.vercelignore` de Producción:
-```gitignore
-# Excluir carpetas pesadas para mantener la función de Python por debajo de 5MB
-Modelos/*.csv
-Modelos/*.pkl
-Modelos/*.joblib
-flujo_ml/
-flujo/
-.agent/
-.git/
-.pytest_cache/
-node_modules/
-frontend/node_modules/
-*.log
-*.png
-*.jpg
-*.jpeg
-*.svg
-```
-> ⚠️ **REGLA DE ORO:** NUNCA escribas `frontend/` en `.vercelignore` (solo `frontend/node_modules/`), de lo contrario Vercel eliminará el código fuente de tu React SPA antes del build.
-
----
-
-## 🛠️ 4. Matriz de Solución de Errores Frecuentes
+## 🛠️ 3. Matriz de Solución de Errores Frecuentes
 
 | Síntoma / Error | Causa Raíz | Solución Definitiva |
 | :--- | :--- | :--- |
 | `Could not resolve "../lib/supabaseClient"` | `.gitignore` en Python ignoró la carpeta `lib/`. | Agregar `!frontend/src/lib/` en `.gitignore`. |
-| `Total bundle size (512MB) exceeds max 500MB` | Vercel metió `frontend/` y `Modelos/` al zip de Python. | Excluir `Modelos/*.joblib` y `frontend/node_modules/` en `.vercelignore`. |
-| `ENOENT: open .../frontend/package.json` | Se colocó `frontend/` completo en `.vercelignore`. | Remover `frontend/` de `.vercelignore` (mantener solo `frontend/node_modules/`). |
-| `vite: command not found` en Vercel | `vite` estaba en `devDependencies` y npm ignoró en prod. | Mover `vite` a `dependencies` en `frontend/package.json`. |
-| Bucle infinito de 10 min en Build | Script con `cd frontend && npm install` recursivo. | Usar `"build": "npm --prefix frontend run build"`. |
+| `Total bundle size (509MB) exceeds max 500MB` | Dependencias pesadas de Python (`pandas`) en Vercel. | Migrar a SPA Estática Pura en Vercel + Supabase + MLOps en GitHub Actions. |
+| `ENOENT: open .../frontend/package.json` | Se colocó `frontend/` completo en `.vercelignore`. | Ignoar `api/` y `Modelos/`, pero MANTENER `frontend/` en `.vercelignore`. |
+| `sh: line 1: vite: command not found` | Vercel no vinculó el PATH binario local en monorepo. | Usar `npx vite build` y `"workspaces": ["frontend"]`. |
+| Bucle infinito de 10 min en Build | Script con `cd frontend && npm install` recursivo. | Usar `"build": "npm --prefix frontend i && npm --prefix frontend run build"`. |
 | Proxy `ECONNREFUSED` en terminal Vite | Proxy local apuntando a puerto 5000 sin Flask activo. | Limpiar proxy innecesario en `vite.config.js` y hacer fallback en cliente. |
-| SPA 404 en subrutas (`/portfolio`) | Falta rewrite de fallback a `index.html`. | Configurar `{"source": "/(.*)", "destination": "/index.html"}` en `vercel.json`. |
 
 ---
 
-## 📋 5. Lista de Chequeo de Despliegue (Checklist)
+## 📋 4. Lista de Chequeo de Despliegue (Checklist)
 
-- [ ] ¿`frontend/src/lib/supabaseClient.js` está incluido en Git (`git ls-files`)?
+- [ ] ¿`frontend/src/lib/supabaseClient.js` está rastreado en Git (`git ls-files`)?
 - [ ] ¿`.gitignore` contiene `!frontend/src/lib/`?
-- [ ] ¿`vite` y `@vitejs/plugin-react` están en `dependencies` en `frontend/package.json`?
-- [ ] ¿`vercel.json` usa `npm --prefix frontend run build` y rewrites a `/index.html`?
-- [ ] ¿`.vercelignore` excluye `Modelos/*.joblib` pero MANTIENE el código fuente de `frontend/`?
-- [ ] ¿El merge entre `developer` y `main` se probó localmente con `npm run build`?
+- [ ] ¿`vercel.json` sirve SPA estática con rewrites a `/index.html`?
+- [ ] ¿El frontend consume Supabase para DB/Auth y CoinGecko/Yahoo para precios en vivo?
+- [ ] ¿El build local finalizó limpiamente en ~2 segundos?
