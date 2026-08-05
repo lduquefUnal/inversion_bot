@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InversionBot - Mapa de Arquitectura Interactiva</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --panel-bg: rgba(17, 24, 39, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-pink: #ec4899;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --glow-blue: rgba(59, 130, 246, 0.4);
+      --glow-purple: rgba(139, 92, 246, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+    }
+
+    /* Contenedor principal de la red */
+    #network-container {
+      flex: 1;
+      height: 100%;
+      position: relative;
+    }
+
+    #mynetwork {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Glassmorphism Header */
+    .header-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 480px;
+      z-index: 10;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .header-panel h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-panel p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Right Sidebar (Flow Panel) */
+    .sidebar {
+      width: 380px;
+      height: 100%;
+      background: rgba(10, 15, 26, 0.85);
+      backdrop-filter: blur(16px);
+      border-left: 1px solid var(--border-color);
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      z-index: 10;
+      overflow-y: auto;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar h2 span {
+      font-size: 0.75rem;
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      padding: 4px 8px;
+      border-radius: 9999px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .flow-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .flow-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flow-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: transparent;
+      transition: background-color 0.3s;
+    }
+
+    .flow-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .flow-card.active {
+      background: rgba(59, 130, 246, 0.08);
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+    }
+
+    .flow-card.active::before {
+      background: var(--accent-blue);
+    }
+
+    .flow-card.active.f2 {
+      background: rgba(139, 92, 246, 0.08);
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+    }
+
+    .flow-card.active.f2::before {
+      background: var(--accent-purple);
+    }
+
+    .flow-card.active.f3 {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--accent-green);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+
+    .flow-card.active.f3::before {
+      background: var(--accent-green);
+    }
+
+    .flow-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .flow-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Detalles del Componente / Leyenda */
+    .legend-container {
+      margin-top: auto;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .legend-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Leyenda Colores */
+    .dot-extractor { background-color: var(--accent-blue); box-shadow: 0 0 6px var(--accent-blue); }
+    .dot-ml { background-color: var(--accent-purple); box-shadow: 0 0 6px var(--accent-purple); }
+    .dot-db { background-color: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+    .dot-ui { background-color: var(--accent-pink); box-shadow: 0 0 6px var(--accent-pink); }
+    .dot-workflow { background-color: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+    .dot-utility { background-color: #6b7280; box-shadow: 0 0 6px #6b7280; }
+
+    /* Contenedor flotante de descripción de nodo seleccionado */
+    .detail-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 480px;
+      z-index: 10;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+    }
+
+    .detail-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .detail-panel h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text-main);
+    }
+
+    .detail-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .detail-path {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--accent-blue);
+      margin-bottom: 10px;
+    }
+
+    .detail-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .reset-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .reset-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Vis.js Custom Tooltip */
+    div.vis-network div.vis-tooltip {
+      background-color: rgba(17, 24, 39, 0.95) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-radius: 8px !important;
+      color: #fff !important;
+      padding: 10px 14px !important;
+      font-family: 'Outfit', sans-serif !important;
+      font-size: 13px !important;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Panel Izquierdo / Visor de Red -->
+  <div id="network-container">
+    <div class="header-panel">
+      <h1>🤖 InversionBot Architecture Map</h1>
+      <p>Explora la arquitectura de datos, flujos de entrenamiento MLOps e inferencia en tiempo real. Selecciona un flujo a la derecha para resaltar la ruta en el mapa.</p>
+    </div>
+
+    <div id="mynetwork"></div>
+
+    <!-- Panel de Detalles del Nodo Seleccionado -->
+    <div id="detailPanel" class="detail-panel">
+      <h3 id="panelTitle">Extractor y Descargador</h3>
+      <span id="panelTag" class="detail-tag dot-extractor">Extractor</span>
+      <div id="panelPath" class="detail-path">flujo/paso1_descargar.py</div>
+      <p id="panelDesc" class="detail-desc">Descarga cotizaciones financieras diarias mediante yfinance y guarda el mercado actual.</p>
+    </div>
+  </div>
+
+  <!-- Barra Lateral Derecha -->
+  <div class="sidebar">
+    <h2>
+      Flujos del Sistema
+      <button class="reset-btn" onclick="resetHighlight()">Resetear</button>
+    </h2>
+
+    <div class="flow-list">
+      <!-- Flujo 1 -->
+      <div class="flow-card f1" onclick="highlightFlow('daily_inference', this)">
+        <div class="flow-title" style="color: #60a5fa;">
+          <span>Daily Inference & Execution</span>
+          <span style="font-size: 0.75rem;">Diario</span>
+        </div>
+        <div class="flow-desc">GitHub Actions descarga métricas en vivo, ejecuta los modelos predictivos, genera el veredicto con Gemini y notifica mediante Telegram.</div>
+      </div>
+
+      <!-- Flujo 2 -->
+      <div class="flow-card f2" onclick="highlightFlow('monthly_retraining', this)">
+        <div class="flow-title" style="color: #c084fc;">
+          <span>MLOps Re-training Pipeline</span>
+          <span style="font-size: 0.75rem;">Mensual</span>
+        </div>
+        <div class="flow-desc">Workflow periódico que descarga 5 años de OHLCV, optimiza umbrales probabilísticos F0.5 por categoría, entrena los 4 modelos de LightGBM y computa SHAP.</div>
+      </div>
+
+      <!-- Flujo 3 -->
+      <div class="flow-card f3" onclick="highlightFlow('interactive_frontend', this)">
+        <div class="flow-title" style="color: #34d399;">
+          <span>Frontend Workspace</span>
+          <span style="font-size: 0.75rem;">Interactivo</span>
+        </div>
+        <div class="flow-desc">El usuario interactúa de forma segura a través de la SPA en Vercel, lee predicciones del oráculo, ve la tesis del LLM y opera compras en Supabase.</div>
+      </div>
+    </div>
+
+    <!-- Leyenda -->
+    <div class="legend-container">
+      <div class="legend-title">Categorías de Componentes</div>
+      <div class="legend-grid">
+        <div class="legend-item">
+          <div class="legend-dot dot-extractor"></div>
+          <span>Descargadores/ETL</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot dot-ml"></div>
+          <span>Modelos & ML</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot dot-db"></div>
+          <span>Bases de Datos/JSON</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot dot-ui"></div>
+          <span>Frontends</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot dot-workflow"></div>
+          <span>CI/CD Workflows</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot dot-utility"></div>
+          <span>Utilidades/Alertas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    // Definición de Nodos de la Arquitectura
+    const rawNodes = [
+      { id: "paso1_descargar", label: "Paso 1: Descargador\nMercado", group: "extractor", path: "flujo/paso1_descargar.py", desc: "Descarga cotizaciones financieras diarias (OHLCV, VIX, USD/COP) mediante yfinance y guarda el mercado actual." },
+      { id: "mercado_json", label: "mercado.json", group: "database", path: "flujo_datos/mercado.json", desc: "Archivo JSON temporal con el estado actual del mercado y precios de referencia para inferencia." },
+      { id: "inferencia_oraculo", label: "Oráculo de Inferencia\nLightGBM V3.7", group: "ml_model", path: "flujo_ml/4_inferencia_oraculo.py", desc: "Carga los 4 modelos LightGBM y thresholds por categoría para clasificar los activos e inferir probabilidad de éxito." },
+      { id: "predicciones_v2_json", label: "predicciones_v2.json", group: "database", path: "flujo_datos/predicciones_v2.json", desc: "Archivo JSON publicado con el Top 25 Dips, Kelly sizing, Take Profit, Stop Loss y umbrales óptimos." },
+      { id: "paso2_analizar", label: "Paso 2: Analista\nGemini AI", group: "ml_model", path: "flujo/paso2_analizar.py", desc: "Genera reportes semánticos detallados y tesis de inversión (Bull/Bear) usando la API multimodal de Gemini." },
+      { id: "ultimo_reporte_md", label: "ultimo_reporte.md", group: "database", path: "flujo_datos/ultimo_reporte.md", desc: "Reporte final y veredicto del analista de Inteligencia Artificial para cada activo del Top 25." },
+      { id: "paso3_enviar", label: "Paso 3: Notificador\nTelegram", group: "utility", path: "flujo/paso3_enviar.py", desc: "Envía el reporte simplificado junto con las gráficas de velas de mayor relevancia al chat de Telegram del usuario." },
+      { id: "orquestador_acciones", label: "GitHub Action:\nOrquestador Diario", group: "workflow", path: ".github/workflows/orquestador_acciones.yml", desc: "Acción automática programada que coordina el flujo diario de descarga, inferencia, análisis semántico, envío y publicación estática." },
+      { id: "descargar_historial", label: "Descarga\nHistorial OHLCV", group: "extractor", path: "flujo_ml/11_descargar_ohclv.py", desc: "Descarga masiva de 5 años de datos de cotizaciones históricas de 227 tickers para reentrenamiento." },
+      { id: "ohclv_cache_csv", label: "ohclv_cache.csv", group: "database", path: "Modelos/ohclv_cache.csv", desc: "Almacenamiento local en caché del historial crudo descargado para acelerar la extracción de features." },
+      { id: "dataset_features", label: "Procesador de\nFeatures V3", group: "utility", path: "flujo_ml/v3_dataset.py", desc: "Calcula 33 variables técnicas e indicadores fundamentales (RSI, SMA, MACD, etc.) a partir del caché." },
+      { id: "dataset_completo_csv", label: "v3_dataset.csv", group: "database", path: "Modelos/v3_dataset.csv", desc: "Dataset consolidado y limpio con todas las features temporales listo para el pipeline de MLOps." },
+      { id: "optimizador_umbrales", label: "Optimizador de\nUmbrales F0.5", group: "ml_model", path: "flujo_ml/v3_threshold_por_cat.py", desc: "Busca y optimiza umbrales probabilísticos por categoría para balancear precisión y exhaustividad (F0.5)." },
+      { id: "entrenamiento_lgb", label: "Entrenamiento\n4 Modelos LGBM", group: "ml_model", path: "flujo_ml/v3_entrenar_por_cat.py", desc: "Entrena y exporta los 4 modelos de clasificación binaria LightGBM por categorías." },
+      { id: "analisis_shap", label: "Analista de\nImportancia SHAP", group: "ml_model", path: "flujo_ml/v3_shap_analysis.py", desc: "Calcula y grafica la importancia global y local de cada feature usando valores SHAP." },
+      { id: "evaluacion_backtest", label: "Evaluador OOS y\nBacktesting", group: "ml_model", path: "flujo_ml/v3_backtest_eval.py", desc: "Simula el rendimiento histórico acumulado del modelo en datos fuera de muestra (OOS) para validar robustez." },
+      { id: "reentrenamiento_ml_v3", label: "GitHub Action:\nReentrenamiento V3", group: "workflow", path: ".github/workflows/reentrenamiento_ml_v3.yml", desc: "Acción automática mensual que reentrena los modelos LightGBM, optimiza umbrales y actualiza reportes de backtest." },
+      { id: "supabase", label: "Supabase\n(PostgreSQL DB)", group: "database", path: "supabase/migrations/0001_init.sql", desc: "Base de datos en la nube que gestiona usuarios, credenciales, carteras de inversión y transacciones usando políticas RLS." },
+      { id: "vite_spa", label: "React Frontend SPA\n(Vite/Vercel)", group: "interface", path: "frontend/", desc: "Dashboard interactivo con charts de rendimiento, visor de alertas del oráculo ML, y gestión de portafolios." }
+    ];
+
+    // Definición de Relaciones (Aristas)
+    const rawEdges = [
+      { from: "orquestador_acciones", to: "paso1_descargar", label: "ejecuta", type: "workflow_step" },
+      { from: "paso1_descargar", to: "mercado_json", label: "guarda", type: "data_flow" },
+      { from: "orquestador_acciones", to: "inferencia_oraculo", label: "ejecuta", type: "workflow_step" },
+      { from: "mercado_json", to: "inferencia_oraculo", label: "lee", type: "data_flow" },
+      { from: "inferencia_oraculo", to: "predicciones_v2_json", label: "genera", type: "data_flow" },
+      { from: "orquestador_acciones", to: "paso2_analizar", label: "ejecuta", type: "workflow_step" },
+      { from: "mercado_json", to: "paso2_analizar", label: "lee", type: "data_flow" },
+      { from: "paso2_analizar", to: "ultimo_reporte_md", label: "genera", type: "data_flow" },
+      { from: "orquestador_acciones", to: "paso3_enviar", label: "ejecuta", type: "workflow_step" },
+      { from: "ultimo_reporte_md", to: "paso3_enviar", label: "procesa", type: "data_flow" },
+      
+      { from: "reentrenamiento_ml_v3", to: "descargar_historial", label: "ejecuta", type: "workflow_step" },
+      { from: "descargar_historial", to: "ohclv_cache_csv", label: "descarga", type: "data_flow" },
+      { from: "reentrenamiento_ml_v3", to: "dataset_features", label: "ejecuta", type: "workflow_step" },
+      { from: "ohclv_cache_csv", to: "dataset_features", label: "procesa", type: "data_flow" },
+      { from: "dataset_features", to: "dataset_completo_csv", label: "genera", type: "data_flow" },
+      { from: "reentrenamiento_ml_v3", to: "optimizador_umbrales", label: "ejecuta", type: "workflow_step" },
+      { from: "dataset_completo_csv", to: "optimizador_umbrales", label: "aprende", type: "data_flow" },
+      { from: "reentrenamiento_ml_v3", to: "entrenamiento_lgb", "label": "ejecuta", type: "workflow_step" },
+      { from: "dataset_completo_csv", to: "entrenamiento_lgb", label: "entrena", type: "data_flow" },
+      { from: "optimizador_umbrales", to: "entrenamiento_lgb", label: "configura", type: "dependency" },
+      { from: "reentrenamiento_ml_v3", to: "analisis_shap", label: "ejecuta", type: "workflow_step" },
+      { from: "entrenamiento_lgb", to: "analisis_shap", label: "explica", type: "dependency" },
+      { from: "reentrenamiento_ml_v3", to: "evaluacion_backtest", label: "ejecuta", type: "workflow_step" },
+      { from: "dataset_completo_csv", to: "evaluacion_backtest", label: "testea", type: "data_flow" },
+      { from: "entrenamiento_lgb", to: "evaluacion_backtest", label: "valida", type: "dependency" },
+
+      { from: "predicciones_v2_json", to: "vite_spa", label: "consume", type: "data_flow" },
+      { from: "ultimo_reporte_md", "to": "vite_spa", label: "muestra", type: "data_flow" },
+      { from: "supabase", to: "vite_spa", label: "sincroniza", type: "data_flow" }
+    ];
+
+    // Mapeo de Flujos
+    const flows = {
+      daily_inference: ["orquestador_acciones", "paso1_descargar", "mercado_json", "inferencia_oraculo", "predicciones_v2_json", "paso2_analizar", "ultimo_reporte_md", "paso3_enviar", "vite_spa"],
+      monthly_retraining: ["reentrenamiento_ml_v3", "descargar_historial", "ohclv_cache_csv", "dataset_features", "dataset_completo_csv", "optimizador_umbrales", "entrenamiento_lgb", "analisis_shap", "evaluacion_backtest", "predicciones_v2_json", "vite_spa"],
+      interactive_frontend: ["vite_spa", "predicciones_v2_json", "ultimo_reporte_md", "supabase"]
+    };
+
+    // Colores por Grupo / Tipo de Nodo
+    const groupColors = {
+      extractor: { background: "#1e3a8a", border: "#3b82f6", highlight: { background: "#2563eb", border: "#60a5fa" } },
+      ml_model: { background: "#4c1d95", border: "#8b5cf6", highlight: { background: "#6d28d9", border: "#a78bfa" } },
+      database: { background: "#064e3b", border: "#10b981", highlight: { background: "#047857", border: "#34d399" } },
+      interface: { background: "#831843", border: "#ec4899", highlight: { background: "#9d174d", border: "#f472b6" } },
+      workflow: { background: "#78350f", border: "#f59e0b", highlight: { background: "#92400e", border: "#fbbf24" } },
+      utility: { background: "#374151", border: "#6b7280", highlight: { background: "#4b5563", border: "#9ca3af" } }
+    };
+
+    // Crear datasets para Vis.js
+    const nodesArray = rawNodes.map(node => {
+      const colors = groupColors[node.group] || groupColors.utility;
+      return {
+        id: node.id,
+        label: node.label,
+        font: { color: "#f3f4f6", face: "Outfit", size: 14, multi: true },
+        shape: node.group === "database" ? "database" : "box",
+        margin: 12,
+        color: {
+          background: colors.background,
+          border: colors.border,
+          highlight: colors.highlight
+        },
+        borderWidth: 2,
+        shadow: { enabled: true, color: "rgba(0,0,0,0.5)", size: 10, x: 5, y: 5 },
+        title: `<b>${node.label}</b><br/>${node.path}<br/><br/>${node.desc}`
+      };
+    });
+
+    const edgesArray = rawEdges.map((edge, idx) => {
+      return {
+        id: `e_${idx}`,
+        from: edge.from,
+        to: edge.to,
+        label: edge.label,
+        font: { color: "#9ca3af", face: "Outfit", size: 10, strokeWidth: 0, align: "middle" },
+        arrows: "to",
+        color: { color: "#374151", highlight: "#60a5fa", hover: "#9ca3af" },
+        width: 1.5,
+        smooth: { type: "cubicBezier", roundness: 0.5 }
+      };
+    });
+
+    const nodes = new vis.DataSet(nodesArray);
+    const edges = new vis.DataSet(edgesArray);
+
+    const container = document.getElementById('mynetwork');
+    const data = { nodes: nodes, edges: edges };
+    const options = {
+      physics: {
+        forceAtlas2Based: {
+          gravitationalConstant: -100,
+          centralGravity: 0.01,
+          springLength: 150,
+          springConstant: 0.08
+        },
+        solver: "forceAtlas2Based",
+        stabilization: { iterations: 150 }
+      },
+      interaction: {
+        hover: true,
+        tooltipDelay: 100
+      }
+    };
+
+    const network = new vis.Network(container, data, options);
+
+    // Evento de Selección de Nodo
+    network.on("selectNode", function (params) {
+      const nodeId = params.nodes[0];
+      const nodeData = rawNodes.find(n => n.id === nodeId);
+      if (nodeData) {
+        showDetailPanel(nodeData);
+      }
+    });
+
+    network.on("deselectNode", function () {
+      hideDetailPanel();
+    });
+
+    function showDetailPanel(node) {
+      const panel = document.getElementById("detailPanel");
+      document.getElementById("panelTitle").innerText = node.label.replace("\n", " ");
+      document.getElementById("panelPath").innerText = node.path;
+      document.getElementById("panelDesc").innerText = node.desc;
+      
+      const tag = document.getElementById("panelTag");
+      tag.innerText = node.group;
+      tag.className = `detail-tag dot-${node.group}`;
+
+      panel.classList.add("visible");
+    }
+
+    function hideDetailPanel() {
+      document.getElementById("detailPanel").classList.remove("visible");
+    }
+
+    // Resaltar Flujo Específico
+    let currentFlowId = null;
+
+    function highlightFlow(flowId, element) {
+      currentFlowId = flowId;
+      
+      // Remover clases activas de todas las tarjetas
+      document.querySelectorAll(".flow-card").forEach(card => card.classList.remove("active"));
+      element.classList.add("active");
+
+      const flowNodes = flows[flowId];
+
+      // Actualizar nodos: atenuar si no pertenecen al flujo, resaltar si pertenecen
+      const updatedNodes = nodesArray.map(node => {
+        const belongs = flowNodes.includes(node.id);
+        const colors = groupColors[node.group];
+        return {
+          id: node.id,
+          color: belongs ? {
+            background: colors.background,
+            border: colors.border
+          } : {
+            background: "rgba(30, 41, 59, 0.15)",
+            border: "rgba(255, 255, 255, 0.03)"
+          },
+          font: { color: belongs ? "#f3f4f6" : "rgba(255,255,255,0.1)" }
+        };
+      });
+      nodes.update(updatedNodes);
+
+      // Actualizar aristas: resaltar el camino del flujo
+      const updatedEdges = edgesArray.map(edge => {
+        // Un edge pertenece al flujo si tanto 'from' como 'to' están en el flujo
+        const fromIdx = flowNodes.indexOf(edge.from);
+        const toIdx = flowNodes.indexOf(edge.to);
+        const belongs = fromIdx !== -1 && toIdx !== -1 && Math.abs(fromIdx - toIdx) <= 2;
+        
+        return {
+          id: edge.id,
+          color: belongs ? { color: "#3b82f6", highlight: "#3b82f6" } : { color: "rgba(55, 65, 81, 0.15)" },
+          width: belongs ? 3.5 : 1
+        };
+      });
+      edges.update(updatedEdges);
+    }
+
+    function resetHighlight() {
+      currentFlowId = null;
+      document.querySelectorAll(".flow-card").forEach(card => card.classList.remove("active"));
+      hideDetailPanel();
+
+      // Resetear nodos
+      const updatedNodes = nodesArray.map(node => {
+        const colors = groupColors[node.group];
+        return {
+          id: node.id,
+          color: {
+            background: colors.background,
+            border: colors.border
+          },
+          font: { color: "#f3f4f6" }
+        };
+      });
+      nodes.update(updatedNodes);
+
+      // Resetear aristas
+      const updatedEdges = edgesArray.map(edge => {
+        return {
+          id: edge.id,
+          color: { color: "#374151" },
+          width: 1.5
+        };
+      });
+      edges.update(updatedEdges);
+    }
+  </script>
+</body>
+</html>

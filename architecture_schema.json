@@ -1,0 +1,190 @@
+{
+  "nodes": [
+    {
+      "id": "paso1_descargar",
+      "label": "Descargador Mercado (Paso 1)",
+      "type": "extractor",
+      "path": "flujo/paso1_descargar.py",
+      "description": "Descarga cotizaciones financieras diarias (OHLCV, VIX, USD/COP) mediante yfinance y guarda el mercado actual."
+    },
+    {
+      "id": "mercado_json",
+      "label": "Datos de Mercado (JSON)",
+      "type": "database",
+      "path": "flujo_datos/mercado.json",
+      "description": "Archivo JSON temporal con el estado actual del mercado y precios de referencia para inferencia."
+    },
+    {
+      "id": "inferencia_oraculo",
+      "label": "Oráculo de Inferencia V3.7",
+      "type": "ml_model",
+      "path": "flujo_ml/4_inferencia_oraculo.py",
+      "description": "Carga los 4 modelos LightGBM y thresholds por categoría para clasificar los activos e inferir probabilidad de éxito."
+    },
+    {
+      "id": "predicciones_v2_json",
+      "label": "Predicciones ML (JSON)",
+      "type": "database",
+      "path": "flujo_datos/predicciones_v2.json",
+      "description": "Archivo JSON publicado con el Top 25 Dips, Kelly sizing, Take Profit, Stop Loss y umbrales óptimos."
+    },
+    {
+      "id": "paso2_analizar",
+      "label": "Analista LLM (Paso 2)",
+      "type": "ml_model",
+      "path": "flujo/paso2_analizar.py",
+      "description": "Genera reportes semánticos detallados y tesis de inversión (Bull/Bear) usando la API multimodal de Gemini."
+    },
+    {
+      "id": "ultimo_reporte_md",
+      "label": "Reporte de Acciones (Markdown)",
+      "type": "database",
+      "path": "flujo_datos/ultimo_reporte.md",
+      "description": "Reporte final y veredicto del analista de Inteligencia Artificial para cada activo del Top 25."
+    },
+    {
+      "id": "paso3_enviar",
+      "label": "Notificador Telegram (Paso 3)",
+      "type": "utility",
+      "path": "flujo/paso3_enviar.py",
+      "description": "Envía el reporte simplificado junto con las gráficas de velas de mayor relevancia al chat de Telegram del usuario."
+    },
+    {
+      "id": "orquestador_acciones",
+      "label": "Orquestador Diario (GitHub Actions)",
+      "type": "workflow",
+      "path": ".github/workflows/orquestador_acciones.yml",
+      "description": "Acción automática programada que coordina el flujo diario de descarga, inferencia, análisis semántico, envío y publicación estática."
+    },
+    {
+      "id": "descargar_historial",
+      "label": "Descarga de Historial OHLCV",
+      "type": "extractor",
+      "path": "flujo_ml/11_descargar_ohclv.py",
+      "description": "Descarga masiva de 5 años de datos de cotizaciones históricas de 227 tickers para reentrenamiento."
+    },
+    {
+      "id": "ohclv_cache_csv",
+      "label": "Caché OHLCV (CSV)",
+      "type": "database",
+      "path": "Modelos/ohclv_cache.csv",
+      "description": "Almacenamiento local en caché del historial crudo descargado para acelerar la extracción de features."
+    },
+    {
+      "id": "dataset_features",
+      "label": "Procesador de Features V3",
+      "type": "utility",
+      "path": "flujo_ml/v3_dataset.py",
+      "description": "Calcula 33 variables técnicas e indicadores fundamentales (RSI, SMA, MACD, etc.) a partir del caché."
+    },
+    {
+      "id": "dataset_completo_csv",
+      "label": "Dataset Consolidado (CSV)",
+      "type": "database",
+      "path": "Modelos/v3_dataset.csv",
+      "description": "Dataset consolidado y limpio con todas las features temporales listo para el pipeline de MLOps."
+    },
+    {
+      "id": "optimizador_umbrales",
+      "label": "Optimizador de Umbrales F0.5",
+      "type": "ml_model",
+      "path": "flujo_ml/v3_threshold_por_cat.py",
+      "description": "Busca y optimiza umbrales probabilísticos por categoría para balancear precisión y exhaustividad (F0.5)."
+    },
+    {
+      "id": "entrenamiento_lgb",
+      "label": "Entrenamiento LightGBM",
+      "type": "ml_model",
+      "path": "flujo_ml/v3_entrenar_por_cat.py",
+      "description": "Entrena y exporta los 4 modelos de clasificación binaria LightGBM por categorías."
+    },
+    {
+      "id": "analisis_shap",
+      "label": "Analista de Importancia SHAP",
+      "type": "ml_model",
+      "path": "flujo_ml/v3_shap_analysis.py",
+      "description": "Calcula y grafica la importancia global y local de cada feature usando valores SHAP."
+    },
+    {
+      "id": "evaluacion_backtest",
+      "label": "Evaluador OOS y Backtesting",
+      "type": "ml_model",
+      "path": "flujo_ml/v3_backtest_eval.py",
+      "description": "Simula el rendimiento histórico acumulado del modelo en datos fuera de muestra (OOS) para validar robustez."
+    },
+    {
+      "id": "reentrenamiento_ml_v3",
+      "label": "Orquestador de Reentrenamiento",
+      "type": "workflow",
+      "path": ".github/workflows/reentrenamiento_ml_v3.yml",
+      "description": "Acción automática mensual que reentrena los modelos LightGBM, optimiza umbrales y actualiza reportes de backtest."
+    },
+    {
+      "id": "supabase",
+      "label": "Supabase (DB & Auth)",
+      "type": "database",
+      "path": "supabase/migrations/0001_init.sql",
+      "description": "Base de datos en la nube que gestiona usuarios, credenciales, carteras de inversión y transacciones usando políticas RLS."
+    },
+    {
+      "id": "vite_spa",
+      "label": "Frontend (React SPA en Vercel)",
+      "type": "interface",
+      "path": "frontend/",
+      "description": "Dashboard interactivo con charts de rendimiento, visor de alertas del oráculo ML, y gestión de portafolios."
+    }
+  ],
+  "edges": [
+    { "from": "orquestador_acciones", "to": "paso1_descargar", "label": "desencadena", "type": "workflow_step" },
+    { "from": "paso1_descargar", "to": "mercado_json", "label": "escribe", "type": "data_flow" },
+    { "from": "orquestador_acciones", "to": "inferencia_oraculo", "label": "desencadena", "type": "workflow_step" },
+    { "from": "mercado_json", "to": "inferencia_oraculo", "label": "lee de", "type": "data_flow" },
+    { "from": "inferencia_oraculo", "to": "predicciones_v2_json", "label": "escribe", "type": "data_flow" },
+    { "from": "orquestador_acciones", "to": "paso2_analizar", "label": "desencadena", "type": "workflow_step" },
+    { "from": "mercado_json", "to": "paso2_analizar", "label": "lee de", "type": "data_flow" },
+    { "from": "paso2_analizar", "to": "ultimo_reporte_md", "label": "escribe", "type": "data_flow" },
+    { "from": "orquestador_acciones", "to": "paso3_enviar", "label": "desencadena", "type": "workflow_step" },
+    { "from": "ultimo_reporte_md", "to": "paso3_enviar", "label": "lee de", "type": "data_flow" },
+    { "from": "paso3_enviar", "to": "ultimo_reporte_md", "label": "envía a Telegram", "type": "data_flow" },
+    
+    { "from": "reentrenamiento_ml_v3", "to": "descargar_historial", "label": "desencadena", "type": "workflow_step" },
+    { "from": "descargar_historial", "to": "ohclv_cache_csv", "label": "escribe", "type": "data_flow" },
+    { "from": "reentrenamiento_ml_v3", "to": "dataset_features", "label": "desencadena", "type": "workflow_step" },
+    { "from": "ohclv_cache_csv", "to": "dataset_features", "label": "lee de", "type": "data_flow" },
+    { "from": "dataset_features", "to": "dataset_completo_csv", "label": "escribe", "type": "data_flow" },
+    { "from": "reentrenamiento_ml_v3", "to": "optimizador_umbrales", "label": "desencadena", "type": "workflow_step" },
+    { "from": "dataset_completo_csv", "to": "optimizador_umbrales", "label": "lee de", "type": "data_flow" },
+    { "from": "reentrenamiento_ml_v3", "to": "entrenamiento_lgb", "label": "desencadena", "type": "workflow_step" },
+    { "from": "dataset_completo_csv", "to": "entrenamiento_lgb", "label": "lee de", "type": "data_flow" },
+    { "from": "optimizador_umbrales", "to": "entrenamiento_lgb", "label": "provee umbrales", "type": "dependency" },
+    { "from": "reentrenamiento_ml_v3", "to": "analisis_shap", "label": "desencadena", "type": "workflow_step" },
+    { "from": "entrenamiento_lgb", "to": "analisis_shap", "label": "lee modelos", "type": "dependency" },
+    { "from": "reentrenamiento_ml_v3", "to": "evaluacion_backtest", "label": "desencadena", "type": "workflow_step" },
+    { "from": "dataset_completo_csv", "to": "evaluacion_backtest", "label": "lee de", "type": "data_flow" },
+    { "from": "entrenamiento_lgb", "to": "evaluacion_backtest", "label": "lee modelos", "type": "dependency" },
+
+    { "from": "predicciones_v2_json", "to": "vite_spa", "label": "consume alertas", "type": "data_flow" },
+    { "from": "ultimo_reporte_md", "to": "vite_spa", "label": "muestra veredicto", "type": "data_flow" },
+    { "from": "supabase", "to": "vite_spa", "label": "sincroniza activos", "type": "data_flow" }
+  ],
+  "flows": [
+    {
+      "id": "daily_inference",
+      "name": "Daily Inference & Executive Flow",
+      "description": "Flujo de actualización diario activado por GitHub Actions. Descarga métricas en vivo, ejecuta los modelos predictivos, genera el veredicto con Gemini y notifica mediante Telegram, publicando los archivos de datos actualizados en el frontend.",
+      "steps": ["orquestador_acciones", "paso1_descargar", "mercado_json", "inferencia_oraculo", "predicciones_v2_json", "paso2_analizar", "ultimo_reporte_md", "paso3_enviar", "vite_spa"]
+    },
+    {
+      "id": "monthly_retraining",
+      "name": "MLOps Re-training Pipeline",
+      "description": "Workflow periódico que descarga el historial de OHLCV de 5 años, calcula 33 features técnicas, optimiza umbrales probabilísticos F0.5 por categoría, reentrena los 4 modelos de LightGBM, genera la matriz SHAP y evalúa el backtest consolidado.",
+      "steps": ["reentrenamiento_ml_v3", "descargar_historial", "ohclv_cache_csv", "dataset_features", "dataset_completo_csv", "optimizador_umbrales", "entrenamiento_lgb", "analisis_shap", "evaluacion_backtest", "predicciones_v2_json", "vite_spa"]
+    },
+    {
+      "id": "interactive_frontend",
+      "name": "Frontend Interactive Workspace",
+      "description": "Flujo de trabajo donde el usuario inicia sesión de forma segura, lee las predicciones de probabilidad de éxito, revisa el veredicto del análisis del LLM y opera compras DCA sincronizando su portafolio con Supabase en tiempo real.",
+      "steps": ["vite_spa", "predicciones_v2_json", "ultimo_reporte_md", "supabase"]
+    }
+  ]
+}
