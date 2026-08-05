@@ -1,14 +1,9 @@
-# Excluir archivos y carpetas pesadas de entrenamiento local (SIN excluir la fuente del frontend)
-Modelos/*.csv
-Modelos/*.pkl
-Modelos/*.joblib
+Modelos/
 flujo_ml/
 flujo/
 .agent/
 .git/
 .pytest_cache/
-node_modules/
-frontend/node_modules/
 *.log
 *.png
 *.jpg
