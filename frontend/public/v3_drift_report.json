@@ -1,0 +1,147 @@
+{
+  "fecha_auditoria": "2026-08-07 00:15:52",
+  "version_activa": "v3.7.2026-08",
+  "data_drift": {
+    "overall_status": "MODERATE_DRIFT_WARNING",
+    "high_drift_count": 1,
+    "moderate_drift_count": 1,
+    "features": {
+      "RSI_2": {
+        "psi": 0.0006,
+        "status": "NO_DRIFT",
+        "ref_mean": 11.22,
+        "act_mean": 10.54
+      },
+      "RSI_14": {
+        "psi": 0.0243,
+        "status": "NO_DRIFT",
+        "ref_mean": 45.13,
+        "act_mean": 43.87
+      },
+      "ATR_%": {
+        "psi": 0.1192,
+        "status": "MODERATE_DRIFT",
+        "ref_mean": 315.87,
+        "act_mean": 4.64
+      },
+      "BB_PctB": {
+        "psi": 0.0332,
+        "status": "NO_DRIFT",
+        "ref_mean": 0.35,
+        "act_mean": 0.33
+      },
+      "BB_Width": {
+        "psi": 0.0523,
+        "status": "NO_DRIFT",
+        "ref_mean": 0.2,
+        "act_mean": 0.22
+      },
+      "CMF_20": {
+        "psi": 0.0675,
+        "status": "NO_DRIFT",
+        "ref_mean": -0.01,
+        "act_mean": -0.05
+      },
+      "Dist_SMA200_%": {
+        "psi": 0.0429,
+        "status": "NO_DRIFT",
+        "ref_mean": 0.61,
+        "act_mean": 0.59
+      },
+      "RVOL_5D": {
+        "psi": 0.0108,
+        "status": "NO_DRIFT",
+        "ref_mean": 1.04,
+        "act_mean": 1.01
+      },
+      "Drawdown_52W_%": {
+        "psi": 0.0211,
+        "status": "NO_DRIFT",
+        "ref_mean": -26.05,
+        "act_mean": -28.35
+      },
+      "RS_Rating": {
+        "psi": 0.5371,
+        "status": "HIGH_DRIFT",
+        "ref_mean": 48.18,
+        "act_mean": 44.84
+      },
+      "Consecutive_Down_Days": {
+        "psi": 0.0026,
+        "status": "NO_DRIFT",
+        "ref_mean": 2.2,
+        "act_mean": 2.21
+      },
+      "ATR_Regime": {
+        "psi": 0.0058,
+        "status": "NO_DRIFT",
+        "ref_mean": 1.01,
+        "act_mean": 1.01
+      },
+      "RR_Ratio": {
+        "psi": 0.0085,
+        "status": "NO_DRIFT",
+        "ref_mean": 2.28,
+        "act_mean": 2.27
+      }
+    }
+  },
+  "concept_drift": {
+    "Sweet Spot": {
+      "win_rate_%": 75.0,
+      "f05_score": 0.4167,
+      "sample_size": 4,
+      "status": "HEALTHY",
+      "th_optimo": 0.66
+    },
+    "Cazador Dips": {
+      "win_rate_%": 40.0,
+      "f05_score": 0.3333,
+      "sample_size": 10,
+      "status": "HEALTHY",
+      "th_optimo": 0.54
+    },
+    "Recup. Rapida": {
+      "win_rate_%": 33.3,
+      "f05_score": 0.3516,
+      "sample_size": 27,
+      "status": "CONCEPT_DRIFT_CRITICAL",
+      "th_optimo": 0.44
+    },
+    "Cuchillos Cayendo": {
+      "win_rate_%": 50.6,
+      "f05_score": 0.5952,
+      "sample_size": 79,
+      "status": "HEALTHY",
+      "th_optimo": 0.41
+    }
+  },
+  "registro_actual": {
+    "version_id": "v3.7.2026-08",
+    "fecha_registro": "2026-08-07 00:15:52",
+    "commit_sha": "local-dev",
+    "modelos_guardados": 4,
+    "categorias": {
+      "Sweet Spot": {
+        "wr_%": 75.0,
+        "f05": 0.4167,
+        "th": 0.66
+      },
+      "Cazador Dips": {
+        "wr_%": 40.0,
+        "f05": 0.3333,
+        "th": 0.54
+      },
+      "Recup. Rapida": {
+        "wr_%": 33.3,
+        "f05": 0.3516,
+        "th": 0.44
+      },
+      "Cuchillos Cayendo": {
+        "wr_%": 50.6,
+        "f05": 0.5952,
+        "th": 0.41
+      }
+    }
+  }
+}

@@ -44,17 +44,20 @@ jobs:
       - name: 6. Evaluación del Backtest Consolidado OOS
         run: python flujo_ml/v3_backtest_eval.py
 
-      - name: 7. Inferencia en Vivo V3 (Oráculo MLOps)
+      - name: 7. Auditoría de Data Drift (PSI) & Registro Mensual de Modelos
+        run: python flujo_ml/v3_drift_monitor.py
+
+      - name: 8. Inferencia en Vivo V3 (Oráculo MLOps)
         run: python flujo_ml/4_inferencia_oraculo.py
 
-      - name: 8. Sincronización de Artefactos MLOps al Frontend
+      - name: 9. Sincronización de Artefactos MLOps al Frontend
         run: |
-          cp Modelos/v3_backtest_reporte_consolidado.json Modelos/modelo_metadata_v3_cat.json Modelos/v3_thresholds_optimos.json Modelos/v3_shap_importances.json Modelos/feature_importance_shap.png frontend/public/ || true
+          cp flujo_datos/historico_modelos_mlops.json Modelos/modelo_metadata_v3_cat.json Modelos/v3_backtest_reporte_consolidado.json frontend/public/ || true
 
-      - name: Commit y Push de Artefactos de Modelo V3 y Métricas
+      - name: Commit y Push de Artefactos de Modelo V3, Registro & Drift Report
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action MLOps V3"
           git add Modelos/ flujo_datos/ frontend/public/
-          git commit -m "🤖 MLOps: Re-entrenamiento Automatizado V3.7 y Métricas F0.5 Actualizadas" || echo "No hay cambios para comitear"
+          git commit -m "🤖 MLOps: Re-entrenamiento Mensual V3.7, Registro y Reporte de Drift (PSI)" || echo "No hay cambios para comitear"
           git push

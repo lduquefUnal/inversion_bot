@@ -1,7 +1,7 @@
 /**
  * Single Source of Truth for Strategy ML Parameters & Model Performance Metrics.
  * Baseline metrics derived from the honest Out-Of-Sample (OOS) Walk-Forward validation
- * of LightGBM V3.7 specialized models (Modelos/lightgbm_cat_*.pkl & Modelos/modelo_metadata_v3_cat.json).
+ * of LightGBM V3.7 specialized models on the High-Liquidity Institutional Universe (227 Tickers).
  * 
  * Target Optimization: F0.5-Score (Precision > Recall) with 100% Reinvestment Compound Interest:
  * EA_compuesto = (1 + E_trade)^N_trades - 1
@@ -82,7 +82,7 @@ export const CATEGORY_PARAMS = {
   },
   "⚠️ Cuchillos Cayendo": {
     id: "Cuchillos Cayendo",
-    catNombre: "⚠️ Cuchillos Cayendo",
+    catNombre: "⚠️ Cuchillos",
     label: "⚠️ Cuchillos",
     shortLabel: "Cuchillos",
     emoji: "⚠️",

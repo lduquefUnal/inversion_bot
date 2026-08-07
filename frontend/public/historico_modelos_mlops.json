@@ -1,0 +1,53 @@
+[
+  {
+    "fecha_ejecucion": "2026-08-07 00:19:22",
+    "version_pipeline": "V3.7",
+    "universo_activos": "Institucional Filtrado (227 Tickers)",
+    "rendimiento_por_categoria": [
+      {
+        "categoria_key": "Recup. Rapida",
+        "categoria": "⚡ Recup. Rápida",
+        "win_rate_%": 33.3,
+        "f05_score": 0.3516,
+        "th_optimo": 0.44,
+        "expectancia_trade_%": "+1.51%",
+        "trades_oos": 27,
+        "status_drift": "CONCEPT_DRIFT_CRITICAL"
+      },
+      {
+        "categoria_key": "Sweet Spot",
+        "categoria": "🎯 Sweet Spot",
+        "win_rate_%": 75.0,
+        "f05_score": 0.4167,
+        "th_optimo": 0.66,
+        "expectancia_trade_%": "+9.10%",
+        "trades_oos": 4,
+        "status_drift": "HEALTHY"
+      },
+      {
+        "categoria_key": "Cazador Dips",
+        "categoria": "🔥 Cazador Dips",
+        "win_rate_%": 40.0,
+        "f05_score": 0.3333,
+        "th_optimo": 0.54,
+        "expectancia_trade_%": "-0.15%",
+        "trades_oos": 10,
+        "status_drift": "HEALTHY"
+      },
+      {
+        "categoria_key": "Cuchillos Cayendo",
+        "categoria": "⚠️ Cuchillos Cayendo",
+        "win_rate_%": 50.6,
+        "f05_score": 0.5952,
+        "th_optimo": 0.41,
+        "expectancia_trade_%": "+1.43%",
+        "trades_oos": 79,
+        "status_drift": "HEALTHY"
+      }
+    ],
+    "data_drift_psi_summary": {
+      "overall_status": "DRIFT_ALERT",
+      "high_drift_features_count": 1
+    }
+  }
+]

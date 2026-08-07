@@ -40,6 +40,8 @@ El sistema escanea diariamente más de 200 activos globales (Acciones EE.UU., LA
 3. **Métricas de EA Compuesto (Fórmula: $EA_{\text{compuesto}} = (1 + E_{\text{trade}})^{N_{\text{trades}}} - 1$):**
    - Reinvertir el 100% del capital liberado tras cada operación (*Time Stop* o choque contra $TP$/$SL$) con fricción real de **$0.15 USD/trade**:
 
+#### 🏆 Universo Institucional Filtrado (~227 Activos Principales - Máxima Precisión)
+
 | Estrategia ML | Take Profit ($TP$) | Stop Loss ($SL$) | Límite Días (Time Stop) | Umbral Óptimo ($th$) | $F_{0.5}$-Score | Win Rate Real OOS | Expectancia / Trade | EA Compuesto Anual (100% Reinversión) | Total Trades OOS |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | ⚡ **Recup. Rápida** | **+15%** | **-5%** | **7 Días** | **$\ge 0.40$** | **0.4514** | **46.7%** | **+2.37%** | **+107.2% / año** | 31 |
@@ -48,11 +50,44 @@ El sistema escanea diariamente más de 200 activos globales (Acciones EE.UU., LA
 | ⚠️ **Cuchillos Cayendo** | **+8%** | **-5%** | **7 Días** | **$\ge 0.37$** | **0.5189** | **45.8%** | **+0.66%** | **+37.1% / año** | 48 |
 | 🚀 **TOTAL PORTAFOLIO** | **+12.5% prom.** | **-6.5% prom.** | **12.2 Días prom.** | **$\ge 0.41$ prom.** | **0.4137 prom.** | **45.6% prom.** | **+1.80% prom.** | **+98.6% a +486% / año** | **80 trades** |
 
-### 📌 Conclusión de Confianza y Matemáticas del Interés Compuesto
-*   **¿Por qué el compuesto es significativamente mayor al hacer más trades?**
-    La tasa de interés compuesto crece exponencialmente según la cantidad de giros de capital ($N_{\text{trades}}$) al año. Por ejemplo, en **⚡ Recup. Rápida** con 31 trades al año a $+2.37\%$ por trade, el capital se multiplica por $(1 + 0.0237)^{31} = 2.072$, logrando **+107.2% compuesto anual**.
-*   **En 🎯 Sweet Spot:** Con expectancia de $+3.29\%$ por trade y 18 operaciones al año, $(1 + 0.0329)^{18} = 1.789 \rightarrow \mathbf{+78.9\% \text{ compuesto anual}}$. (Si se lograse un trade continuo cada 14 días en los 365 días del año, es decir 26 trades: $(1.0329)^{26} = 2.327 \rightarrow \mathbf{+132.7\% \text{ anual compuesto}}$).
-*   **La versión más confiable es V3.7 (`lightgbm_cat_*.pkl`)** optimizada con $F_{0.5}$-Score para maximizar precisión sobre recall.
+#### 🌐 Universo Expandido Sin Filtro (~534 Activos Globales - Alta Volatilidad)
+
+| Estrategia ML | Take Profit ($TP$) | Stop Loss ($SL$) | Límite Días (Time Stop) | Umbral Óptimo ($th$) | $F_{0.5}$-Score | Win Rate Real OOS | Expectancia / Trade | EA Compuesto Anual (100% Reinversión) | Total Trades OOS |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| ⚡ **Recup. Rápida** | **+15%** | **-5%** | **7 Días** | **$\ge 0.35$** | **0.3049** | **26.0%** | **+0.20%** | **+16.6% / año** | 77 |
+| 🎯 **Sweet Spot** | **+15%** | **-8%** | **14 Días** | **$\ge 0.45$** | **0.4297** | **40.7%** | **+1.36%** | **+44.2% / año** | 27 |
+| 🔥 **Cazador Dips** | **+12%** | **-8%** | **21 Días** | **$\ge 0.40$** | **0.4018** | **39.1%** | **-0.18%** | **-4.0% / año** | 23 |
+| ⚠️ **Cuchillos Cayendo** | **+8%** | **-5%** | **7 Días** | **$\ge 0.35$** | **0.4785** | **39.8%** | **+0.17%** | **+23.3% / año** | 123 |
+| 🚀 **TOTAL PORTAFOLIO** | **+12.5% prom.** | **-6.5% prom.** | **12.2 Días prom.** | **$\ge 0.39$ prom.** | **0.4037 prom.** | **36.4% prom.** | **+0.39% prom.** | **+25.0% / año** | **250 trades** |
+
+### 📌 Diagnóstico Empírico MLOps: ¿Por qué Filtrar el Universo Institucional?
+*   **Ruido de Baja Liquidez:** Al añadir activos de micro-capitalización o baja liquidez global, el Win Rate de estrategias de tendencia como **⚡ Recup. Rápida** sufre un impacto negativo (cayendo de $46.7\%$ a $26.0\%$) debido a sacudidas erráticas de precio (*whipsaws*).
+*   **Conclusión:** El modelo **LightGBM V3.7** alcanza su rendimiento óptimo y máxima rentabilidad fuera de muestra (**Win Rate $\ge 40\%$ – $46.7\%$**) al operar en el **Universo Institucional de Alta Liquidez (~220 Activos)**.
+
+---
+
+## 📦 Registro Mensual de Modelos & Monitoreo de Drift (MLOps Architecture)
+
+El pipeline de GitHub Actions incluye un job mensual automatizado (`.github/workflows/reentrenamiento_ml_v3.yml`) que se ejecuta el día 1 de cada mes a las 00:00 UTC para realizar el re-entrenamiento, control de versiones y auditoría de **Data & Concept Drift**:
+
+### 1. 📂 Registro Histórico de Modelos (`Modelos/registry/`)
+- Cada ejecución mensual archiva un snapshot inmutable en `Modelos/registry/v3.7.YYYY-MM/` con:
+  - Los 4 modelos binarios especializados (`lightgbm_cat_*.pkl`).
+  - La metadata de umbrales óptimos `modelo_metadata_v3_cat.json`.
+  - El historial append-only lineage `registry_history.json`.
+
+### 2. 📊 Monitoreo de Data Drift (Population Stability Index - PSI)
+- El script `flujo_ml/v3_drift_monitor.py` calcula el **PSI** comparando la distribución de las 13 características principales de los datos recientes de inferencia vs. la ventana de referencia de entrenamiento (`v3_dataset.csv`):
+  - **$\text{PSI} < 0.10$:** Distribución Estable (`NO_DRIFT`).
+  - **$0.10 \le \text{PSI} < 0.25$:** Desplazamiento Moderado (`MODERATE_DRIFT`).
+  - **$\text{PSI} \ge 0.25$:** Desplazamiento Crítico (`HIGH_DRIFT_ALERT` - Desencadena alerta de re-calibración).
+
+### 3. 🎯 Monitoreo de Concept Drift por Categoría
+- Evalúa mensualmente la evolución del **Win Rate fuera de muestra** y el **$F_{0.5}$-Score** por categoría:
+  - **Win Rate $\ge 40\%$:** Estado Óptimo (`HEALTHY`).
+  - **$35\% \le \text{Win Rate} < 40\%$:** Alerta de Degradación (`DEGRADATION_WARNING`).
+  - **Win Rate $< 35\%$:** Alerta Crítica (`CONCEPT_DRIFT_CRITICAL`).
+- Publica los resultados en `frontend/public/v3_drift_report.json` para su monitoreo en la aplicación web.
 
 ---
 

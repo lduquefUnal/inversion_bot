@@ -19,12 +19,31 @@ DAYS_BACK = int(os.environ.get("DAYS_BACK", 1825))
 
 
 def get_tickers():
-    """Unión de tickers de predicciones_v2.json y dataset_entrenamiento.csv."""
+    """Unión de tickers de paso1_descargar, predicciones_v2.json y dataset_entrenamiento.csv."""
     tickers = set()
-    preds = json.load(open(os.path.join(FLUJO_DATOS, "predicciones_v2.json")))["predicciones"]
-    tickers.update(p["Ticker"] for p in preds)
-    ds = pd.read_csv(os.path.join(ROOT, "Modelos", "dataset_entrenamiento.csv"))
-    tickers.update(ds["Ticker"].unique())
+    try:
+        import sys
+        if ROOT not in sys.path:
+            sys.path.insert(0, ROOT)
+        from flujo.paso1_descargar import get_expanded_universe
+        tickers.update(get_expanded_universe())
+    except Exception as e:
+        print(f"⚠️ Warning importing paso1_descargar universe: {e}")
+
+    try:
+        preds_path = os.path.join(FLUJO_DATOS, "predicciones_v2.json")
+        if os.path.exists(preds_path):
+            preds = json.load(open(preds_path))["predicciones"]
+            tickers.update(p["Ticker"] for p in preds)
+    except Exception: pass
+
+    try:
+        ds_path = os.path.join(ROOT, "Modelos", "dataset_entrenamiento.csv")
+        if os.path.exists(ds_path):
+            ds = pd.read_csv(ds_path)
+            tickers.update(ds["Ticker"].unique())
+    except Exception: pass
+
     return sorted(tickers)
 
 

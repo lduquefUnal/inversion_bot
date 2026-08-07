@@ -37,14 +37,24 @@ def main():
     ohlcv = pd.read_csv(CACHE, parse_dates=["Date"])
     ts = pd.Timestamp(TEST_START)
 
-    df = build_dataset(ohlcv)
+    ds_path = os.path.join(MODELOS, "v3_dataset.csv")
+    if os.path.exists(ds_path):
+        print(f"📦 Cargando dataset pre-calculado V3 desde {ds_path}...")
+        df = pd.read_csv(ds_path)
+    else:
+        print("📦 Reconstruyendo dataset V3...")
+        df = build_dataset(ohlcv)
+
     df["Date"] = pd.to_datetime(df["Date"])
+    cols_to_add = [c for c in ["Close", "High", "Low"] if c not in df.columns]
+    if cols_to_add:
+        ohlcv["Date"] = pd.to_datetime(ohlcv["Date"])
+        df = df.merge(ohlcv[["Date", "Ticker"] + cols_to_add], on=["Date", "Ticker"], how="left")
+
     train_full = df[df["Date"] < ts].reset_index(drop=True)
 
-    feat_all = compute_features(ohlcv)
+    feat_all = df.copy()
     feat_test = feat_all[feat_all["Date"] >= ts].copy()
-    feat_test = enrich_derived(feat_test)
-    feat_test = enrich_fundamentals(feat_test)
 
     cat_models = {}
     cat_metadata = {}

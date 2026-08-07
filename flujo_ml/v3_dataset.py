@@ -154,40 +154,52 @@ def build_v3_dataset(ohlcv, horizon=HORIZON):
     import math
     feats = add_skill_features(ohlcv)
     feats["Date"] = pd.to_datetime(feats["Date"])
+    max_date = pd.to_datetime(ohlcv["Date"]).max()
 
     rows = []
     ohlcv_by_t = {t: g.sort_values("Date").reset_index(drop=True) for t, g in ohlcv.groupby("Ticker")}
-    for _, r in feats.iterrows():
-        g = ohlcv_by_t.get(r["Ticker"])
-        if g is None:
+
+    for ticker, group_feats in feats.groupby("Ticker"):
+        g = ohlcv_by_t.get(ticker)
+        if g is None or len(g) == 0:
             continue
-        # localizar índice del día en el OHLCV
-        idx = g.index[g["Date"] == r["Date"]]
-        if len(idx) == 0:
-            continue
-        i = idx[0]
-        fut = g.iloc[i + 1: i + 1 + horizon]
-        if len(fut) < horizon:
-            continue
-        p = CAT_PARAMS[r["Categoria"]]
-        tp_price = r["Close"] * (1 + p["tp"])
-        sl_price = r["Close"] * (1 - p["sl"])
-        target = 0
-        for _, f in fut.iterrows():
-            if f["Low"] <= sl_price:
-                target = 0
-                break
-            if f["High"] >= tp_price:
-                target = 1
-                break
-        days_old = (ohlcv["Date"].max() - r["Date"]).days
-        w = math.exp(-math.log(2) * (days_old / HALFLIFE_DAYS))
-        row = r.drop(labels=["Close"]).to_dict()
-        row["Sample_Weight"] = round(w, 4)
-        row["Target"] = target
-        row["TP_Pct"] = p["tp"] * 100.0
-        row["SL_Pct"] = p["sl"] * 100.0
-        rows.append(row)
+        g["Date"] = pd.to_datetime(g["Date"])
+        date_to_idx = {d: i for i, d in enumerate(g["Date"])}
+        
+        highs = g["High"].values
+        lows = g["Low"].values
+        n_g = len(g)
+
+        for _, r in group_feats.iterrows():
+            i = date_to_idx.get(r["Date"])
+            if i is None or i + 1 + horizon > n_g:
+                continue
+            
+            p = CAT_PARAMS[r["Categoria"]]
+            close_val = r["Close"]
+            tp_price = close_val * (1 + p["tp"])
+            sl_price = close_val * (1 - p["sl"])
+            
+            fut_highs = highs[i + 1 : i + 1 + horizon]
+            fut_lows = lows[i + 1 : i + 1 + horizon]
+            
+            target = 0
+            for h_val, l_val in zip(fut_highs, fut_lows):
+                if l_val <= sl_price:
+                    target = 0
+                    break
+                if h_val >= tp_price:
+                    target = 1
+                    break
+                    
+            days_old = (max_date - r["Date"]).days
+            w = math.exp(-math.log(2) * (days_old / HALFLIFE_DAYS))
+            row = r.to_dict()
+            row["Sample_Weight"] = round(w, 4)
+            row["Target"] = target
+            row["TP_Pct"] = p["tp"] * 100.0
+            row["SL_Pct"] = p["sl"] * 100.0
+            rows.append(row)
 
     df = pd.DataFrame(rows)
     df = enrich_derived(df)

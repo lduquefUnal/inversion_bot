@@ -34,26 +34,8 @@ def calcular_rsi(data, periods=14):
     rsi = 100 - (100/(1 + rsi))
     return rsi.iloc[-1]
 
-def main():
-    parser = argparse.ArgumentParser(description="Descargar datos de mercado")
-    parser.add_argument("--ligero", action="store_true", help="Modo ligero: omite mpf y scraping de noticias/reddit")
-    args = parser.parse_args()
-
-    TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
-    CHAT_ID = os.environ.get('CHAT_ID')
-    bot = telebot.TeleBot(TELEGRAM_TOKEN) if TELEGRAM_TOKEN and CHAT_ID else None
-    
-    os.makedirs("flujo_datos", exist_ok=True)
-    # Limpiar PNGs y MDs antiguos para evitar que se envíen más de 3 gráficas acumuladas
-    for file in glob.glob("flujo_datos/*.png") + glob.glob("flujo_datos/*.md"):
-        try: os.remove(file)
-        except: pass
-
-    if bot:
-        try: bot.send_message(CHAT_ID, "🚀 *10%* - `Orquestador Robusto`: Limpieza inicial lista. Escaneando 52-Week Drawdown y Valoración Estructural...", parse_mode="Markdown")
-        except: pass
-
-    universe = [
+def get_expanded_universe():
+    universe_raw = [
         # --- CRIPTOMONEDAS Y BLOCKCHAIN ---
         "BTC-USD", "ETH-USD", "SOL-USD", "ADA-USD", "AVAX-USD", "LINK-USD", "DOT-USD", "COIN", "MARA", "RIOT", "MSTR", "CLSK", "CIFR", "WULF",
         # ETFs cripto spot
@@ -71,7 +53,7 @@ def main():
         "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "AMD",
         "INTC", "MU", "SMCI", "TSM", "ASML", "ARM", "PLTR", "LRCX", "KLAC", "AMAT", "ADI", "TXN", "NXPI", "MRVL", "MCHP", "ON", "MPWR", "WDC", "STX",
         # Tech software & Hardware
-        "DELL", "ORCL", "CRM", "ADBE", "QCOM", "AVGO", "HPQ", "HPE", "NTAP", "WDC",
+        "DELL", "ORCL", "CRM", "ADBE", "QCOM", "AVGO", "HPQ", "HPE", "NTAP",
 
         # --- CIBERSEGURIDAD, NUBE Y SAAS ---
         "CRWD", "PANW", "FTNT", "ZS", "NET", "SNOW", "NOW", "WDAY", "INTU",
@@ -132,6 +114,30 @@ def main():
         "VDE", "XLV", "XLF", "XLC", "XLY", "XLP", "XLI", "XLB", "XLRE", "XLU",
         "NOBL", "HDV", "VIG", "DGRO"
     ]
+    
+    seen = set()
+    return [x for x in universe_raw if not (x in seen or seen.add(x))]
+
+def main():
+    parser = argparse.ArgumentParser(description="Descargar datos de mercado")
+    parser.add_argument("--ligero", action="store_true", help="Modo ligero: omite mpf y scraping de noticias/reddit")
+    args = parser.parse_args()
+
+    TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+    CHAT_ID = os.environ.get('CHAT_ID')
+    bot = telebot.TeleBot(TELEGRAM_TOKEN) if TELEGRAM_TOKEN and CHAT_ID else None
+    
+    os.makedirs("flujo_datos", exist_ok=True)
+    # Limpiar PNGs y MDs antiguos para evitar que se envíen más de 3 gráficas acumuladas
+    for file in glob.glob("flujo_datos/*.png") + glob.glob("flujo_datos/*.md"):
+        try: os.remove(file)
+        except: pass
+
+    if bot:
+        try: bot.send_message(CHAT_ID, "🚀 *10%* - `Orquestador Robusto`: Limpieza inicial lista. Escaneando 52-Week Drawdown y Valoración Estructural...", parse_mode="Markdown")
+        except: pass
+
+    universe = get_expanded_universe()
     
     macro_data = {}
     try:
