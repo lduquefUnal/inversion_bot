@@ -256,11 +256,12 @@ def build_dataset(ohlcv, horizon=11):
 
 
 # ── Simulación honesta ───────────────────────────────────────────────────────
-def simulate_signals(feat_df, prob_col, umbral, max_trades_per_ticker=1, dedupe_same_day=True):
+def simulate_signals(feat_df, prob_col, umbral, max_trades_per_ticker=1, dedupe_same_day=True, modo_timeout=False):
     """
     Recorre día a día la ventana de test. Abre trade al close del día de señal.
-    Señales NO repetidas: máx `max_trades_per_ticker` por ticker y nunca 2 entradas
-    consecutivas con el mismo ticker. Retorna lista de trades.
+    Señales NO repetidas: máx `max_trades_per_ticker` por ticker.
+    Si `modo_timeout=True`, ignora TP y SL intermedias y sostiene la posición
+    hasta agotar el límite de días (TimeStop) o la fecha actual si está abierto.
     """
     feat = feat_df.copy()
     feat["prob"] = prob_col
@@ -285,34 +286,51 @@ def simulate_signals(feat_df, prob_col, umbral, max_trades_per_ticker=1, dedupe_
                 tp_p, sl_p = open_pos["tp_p"], open_pos["sl_p"]
                 tp_price = open_pos["Precio_Entrada"] * (1 + tp_p)
                 sl_price = open_pos["Precio_Entrada"] * (1 - sl_p)
-                if row["High"] >= tp_price:
-                    res, pnl_pct, exit_p = "WIN", tp_p * 100, tp_price
-                elif row["Low"] <= sl_price:
-                    res, pnl_pct, exit_p = "LOSS", -sl_p * 100, sl_price
-                elif open_pos["dias"] >= open_pos["limite"]:
+                
+                es_ultimo_dia = (i == len(g) - 1)
+                alcanzo_limite = (open_pos["dias"] >= open_pos["limite"])
+
+                if modo_timeout:
+                    if not (alcanzo_limite or es_ultimo_dia):
+                        continue
                     res = "TIMEOUT"
-                    pnl_pct = (row["Close"] - open_pos["Precio_Entrada"]) / open_pos["Precio_Entrada"] * 100
                     exit_p = row["Close"]
+                    pnl_pct = (row["Close"] - open_pos["Precio_Entrada"]) / open_pos["Precio_Entrada"] * 100.0
                 else:
-                    continue
-                friccion = max(0.05, min(0.3, 0.15 / open_pos["Precio_Entrada"] * 100))
+                    if row["High"] >= tp_price:
+                        res, pnl_pct, exit_p = "WIN", tp_p * 100.0, tp_price
+                    elif row["Low"] <= sl_price:
+                        res, pnl_pct, exit_p = "LOSS", -sl_p * 100.0, sl_price
+                    elif alcanzo_limite:
+                        res = "TIMEOUT"
+                        pnl_pct = (row["Close"] - open_pos["Precio_Entrada"]) / open_pos["Precio_Entrada"] * 100.0
+                        exit_p = row["Close"]
+                    else:
+                        continue
+
+                friccion = max(0.05, min(0.3, 0.15 / open_pos["Precio_Entrada"] * 100.0))
                 trades.append({
-                    "Ticker": open_pos["Ticker"], "Categoria": open_pos["Categoria"],
+                    "Ticker": open_pos["Ticker"], 
+                    "Categoria": open_pos["Categoria"],
                     "Veredicto_V2": "BUY",
-                    "Probabilidad_%": round(open_pos["prob"] * 100, 1),
+                    "Probabilidad_%": round(open_pos["prob"] * 100.0, 1),
                     "Fecha_Entrada": open_pos["Fecha_Entrada"].strftime("%Y-%m-%d"),
                     "Precio_Entrada_Hist": round(open_pos["Precio_Entrada"], 2),
                     "Precio_Salida": round(exit_p, 2),
-                    "Resultado": res, "Dias_Trade": open_pos["dias"],
+                    "Resultado": res, 
+                    "Dias_Trade": open_pos["dias"],
                     "PnL_%": round(pnl_pct, 2),
                     "PnL_Neto_%": round(pnl_pct - friccion, 2),
-                    "TP_%": round(tp_p * 100, 1), "SL_%": round(sl_p * 100, 1),
+                    "TP_%": round(tp_p * 100.0, 1), 
+                    "SL_%": round(sl_p * 100.0, 1),
+                    "Limite_Dias": open_pos["limite"],
                 })
                 count += 1
                 open_pos = None
                 if count >= max_trades_per_ticker:
                     break
     return trades
+
 
 
 def metrics(trades):

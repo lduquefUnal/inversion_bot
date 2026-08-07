@@ -120,6 +120,8 @@ const Backtesting = () => {
 
   const cat = categoriasDyn.find(c => c.id === selectedCat) || categoriasDyn[0];
 
+  const [execMode, setExecMode] = useState('TIMEOUT'); // 'TIMEOUT' (default) | 'ESTANDAR'
+
   const activosCat = useMemo(() => {
     const predicciones = marketData?.TOP_25_DIPS || [];
     return predicciones.filter(a => {
@@ -133,17 +135,45 @@ const Backtesting = () => {
     ? (activosCat.reduce((s, a) => s + (a['Probabilidad_Exito_%'] || 0), 0) / activosCat.length).toFixed(1)
     : 0;
 
-  const btTrades = useMemo(() => {
-    if (!bt || !bt.trades) return [];
-    return bt.trades.filter(t => {
+  const allBtTrades = useMemo(() => {
+    if (!bt) return [];
+    const source = (execMode === 'TIMEOUT' && bt.trades_timeout) ? bt.trades_timeout : (bt.trades || []);
+    return source.map(t => {
+      if (execMode === 'TIMEOUT') {
+        const pnlNeto = t.PnL_Neto_Timeout_% ?? t['PnL_Neto_%'] ?? t['PnL_%'] ?? 0;
+        const exitPrice = t.Precio_Salida_Timeout ?? t.Precio_Salida ?? t.Precio_Entrada_Hist;
+        return {
+          ...t,
+          Resultado: 'TIMEOUT',
+          Precio_Salida: exitPrice,
+          PnL_Neto_%: pnlNeto,
+        };
+      }
+      return t;
+    });
+  }, [bt, execMode]);
+
+  const btTradesFiltered = useMemo(() => {
+    return allBtTrades.filter(t => {
       const matchResult = btFilter === 'TODOS' || t.Resultado === btFilter;
       const matchCat = btCatFilter === 'Todos' || String(t.Categoria || '').toLowerCase().includes(btCatFilter.toLowerCase());
       return matchResult && matchCat;
     });
-  }, [bt, btFilter, btCatFilter]);
+  }, [allBtTrades, btFilter, btCatFilter]);
+
+  // Tomar las últimas 20 alertas para análisis directo
+  const last20Trades = useMemo(() => {
+    return btTradesFiltered.slice(-20);
+  }, [btTradesFiltered]);
+
+  // Calcular PnL promedio de las alertas mostradas
+  const pnlPromedioUltimas20 = useMemo(() => {
+    if (!last20Trades.length) return 0;
+    const sum = last20Trades.reduce((acc, t) => acc + (t['PnL_Neto_%'] ?? 0), 0);
+    return Number((sum / last20Trades.length).toFixed(2));
+  }, [last20Trades]);
 
   const btCats = (bt && bt.resumen_por_categoria) ? Object.keys(bt.resumen_por_categoria) : ['Sweet Spot', 'Cazador Dips', 'Recup. Rapida', 'Cuchillos Cayendo'];
-
 
   return (
     <div style={{ paddingBottom: '60px', maxWidth: '1050px', margin: '0 auto' }}>
@@ -371,17 +401,50 @@ const Backtesting = () => {
         )}
       </div>
 
-      {/* ── Backtest Real — Últimos 45 Días ─────────────────────────────── */}
+      {/* ── Backtest Real — Criterio Timeout & Alertas ─────────────────── */}
       <div style={{ background: 'rgba(18,26,44,0.7)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', padding: '22px 24px', marginBottom: '28px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '18px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#f8fafc' }}>
-              📈 Backtest Real — Últimos 45 Días
-            </h3>
-            <p style={{ margin: '4px 0 0', color: '#475569', fontSize: '0.8rem' }}>
-              Simulación trade-a-trade de cada señal sobre precios reales · Fricción $0.15 USD/orden
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#f8fafc' }}>
+                📈 Backtest Real — Últimas 20 Alertas (Criterio Timeout)
+              </h3>
+              <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 700, background: 'rgba(245,158,11,0.15)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.3)' }}>
+                ⏱️ Reacción 12-24h (Holding Completo)
+              </span>
+            </div>
+            <p style={{ margin: '6px 0 0', color: '#475569', fontSize: '0.8rem' }}>
+              Evaluación sosteniendo la posición durante el TimeStop completo ({cat.limiteDias} días) adaptado a ejecución manual · Fricción $0.15 USD/orden
               {bt?.ventana ? ` · Ventana: ${bt.ventana}` : ''}
             </p>
+          </div>
+
+          {/* Botón Selector de Modo de Ejecución */}
+          <div style={{ display: 'flex', gap: '6px', background: 'rgba(15,23,42,0.8)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <button
+              onClick={() => setExecMode('TIMEOUT')}
+              style={{
+                padding: '6px 14px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                background: execMode === 'TIMEOUT' ? 'rgba(245,158,11,0.2)' : 'transparent',
+                color: execMode === 'TIMEOUT' ? '#f59e0b' : '#64748b',
+                border: execMode === 'TIMEOUT' ? '1px solid rgba(245,158,11,0.4)' : '1px solid transparent',
+                transition: 'all 0.2s',
+              }}
+            >
+              ⏱️ Criterio Timeout (Holding 100%)
+            </button>
+            <button
+              onClick={() => setExecMode('ESTANDAR')}
+              style={{
+                padding: '6px 14px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                background: execMode === 'ESTANDAR' ? 'rgba(16,185,129,0.2)' : 'transparent',
+                color: execMode === 'ESTANDAR' ? '#10b981' : '#64748b',
+                border: execMode === 'ESTANDAR' ? '1px solid rgba(16,185,129,0.4)' : '1px solid transparent',
+                transition: 'all 0.2s',
+              }}
+            >
+              🎯 Criterio Estándar (TP/SL)
+            </button>
           </div>
         </div>
 
@@ -395,21 +458,26 @@ const Backtesting = () => {
           <>
             {/* Métricas globales */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', marginBottom: '20px' }}>
-              <StatCard label="Trades Totales" value={bt.resumen?.total ?? bt.total_activos ?? 0} color="#94a3b8" sub={`${bt.resumen?.buy_signals ?? 0} señales BUY`} />
-              <StatCard label="✅ Wins" value={bt.resumen?.wins ?? bt.wins ?? 0} color="#10b981" tooltip="Señales que alcanzaron el Take Profit" />
-              <StatCard label="❌ Losses" value={bt.resumen?.losses ?? bt.losses ?? 0} color="#ef4444" tooltip="Señales que tocaron el Stop Loss" />
-              <StatCard label="⏱️ Timeouts" value={bt.resumen?.timeouts ?? bt.timeouts ?? 0} color="#f59e0b" tooltip="Señales que agotaron el tiempo máximo sin llegar a TP ni SL" />
+              <StatCard label="Alertas Mostradas" value={last20Trades.length} color="#94a3b8" sub={`Últimas 20 del historial`} />
               <StatCard
-                label="Win Rate Real"
-                value={`${bt.resumen?.['win_rate_%'] ?? bt['win_rate_real_%'] ?? 0}%`}
-                color={(bt.resumen?.['win_rate_%'] ?? 0) >= 40 ? '#10b981' : '#ef4444'}
-                tooltip="Wins / total de trades en los últimos 45 días"
+                label="Criterio Salida"
+                value={execMode === 'TIMEOUT' ? '⏱️ Timeout (11d)' : '🎯 TP / SL'}
+                color={execMode === 'TIMEOUT' ? '#f59e0b' : '#10b981'}
+                tooltip={execMode === 'TIMEOUT' ? 'Sostener posición hasta TimeStop de 11 días sin salir anticipadamente' : 'Cierre inmediato al tocar TP o SL'}
               />
               <StatCard
-                label="PnL Promedio"
-                value={`${(bt.resumen?.['pnl_promedio_%'] ?? 0) > 0 ? '+' : ''}${bt.resumen?.['pnl_promedio_%'] ?? 0}%`}
-                color={(bt.resumen?.['pnl_promedio_%'] ?? 0) >= 0 ? '#10b981' : '#ef4444'}
-                tooltip="Ganancia/pérdida neta promedio por trade (después de fricción)"
+                label="PnL Promedio (Últimas 20)"
+                value={`${pnlPromedioUltimas20 > 0 ? '+' : ''}${pnlPromedioUltimas20}%`}
+                color={pnlPromedioUltimas20 >= 0 ? '#10b981' : '#ef4444'}
+                tooltip="Promedio neto de ganancia/pérdida de las 20 últimas alertas bajo este criterio"
+                sub="Promedio de la columna PnL"
+              />
+              <StatCard
+                label="Tiempo de Reacción"
+                value="12 - 24 Hours"
+                color="#60a5fa"
+                tooltip="Modo de ejecución manual sin requerir monitoreo continuo"
+                sub="Operativa Manual"
               />
             </div>
 
@@ -443,7 +511,7 @@ const Backtesting = () => {
             </div>
 
             {/* Tabla de señales */}
-            {btTrades.length === 0 ? (
+            {last20Trades.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '20px', color: '#475569', fontSize: '0.85rem' }}>No hay trades que coincidan con los filtros.</div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
@@ -454,14 +522,14 @@ const Backtesting = () => {
                       <th style={{ padding: '10px 12px' }}>Categoría</th>
                       <th style={{ padding: '10px 12px' }}>Señal</th>
                       <th style={{ padding: '10px 12px' }}>Prob.</th>
-                      <th style={{ padding: '10px 12px' }}>Entrada → Salida</th>
-                      <th style={{ padding: '10px 12px' }}>Días / TimeStop</th>
-                      <th style={{ padding: '10px 12px' }}>PnL Neto</th>
+                      <th style={{ padding: '10px 12px' }}>Entrada → Salida ({execMode})</th>
+                      <th style={{ padding: '10px 12px' }}>Días Sostenidos</th>
+                      <th style={{ padding: '10px 12px' }}>PnL Neto %</th>
                       <th style={{ padding: '10px 12px' }}>Motivo de Salida</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {btTrades.map((t, i) => {
+                    {last20Trades.map((t, i) => {
                       const catColor = CAT_COLOR[t.Categoria] || { color: '#94a3b8', bg: 'rgba(148,163,184,0.12)' };
                       const pnl = t['PnL_Neto_%'] ?? t['PnL_%'] ?? 0;
                       const pnlColor = pnl >= 0 ? '#10b981' : '#ef4444';
@@ -469,13 +537,13 @@ const Backtesting = () => {
                       
                       const tpPct = t['TP_%'] ?? 10;
                       const slPct = t['SL_%'] ?? 4;
-                      const maxDias = 11;
+                      const maxDias = t.Limite_Dias || 11;
                       
-                      const motivoSalida = t.Resultado === 'WIN'
+                      const motivoSalida = execMode === 'TIMEOUT' || t.Resultado === 'TIMEOUT'
+                        ? { label: `⏱️ TimeStop (${t.Dias_Trade || maxDias}d)`, color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)' }
+                        : t.Resultado === 'WIN'
                         ? { label: `🎯 TP (+${tpPct}%)`, color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.3)' }
-                        : t.Resultado === 'LOSS'
-                        ? { label: `🛑 SL (-${slPct}%)`, color: '#ef4444', bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.3)' }
-                        : { label: `⏱️ Time Stop (${t.Dias_Trade}d)`, color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)' };
+                        : { label: `🛑 SL (-${slPct}%)`, color: '#ef4444', bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.3)' };
 
                       return (
                         <tr key={t.Ticker + i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', transition: '0.15s' }}
@@ -505,6 +573,55 @@ const Backtesting = () => {
                             <span style={{ color: '#64748b' }}>${t.Precio_Entrada_Hist?.toFixed(2)} → ${t.Precio_Salida?.toFixed(2)}</span>
                           </td>
                           <td style={{ padding: '11px 12px', color: '#60a5fa', fontWeight: 600, fontSize: '0.82rem' }}>
+                            {t.Dias_Trade}d <span style={{ color: '#475569', fontSize: '0.72rem' }}>/ {maxDias}d máx</span>
+                          </td>
+                          <td style={{ padding: '11px 12px', fontWeight: 800, color: pnlColor, fontSize: '0.95rem' }}>
+                            {pnl > 0 ? '+' : ''}{pnl}%
+                          </td>
+                          <td style={{ padding: '11px 12px' }}>
+                            <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 700, background: motivoSalida.bg, color: motivoSalida.color, border: `1px solid ${motivoSalida.border}`, whiteSpace: 'nowrap' }}>{motivoSalida.label}</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+
+                  {/* ── FILA FINAL CON EL PNL PROMEDIO DE LAS 20 ALERTAS ─────── */}
+                  <tfoot>
+                    <tr style={{
+                      background: 'rgba(15,23,42,0.95)',
+                      borderTop: '2px solid rgba(255,255,255,0.12)',
+                      fontSize: '0.88rem',
+                    }}>
+                      <td colSpan={6} style={{ padding: '14px 12px', fontWeight: 800, color: '#f8fafc', textAlign: 'right' }}>
+                        📊 PnL PROMEDIO (ÚLTIMAS {last20Trades.length} ALERTAS {execMode}):
+                      </td>
+                      <td style={{ padding: '14px 12px', fontWeight: 900, fontSize: '1.1rem', color: pnlPromedioUltimas20 >= 0 ? '#10b981' : '#ef4444' }}>
+                        <span style={{
+                          padding: '4px 12px',
+                          borderRadius: '8px',
+                          background: pnlPromedioUltimas20 >= 0 ? 'rgba(16,185,129,0.18)' : 'rgba(239,68,68,0.18)',
+                          border: `1px solid ${pnlPromedioUltimas20 >= 0 ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`,
+                          boxShadow: `0 0 12px ${pnlPromedioUltimas20 >= 0 ? '#10b981' : '#ef4444'}33`
+                        }}>
+                          {pnlPromedioUltimas20 > 0 ? '+' : ''}{pnlPromedioUltimas20}%
+                        </span>
+                      </td>
+                      <td style={{ padding: '14px 12px' }}>
+                        <span style={{ padding: '4px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, background: 'rgba(245,158,11,0.15)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.3)' }}>
+                          ⏱️ 100% TIMEOUT ({cat.limiteDias}d)
+                        </span>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ── Comparativa entre categorías ────────────────────────────────── */}1px 12px', color: '#60a5fa', fontWeight: 600, fontSize: '0.82rem' }}>
                             {t.Dias_Trade}d <span style={{ color: '#475569', fontSize: '0.72rem' }}>/ {maxDias}d máx</span>
                           </td>
                           <td style={{ padding: '11px 12px', fontWeight: 800, color: pnlColor }}>{pnl > 0 ? '+' : ''}{pnl}%</td>
