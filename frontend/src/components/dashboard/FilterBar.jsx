@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
+import { CATEGORY_PARAMS } from '../../lib/strategies';
 
 // ─── Datos del modelo LightGBM V3.7 (Modelos Especializados)
 // Optimizados con F0.5-score — precisión > recall sobre 5 años OHLCV
@@ -16,62 +17,22 @@ const ESTRATEGIAS_MODELO = [
     type: 'veredicto',
     descripcion: 'Solo activos con Veredicto = BUY (Probabilidad ≥ umbral óptimo del modelo)',
   },
-  {
-    id: 'Recup. Rapida',
-    label: '⚡ Recup. Rápida',
-    type: 'verde',
-    tp: '+10%',
-    sl: '-4%',
-    confirmacion: '1 Día',
-    limite_dias: '11 Días',
-    winRate: '48.5%',
-    cagr: '+35.6% / año',
-    retorno_trade: '+2.66%',
-    total_trades: 33,
-    descripcion: 'Tendencia alcista primaria (precio > SMA200) con corrección temporal corta. Mayor inercia y expectancia positiva (+2.66%/trade).',
-  },
-  {
-    id: 'Sweet Spot',
-    label: '🎯 Sweet Spot',
-    type: 'yellow',
-    tp: '+15%',
-    sl: '-6%',
-    confirmacion: '2 Días',
-    limite_dias: '11 Días',
-    winRate: '33.3%',
-    cagr: '0.0% / año',
-    retorno_trade: '-1.48%',
-    total_trades: 19,
-    descripcion: 'Drawdown moderado en tendencia sana. Exige umbral de alta probabilidad (th ≥ 0.55) para activar entrada.',
-  },
-  {
-    id: 'Cazador Dips',
-    label: '🔥 Cazador Dips',
-    type: 'red',
-    tp: '+12%',
-    sl: '-5%',
-    confirmacion: '1 Día',
-    limite_dias: '11 Días',
-    winRate: '45.5%',
-    cagr: '+45.1% / año',
-    retorno_trade: '+3.76%',
-    total_trades: 26,
-    descripcion: 'Caídas profundas con sobreventa RSI14 < 32. Requiere confirmación de volumen institucional (CMF > -0.10).',
-  },
-  {
-    id: 'Cuchillos Cayendo',
-    label: '⚠️ Cuchillos',
-    type: 'gray',
-    tp: '+8%',
-    sl: '-4%',
-    confirmacion: '2 Días',
-    limite_dias: '11 Días',
-    winRate: '45.8%',
-    cagr: '0.0% / año',
-    retorno_trade: '-0.50%',
-    total_trades: 99,
-    descripcion: 'Tendencia bajista sin soporte. Desactivada de capital por el algoritmo salvo probabilidad muy alta.',
-  },
+  ...Object.values(CATEGORY_PARAMS).map(p => ({
+    id: p.id,
+    label: p.label,
+    type: p.type,
+    tp: `+${p.tpPct}%`,
+    sl: `-${p.slPct}%`,
+    confirmacion: p.confirmacion,
+    limite_dias: `${p.maxDays} Días`,
+    threshold: p.threshold,
+    f05Str: p.f05Str,
+    winRate: p.winRate,
+    cagr: p.cagr,
+    retorno_trade: p.retornoTrade,
+    total_trades: p.totalTrades,
+    descripcion: p.descripcion,
+  }))
 ];
 
 const COLOR_CFG = {
@@ -88,7 +49,7 @@ const EstrategiaCard = ({ est }) => {
   if (!est.tp) return null; // 'Todos' y 'veredicto' no tienen métricas de modelo
   const cfg = COLOR_CFG[est.type];
   const winNum = parseFloat(est.winRate);
-  const winColor = winNum >= 75 ? '#10b981' : winNum >= 65 ? '#eab308' : '#ef4444';
+  const winColor = winNum >= 75 ? '#10b981' : winNum >= 40 ? '#eab308' : '#ef4444';
 
   return (
     <div style={{
@@ -105,17 +66,19 @@ const EstrategiaCard = ({ est }) => {
       )}
 
       {/* Grid de métricas del modelo */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '12px' }}>
         <MetricBox label="🎯 Take Profit" value={est.tp} color="#10b981" />
         <MetricBox label="🛑 Stop Loss" value={est.sl} color="#ef4444" />
         <MetricBox label="⏱️ Límite Días" value={est.limite_dias} color="#60a5fa"
           tooltip="Time Stop: si no llega al TP ni SL en N días, se cierra al precio de mercado para liberar capital." />
+        <MetricBox label="🎚️ Umbral (th)" value={`≥ ${est.threshold}`} color="#f59e0b" tooltip="Umbral óptimo de probabilidad para activar entrada BUY." />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '12px' }}>
         <MetricBox label="📈 Ret./Trade" value={est.retorno_trade} color="#a78bfa" />
-        <MetricBox label="🚀 CAGR" value={est.cagr} color="#38bdf8" />
+        <MetricBox label="🚀 EA Compuesto" value={est.cagr} color="#38bdf8" tooltip="Interés Anual Compuesto reinvirtiendo el 100% de la cartera por Time Stop." />
         <MetricBox label="✅ Win Rate" value={est.winRate} color={winColor} />
+        <MetricBox label="⚙️ F₀.₅ Score" value={est.f05Str} color="#6366f1" tooltip="Métrica F0.5 que prioriza precisión sobre recall." />
       </div>
 
       {/* Confirmación + Trades */}
@@ -131,7 +94,7 @@ const EstrategiaCard = ({ est }) => {
       {/* F0.5-score badge */}
       <div style={{ marginTop: '10px', padding: '6px 12px', background: 'rgba(99,102,241,0.1)', borderRadius: '8px', border: '1px solid rgba(99,102,241,0.2)' }}>
         <span style={{ fontSize: '0.72rem', color: '#6366f1', fontWeight: 600 }}>
-          ⚙️ Optimizado con F₀.₅-Score — prioriza precisión sobre recall (menos falsos positivos)
+          ⚙️ Umbral óptimo th={est.threshold} optimizado con F₀.₅-Score ({est.f05Str}) — prioriza precisión sobre recall
         </span>
       </div>
     </div>

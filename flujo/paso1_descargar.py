@@ -22,6 +22,8 @@ except ImportError:
 import urllib.request
 import urllib.parse
 
+import argparse
+
 def calcular_rsi(data, periods=14):
     close_delta = data['Close'].diff()
     up = close_delta.clip(lower=0)
@@ -33,6 +35,10 @@ def calcular_rsi(data, periods=14):
     return rsi.iloc[-1]
 
 def main():
+    parser = argparse.ArgumentParser(description="Descargar datos de mercado")
+    parser.add_argument("--ligero", action="store_true", help="Modo ligero: omite mpf y scraping de noticias/reddit")
+    args = parser.parse_args()
+
     TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
     CHAT_ID = os.environ.get('CHAT_ID')
     bot = telebot.TeleBot(TELEGRAM_TOKEN) if TELEGRAM_TOKEN and CHAT_ID else None
@@ -306,123 +312,126 @@ def main():
     # Re-ordenar para consolidar
     top_50_candidatas = sorted(lista_final, key=lambda x: x["Score_Total"], reverse=True)
     
-    print(f"Pre-procesando {len(top_50_candidatas)} activos y graficando velas japonesas...")
-    for i, candidato in enumerate(top_50_candidatas):
-        ticker = candidato['Ticker']
-        nombre = candidato.get('Nombre', ticker)
-        try:
-            df = candidato["Historia_Precios"].copy()
-            df.index = pd.to_datetime(df.index)
-            
-            # Pre calcular RSI
-            close_delta = df['Close'].diff()
-            up = close_delta.clip(lower=0)
-            down = -1 * close_delta.clip(upper=0)
-            df['RSI'] = 100 - (100/(1 + (up.rolling(14).mean() / down.rolling(14).mean())))
-            
-            # Pre calcular SMA
-            df['SMA50'] = df['Close'].rolling(window=50).mean()
-            df['SMA100'] = df['Close'].rolling(window=100).mean()
-            df['SMA200'] = df['Close'].rolling(window=200).mean()
-            
-            # Visualizar mas dias (200 dias de mercado en pantalla)
-            df_plot = df.tail(200).copy() 
-            
-            if mpf is not None:
-                mc = mpf.make_marketcolors(up='g', down='r', edge='inherit', wick='inherit', volume='in')
-                s  = mpf.make_mpf_style(marketcolors=mc, gridstyle='--', gridaxis='both')
+    if not args.ligero:
+        print(f"Pre-procesando {len(top_50_candidatas)} activos y graficando velas japonesas...")
+        for i, candidato in enumerate(top_50_candidatas):
+            ticker = candidato['Ticker']
+            nombre = candidato.get('Nombre', ticker)
+            try:
+                df = candidato["Historia_Precios"].copy()
+                df.index = pd.to_datetime(df.index)
                 
-                my_addplots = [
-                    mpf.make_addplot(df_plot['SMA50'], color='orange', width=1.1),
-                    mpf.make_addplot(df_plot['SMA100'], color='green', width=1.1),
-                    mpf.make_addplot(df_plot['SMA200'], color='purple', width=2.0),
-                    mpf.make_addplot(df_plot['RSI'], panel=2, color='blue', ylabel='RSI')
-                ]
+                # Pre calcular RSI
+                close_delta = df['Close'].diff()
+                up = close_delta.clip(lower=0)
+                down = -1 * close_delta.clip(upper=0)
+                df['RSI'] = 100 - (100/(1 + (up.rolling(14).mean() / down.rolling(14).mean())))
                 
-                # Título y Leyenda explicática
-                plot_title = f"{nombre} ({ticker})\nSMA 50(Amar.) | SMA 100(Verd.) | SMA 200(Mor.)"
-                mpf.plot(df_plot, type='candle', style=s, volume=True, addplot=my_addplots,
-                         title=plot_title, ylabel="Precio (USD)", 
-                         savefig=f"flujo_datos/top_{i+1}_{ticker}.png", tight_layout=True)
-        except Exception as e:
-            pass
-            
-        import urllib.request
-        import urllib.parse
-        import datetime
+                # Pre calcular SMA
+                df['SMA50'] = df['Close'].rolling(window=50).mean()
+                df['SMA100'] = df['Close'].rolling(window=100).mean()
+                df['SMA200'] = df['Close'].rolling(window=200).mean()
+                
+                # Visualizar mas dias (200 dias de mercado en pantalla)
+                df_plot = df.tail(200).copy() 
+                
+                if mpf is not None:
+                    mc = mpf.make_marketcolors(up='g', down='r', edge='inherit', wick='inherit', volume='in')
+                    s  = mpf.make_mpf_style(marketcolors=mc, gridstyle='--', gridaxis='both')
+                    
+                    my_addplots = [
+                        mpf.make_addplot(df_plot['SMA50'], color='orange', width=1.1),
+                        mpf.make_addplot(df_plot['SMA100'], color='green', width=1.1),
+                        mpf.make_addplot(df_plot['SMA200'], color='purple', width=2.0),
+                        mpf.make_addplot(df_plot['RSI'], panel=2, color='blue', ylabel='RSI')
+                    ]
+                    
+                    # Título y Leyenda explicática
+                    plot_title = f"{nombre} ({ticker})\nSMA 50(Amar.) | SMA 100(Verd.) | SMA 200(Mor.)"
+                    mpf.plot(df_plot, type='candle', style=s, volume=True, addplot=my_addplots,
+                             title=plot_title, ylabel="Precio (USD)", 
+                             savefig=f"flujo_datos/top_{i+1}_{ticker}.png", tight_layout=True)
+            except Exception as e:
+                pass
+                
+            import urllib.request
+            import urllib.parse
+            import datetime
 
-        # --- NOTICIAS REALES DE YAHOO FINANCE ---
-        try:
-            yf_news = stock.news
-            noticias_yf = []
-            if yf_news:
-                for n in yf_news[:4]:  # Tomar las últimas 4 noticias reales
-                    try:
-                        pub_time = datetime.datetime.fromtimestamp(n.get('providerPublishTime', 0)).strftime('%b %d, %Y')
-                    except:
-                        pub_time = 'Reciente'
-                    noticias_yf.append({
-                        "titulo": n.get('title', ''),
-                        "url": n.get('link', ''),
-                        "publisher": n.get('publisher', 'Yahoo Finance'),
-                        "time": pub_time
-                    })
-            candidato["Noticias_YF"] = noticias_yf if noticias_yf else None
-        except:
-            candidato["Noticias_YF"] = None
+            # --- NOTICIAS REALES DE YAHOO FINANCE ---
+            try:
+                yf_news = stock.news
+                noticias_yf = []
+                if yf_news:
+                    for n in yf_news[:4]:  # Tomar las últimas 4 noticias reales
+                        try:
+                            pub_time = datetime.datetime.fromtimestamp(n.get('providerPublishTime', 0)).strftime('%b %d, %Y')
+                        except:
+                            pub_time = 'Reciente'
+                        noticias_yf.append({
+                            "titulo": n.get('title', ''),
+                            "url": n.get('link', ''),
+                            "publisher": n.get('publisher', 'Yahoo Finance'),
+                            "time": pub_time
+                        })
+                candidato["Noticias_YF"] = noticias_yf if noticias_yf else None
+            except:
+                candidato["Noticias_YF"] = None
 
-        # --- RECOMENDACIONES DE ANALISTAS (Wall Street Consensus) ---
-        try:
-            r_info = stock.info
-            rec_key = r_info.get('recommendationKey', 'none').lower()
-            rec_mean = r_info.get('recommendationMean', 3.0)
-            
-            if rec_key != 'none':
-                # Distribución visual simulada basada en el Score de Yahoo (1.0 Buy a 5.0 Sell)
-                if rec_mean <= 1.5:
-                    candidato["Recomendacion_Analistas"] = {"compra": 90, "hold": 10, "vender": 0, "total": 100}
-                elif rec_mean <= 2.5:
-                    candidato["Recomendacion_Analistas"] = {"compra": 65, "hold": 30, "vender": 5, "total": 100}
-                elif rec_mean <= 3.5:
-                    candidato["Recomendacion_Analistas"] = {"compra": 15, "hold": 70, "vender": 15, "total": 100}
-                elif rec_mean <= 4.5:
-                    candidato["Recomendacion_Analistas"] = {"compra": 5, "hold": 40, "vender": 55, "total": 100}
+            # --- RECOMENDACIONES DE ANALISTAS (Wall Street Consensus) ---
+            try:
+                r_info = stock.info
+                rec_key = r_info.get('recommendationKey', 'none').lower()
+                rec_mean = r_info.get('recommendationMean', 3.0)
+                
+                if rec_key != 'none':
+                    # Distribución visual simulada basada en el Score de Yahoo (1.0 Buy a 5.0 Sell)
+                    if rec_mean <= 1.5:
+                        candidato["Recomendacion_Analistas"] = {"compra": 90, "hold": 10, "vender": 0, "total": 100}
+                    elif rec_mean <= 2.5:
+                        candidato["Recomendacion_Analistas"] = {"compra": 65, "hold": 30, "vender": 5, "total": 100}
+                    elif rec_mean <= 3.5:
+                        candidato["Recomendacion_Analistas"] = {"compra": 15, "hold": 70, "vender": 15, "total": 100}
+                    elif rec_mean <= 4.5:
+                        candidato["Recomendacion_Analistas"] = {"compra": 5, "hold": 40, "vender": 55, "total": 100}
+                    else:
+                        candidato["Recomendacion_Analistas"] = {"compra": 0, "hold": 10, "vender": 90, "total": 100}
                 else:
-                    candidato["Recomendacion_Analistas"] = {"compra": 0, "hold": 10, "vender": 90, "total": 100}
-            else:
+                    candidato["Recomendacion_Analistas"] = None
+            except:
                 candidato["Recomendacion_Analistas"] = None
-        except:
-            candidato["Recomendacion_Analistas"] = None
 
-        # --- BÚSQUEDA EN REDDIT (fuentes para contrastar) ---
-        try:
-            termino_busqueda = ticker if len(ticker) > 2 else f"{nombre}+stock"
-            req = urllib.request.Request(f"https://www.reddit.com/search.json?q={termino_busqueda}&sort=new&limit=8", headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req) as r:
-                posts = json.loads(r.read().decode()).get("data",{}).get("children",[])
-                noticias = []
-                for h in posts:
-                    titulo   = h['data']['title']
-                    subreddit = h['data']['subreddit_name_prefixed']
-                    noticias.append({"titulo": f"[{subreddit}]: {titulo}", "url": f"https://reddit.com{h['data']['permalink']}"})
-                candidato["Contexto_Reddit"] = noticias if noticias else None
-        except:
-            candidato["Contexto_Reddit"] = None
+            # --- BÚSQUEDA EN REDDIT (fuentes para contrastar) ---
+            try:
+                termino_busqueda = ticker if len(ticker) > 2 else f"{nombre}+stock"
+                req = urllib.request.Request(f"https://www.reddit.com/search.json?q={termino_busqueda}&sort=new&limit=8", headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(req) as r:
+                    posts = json.loads(r.read().decode()).get("data",{}).get("children",[])
+                    noticias = []
+                    for h in posts:
+                        titulo   = h['data']['title']
+                        subreddit = h['data']['subreddit_name_prefixed']
+                        noticias.append({"titulo": f"[{subreddit}]: {titulo}", "url": f"https://reddit.com{h['data']['permalink']}"})
+                    candidato["Contexto_Reddit"] = noticias if noticias else None
+            except:
+                candidato["Contexto_Reddit"] = None
 
-        try:
-             req_p = urllib.request.Request(f"https://gamma-api.polymarket.com/events?title={urllib.parse.quote(ticker)}&active=true&limit=2", headers={'User-Agent': 'Mozilla/5.0'})
-             with urllib.request.urlopen(req_p, timeout=5) as resp:
-                 p_res = []
-                 deportes_excluir = ['nba', 'nfl', 'nhl', 'mlb', 'mls', 'fifa', 'ufc', 'soccer', 'football', 'basketball', 'baseball', 'matchup', 'beat the', 'points in']
-                 for ev in json.loads(resp.read().decode()):
-                    for m in ev.get('markets', []):
-                       try:
-                           pregunta = m.get('question', '').lower()
-                           if not any(d in pregunta for d in deportes_excluir):
-                               p_res.append(f"{m.get('question', '')} -> YES: {float(json.loads(m.get('outcomePrices', '[]'))[0])*100:.1f}%")
-                       except: pass
-                 candidato["Polymarket"] = p_res if p_res else ["N/A"]
-        except: candidato["Polymarket"] = ["N/A"]
+            try:
+                 req_p = urllib.request.Request(f"https://gamma-api.polymarket.com/events?title={urllib.parse.quote(ticker)}&active=true&limit=2", headers={'User-Agent': 'Mozilla/5.0'})
+                 with urllib.request.urlopen(req_p, timeout=5) as resp:
+                     p_res = []
+                     deportes_excluir = ['nba', 'nfl', 'nhl', 'mlb', 'mls', 'fifa', 'ufc', 'soccer', 'football', 'basketball', 'baseball', 'matchup', 'beat the', 'points in']
+                     for ev in json.loads(resp.read().decode()):
+                        for m in ev.get('markets', []):
+                           try:
+                               pregunta = m.get('question', '').lower()
+                               if not any(d in pregunta for d in deportes_excluir):
+                                   p_res.append(f"{m.get('question', '')} -> YES: {float(json.loads(m.get('outcomePrices', '[]'))[0])*100:.1f}%")
+                           except: pass
+                     candidato["Polymarket"] = p_res if p_res else ["N/A"]
+            except: candidato["Polymarket"] = ["N/A"]
+    else:
+        print("⚡ Modo ligero activo: omitiendo generación de gráficos y scraping de noticias.")
              
     # Cleanup pre-json
     for item in top_50_candidatas:

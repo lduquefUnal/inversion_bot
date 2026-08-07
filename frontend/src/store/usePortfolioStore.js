@@ -63,6 +63,9 @@ export const usePortfolioStore = create((set, get) => ({
   error: null,
   user: null,
   isDemoMode: true,
+  isPasswordRecovery: false,
+
+  clearPasswordRecovery: () => set({ isPasswordRecovery: false }),
 
   /** Inicializar escuchador de Auth de Supabase */
   initAuthListener: async () => {
@@ -75,7 +78,10 @@ export const usePortfolioStore = create((set, get) => ({
       }
       get().fetchFromSupabase();
 
-      supabase.auth.onAuthStateChange((_event, session) => {
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          set({ isPasswordRecovery: true });
+        }
         if (session?.user) {
           set({ user: session.user, isDemoMode: false });
         } else {

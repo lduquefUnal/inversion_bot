@@ -1,54 +1,36 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMarketData } from '../hooks/useMarketData';
+import { CATEGORY_PARAMS } from '../lib/strategies';
 
 // ─── Configuración Base de Categorías V3.7 ──────────────────────────────────
-const DEFAULT_CATEGORIAS = [
-  {
-    id: '⚡ Recup. Rápida',
-    emoji: '⚡',
-    nombre: 'Recup. Rapida',
-    tp: 10, sl: 4, limiteDias: 7, confirmacion: 1,
-    winRate: 48.5, retornoTrade: 2.66, totalTrades: 33, cagr: 35.6, ea: 35.6,
-    frecuencia: '1 trade c/ 2.7 días',
-    color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: '#10b981',
-    desc: 'Activos en tendencia alcista primaria (precio > SMA200) en corrección corta. Alta rotación con inercia de rebote favorable.',
-    f05: 0.4514,
-  },
-  {
-    id: '🎯 Sweet Spot',
-    emoji: '🎯',
-    nombre: 'Sweet Spot',
-    tp: 15, sl: 6, limiteDias: 14, confirmacion: 2,
-    winRate: 33.3, retornoTrade: -1.48, totalTrades: 19, cagr: 0.0, ea: 0.0,
-    frecuencia: '1 trade c/ 4.7 días',
-    color: '#eab308', bg: 'rgba(234,179,8,0.15)', border: '#eab308',
-    desc: 'Drawdown moderado (-20% a -35%) en tendencia sana. Descuento temporal con margen de seguridad.',
-    f05: 0.2941,
-  },
-  {
-    id: '🔥 Cazador Dips',
-    emoji: '🔥',
-    nombre: 'Cazador Dips',
-    tp: 12, sl: 5, limiteDias: 11, confirmacion: 1,
-    winRate: 45.5, retornoTrade: 3.76, totalTrades: 26, cagr: 45.1, ea: 45.1,
-    frecuencia: '1 trade c/ 3.5 días',
-    color: '#ef4444', bg: 'rgba(239,68,68,0.15)', border: '#ef4444',
-    desc: 'Caídas profundas (>35%) con sobreventa RSI14 <32. Exige confirmación de flujo o umbral de alta probabilidad.',
-    f05: 0.3906,
-  },
-  {
-    id: '⚠️ Cuchillos Cayendo',
-    emoji: '⚠️',
-    nombre: 'Cuchillos Cayendo',
-    tp: 8, sl: 4, limiteDias: 5, confirmacion: 2,
-    winRate: 45.8, retornoTrade: -0.50, totalTrades: 99, cagr: 0.0, ea: 0.0,
-    frecuencia: '1 trade c/ 0.9 días',
-    color: '#94a3b8', bg: 'rgba(100,116,139,0.15)', border: '#64748b',
-    desc: 'Sin soporte de tendencia (precio < SMA200). Alta volatilidad; se desactiva de asignación de capital salvo prob muy alta.',
-    f05: 0.5189,
-  },
-];
+const COLOR_MAP = {
+  verde:  { color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: '#10b981' },
+  yellow: { color: '#eab308', bg: 'rgba(234,179,8,0.15)', border: '#eab308' },
+  red:    { color: '#ef4444', bg: 'rgba(239,68,68,0.15)', border: '#ef4444' },
+  gray:   { color: '#94a3b8', bg: 'rgba(100,116,139,0.15)', border: '#64748b' },
+};
+
+const DEFAULT_CATEGORIAS = Object.values(CATEGORY_PARAMS).map(p => ({
+  id: p.catNombre,
+  emoji: p.emoji,
+  nombre: p.id,
+  tp: p.tpPct,
+  sl: p.slPct,
+  limiteDias: p.maxDays,
+  confirmacion: parseInt(p.confirmacion),
+  winRate: p.winRateNum,
+  retornoTrade: parseFloat(p.retornoTrade),
+  totalTrades: p.totalTrades,
+  cagr: parseFloat(p.cagr),
+  ea: parseFloat(p.cagr),
+  frecuencia: `1 trade c/ ${(30 / (p.totalTrades / 12)).toFixed(1)} días`,
+  color: COLOR_MAP[p.type].color,
+  bg: COLOR_MAP[p.type].bg,
+  border: COLOR_MAP[p.type].border,
+  desc: p.descripcion,
+  f05: p.f05,
+}));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, color = '#f8fafc', bg = 'rgba(15,23,42,0.8)', tooltip, sub }) => (

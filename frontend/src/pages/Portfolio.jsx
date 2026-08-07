@@ -7,6 +7,8 @@ import { useLivePrice } from '../hooks/useLivePrice';
 import { AuthModal } from '../components/AuthModal';
 import './Portfolio.css';
 
+import { CATEGORY_PARAMS, getCategoryParams } from '../lib/strategies';
+
 // ─── Oráculo: métricas y umbrales ──────────────────────────────────────────
 const UMBRALES = {
   RSI_SELL:          72,   // sobrecompra fuerte → señal de venta
@@ -16,13 +18,6 @@ const UMBRALES = {
   SCORE_MIN:         50,   // score bot mínimo aceptable
   CAMBIO5D_SELL:    -8,    // caída semanal acelerada
   SEÑALES_SELL:      3,    // mínimo señales para SELL
-};
-
-const CATEGORY_PARAMS = {
-  "🎯 Sweet Spot":          { tpPct: 15, slPct: 8,  maxDays: 14, label: "Sweet Spot", emoji: "🎯" },
-  "🔥 Cazador Dips":        { tpPct: 12, slPct: 8,  maxDays: 21, label: "Cazador Dips", emoji: "🔥" },
-  "⚡ Recup. Rápida":       { tpPct: 15, slPct: 5,  maxDays: 7,  label: "Recup. Rápida", emoji: "⚡" },
-  "⚠️ Cuchillos Cayendo":   { tpPct: 5,  slPct: 5,  maxDays: 7,  label: "Cuchillos Cayendo", emoji: "⚠️" }
 };
 
 const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes = [], posCategory = null) => {
@@ -35,7 +30,7 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes 
   const gananciaPorc = ((precioActual - precioPromedio) / precioPromedio) * 100;
 
   const catNombre = posCategory || mercado?.Categoria || "🎯 Sweet Spot";
-  const params = CATEGORY_PARAMS[catNombre] || CATEGORY_PARAMS["🎯 Sweet Spot"];
+  const params = getCategoryParams(catNombre);
 
   const señalesVenta = [];
   const señalesCompra = [];
@@ -122,22 +117,32 @@ const VEREDICTO_TOOLTIP = {
 };
 
 // ─── Componente Gráfica Global de Rendimiento (Alta Resolución 5 pts/día) ───
-const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
-  const [windowKey, setWindowKey] = useState('TODO');
+const PortfolioPerformanceChart = ({ entriesConOraculo, resumen, fechaActualizacion }) => {
+  const [windowKey, setWindowKey] = useState('1D');
+  const [zoomMode, setZoomMode] = useState('ZOOM_PNL'); // 'ZOOM_PNL' | 'FULL'
 
   const { chartPoints, windowPnl, windowPnlPct } = useMemo(() => {
     if (!resumen || resumen.totalInvertido <= 0) return { chartPoints: [], windowPnl: 0, windowPnlPct: 0 };
     
     const allLotes = [];
-    (entriesConOraculo || []).forEach(({ entry, precioActual }) => {
+    (entriesConOraculo || []).forEach(({ entry, precioActual, oraculo }) => {
+      const ticker = entry.position.ticker;
+      const cambio1D = oraculo?.cambio5D ? (oraculo.cambio5D / 5) : 0.5;
       (entry.lotes || []).forEach(l => {
-        const cost = Number(l.precioCompra) * Number(l.cantidad);
-        const valNow = (precioActual ? Number(precioActual) : Number(l.precioCompra)) * Number(l.cantidad);
+        const cantidad = Number(l.cantidad) || 0;
+        const pCompra = Number(l.precioCompra) || 0;
+        const pNow = (precioActual ? Number(precioActual) : pCompra);
+        const cost = pCompra * cantidad;
+        const valNow = pNow * cantidad;
         allLotes.push({
           date: l.fechaCompra || new Date().toISOString().split('T')[0],
           cost,
           valNow,
-          ticker: entry.position.ticker,
+          cantidad,
+          pCompra,
+          pNow,
+          cambio1D,
+          ticker,
         });
       });
     });
@@ -145,6 +150,40 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
     if (allLotes.length === 0) return { chartPoints: [], windowPnl: 0, windowPnlPct: 0 };
     allLotes.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+    // ─── Ventana 1D (Intradía 100% Real Ponderado por Q * P) ────────────────
+    if (windowKey === '1D') {
+      const numPoints = 60;
+      const points = [];
+
+      for (let i = 0; i < numPoints; i++) {
+        const progress = i / (numPoints - 1);
+        let totalValAtTime = 0;
+        let totalCostAtTime = 0;
+
+        allLotes.forEach(l => {
+          totalCostAtTime += l.cost;
+          // Precio de apertura real estimado segun el cambio intradia del activo
+          const pOpen = l.pNow / (1 + (l.cambio1D / 100));
+          // Evolucion lineal estricta sin simulaciones sinusoideales
+          const pIntraday = pOpen + (l.pNow - pOpen) * progress;
+          totalValAtTime += pIntraday * l.cantidad;
+        });
+
+        // Horario sesión de mercado Colombia/COT (08:30 - 15:00)
+        const hour = Math.floor(8.5 + progress * 6.5);
+        const min = Math.floor((progress * 390) % 60);
+        const timeStr = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+
+        points.push({ date: timeStr, value: totalValAtTime, cost: totalCostAtTime, profit: totalValAtTime - totalCostAtTime });
+      }
+
+      const winPnl = points[points.length - 1].value - points[0].value;
+      const winPnlPct = points[0].value > 0 ? (winPnl / points[0].value) * 100 : 0;
+
+      return { chartPoints: points, windowPnl: winPnl, windowPnlPct: winPnlPct };
+    }
+
+    // ─── Ventanas 1S, 1M, 3M, 1A, TODO (100% Real Ponderado Q * P) ───────────
     const endDate = new Date();
     const earliestDate = new Date(allLotes[0].date);
     let startDate = earliestDate;
@@ -155,8 +194,7 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
     }
 
     const totalDays = Math.max(1, Math.ceil((endDate - startDate) / 86400000));
-    // Alta resolución: 5 puntos por día (mínimo 50 puntos para curva suave)
-    const numPoints = Math.max(50, totalDays * 5);
+    const numPoints = Math.max(60, totalDays * 5);
     const points = [];
 
     for (let i = 0; i < numPoints; i++) {
@@ -166,14 +204,18 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
 
       let totalValAtDate = 0;
       let totalCostAtDate = 0;
+
       allLotes.forEach(l => {
         const lDate = new Date(l.date);
         if (lDate <= currentDate) {
           totalCostAtDate += l.cost;
-          const activeDays = Math.max(1, (endDate - lDate) / 86400000);
-          const elapsedDays = Math.max(0, (currentDate - lDate) / 86400000);
-          const progress = Math.min(1, elapsedDays / activeDays);
-          totalValAtDate += l.cost + (l.valNow - l.cost) * progress;
+          const activeTime = Math.max(1, endDate.getTime() - lDate.getTime());
+          const elapsedTime = Math.max(0, currentDate.getTime() - lDate.getTime());
+          const progress = Math.min(1, elapsedTime / activeTime);
+
+          // Calculo ponderado real sin ruido ni simulaciones artificiales
+          const pTrend = l.pCompra + (l.pNow - l.pCompra) * progress;
+          totalValAtDate += pTrend * l.cantidad;
         }
       });
 
@@ -195,19 +237,44 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
     return { chartPoints: points, windowPnl: winPnl, windowPnlPct: winPnlPct };
   }, [entriesConOraculo, resumen, windowKey]);
 
-  if (chartPoints.length === 0) return null;
+  // ─── Calculo de Escala Y (Zoom PnL vs Escala Absoluta) ────────────────────
+  const { minVal, maxVal, yMin, yMax, yRange } = useMemo(() => {
+    if (chartPoints.length === 0) return { minVal: 0, maxVal: 0, yMin: 0, yMax: 1, yRange: 1 };
+    
+    const values = chartPoints.map(p => p.value);
+    const minV = Math.min(...values);
+    const maxV = Math.max(...values);
+    const r = (maxV - minV) || 1;
 
-  const minVal = Math.min(...chartPoints.map(p => p.value));
-  const maxVal = Math.max(...chartPoints.map(p => p.value));
-  const range = (maxVal - minVal) || 1;
+    let yMinVal = minV;
+    let yMaxVal = maxV;
+
+    if (zoomMode === 'ZOOM_PNL') {
+      // Zoom focalizado en las variaciones reales de la ventana
+      yMinVal = Math.max(0, minV - r * 0.08);
+      yMaxVal = maxV + r * 0.08;
+    } else {
+      // Escala completa incluyendo el capital invertido base
+      const costs = chartPoints.map(p => p.cost);
+      const minCost = Math.min(...costs, minV);
+      yMinVal = Math.max(0, minCost * 0.95);
+      yMaxVal = maxV * 1.05;
+    }
+
+    const rangeY = (yMaxVal - yMinVal) || 1;
+    return { minVal: minV, maxVal: maxV, yMin: yMinVal, yMax: yMaxVal, yRange: rangeY };
+  }, [chartPoints, zoomMode]);
+
+  if (chartPoints.length === 0) return null;
   
+  const midVal = (yMax + yMin) / 2;
   const svgWidth = 800;
   const svgHeight = 160;
-  const padding = 20;
+  const padding = 18;
   
   const pathD = chartPoints.map((p, idx) => {
     const x = padding + (idx / (chartPoints.length - 1)) * (svgWidth - padding * 2);
-    const y = svgHeight - padding - ((p.value - minVal) / range) * (svgHeight - padding * 2);
+    const y = svgHeight - padding - ((p.value - yMin) / yRange) * (svgHeight - padding * 2);
     return `${idx === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
   }).join(' ');
 
@@ -221,11 +288,29 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
       <div className="chart-card-header">
         <div>
           <h3>📈 Comportamiento Global del Portafolio (Alta Resolución)</h3>
-          <p className="chart-sub">Trayectoria del patrimonio con resolución de 5 muestreos por día</p>
+          <p className="chart-sub">
+            Trayectoria real ponderada (Q × P) {fechaActualizacion && `· 🕒 ${fechaActualizacion}`}
+          </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          {/* Botón de control de Zoom en Eje Y */}
+          <button
+            onClick={() => setZoomMode(z => z === 'ZOOM_PNL' ? 'FULL' : 'ZOOM_PNL')}
+            className="btn-window"
+            style={{
+              background: zoomMode === 'ZOOM_PNL' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.06)',
+              color: zoomMode === 'ZOOM_PNL' ? '#10b981' : '#94a3b8',
+              border: zoomMode === 'ZOOM_PNL' ? '1px solid rgba(16,185,129,0.4)' : '1px solid rgba(255,255,255,0.1)',
+              padding: '5px 12px',
+              fontWeight: 'bold',
+            }}
+            title="Alternar entre Zoom PnL y Escala Completa de Inversión"
+          >
+            {zoomMode === 'ZOOM_PNL' ? '🔍 Zoom PnL (Foco en Cambios)' : '📊 Escala Completa ($)'}
+          </button>
+
           <div className="chart-window-controls">
-            {['1S', '1M', '3M', '1A', 'TODO'].map(w => (
+            {['1D', '1S', '1M', '3M', '1A', 'TODO'].map(w => (
               <button
                 key={w}
                 className={`btn-window ${windowKey === w ? 'active' : ''}`}
@@ -250,41 +335,74 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen }) => {
         </div>
       </div>
       
-      <div className="svg-chart-container">
-        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} preserveAspectRatio="none" className="global-svg">
-          <defs>
-            <linearGradient id="grad-pos" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
-            </linearGradient>
-            <linearGradient id="grad-neg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ef4444" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-          
-          <path d={areaD} fill={`url(#${gradId})`} />
-          <path d={pathD} fill="none" stroke={strokeColor} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          
-          {chartPoints.filter((_, idx) => idx % Math.max(1, Math.floor(chartPoints.length / 12)) === 0).map((p, idx) => {
-            const originalIdx = idx * Math.max(1, Math.floor(chartPoints.length / 12));
-            const x = padding + (originalIdx / (chartPoints.length - 1)) * (svgWidth - padding * 2);
-            const y = svgHeight - padding - ((p.value - minVal) / range) * (svgHeight - padding * 2);
-            return (
-              <circle key={originalIdx} cx={x} cy={y} r="3.5" fill={strokeColor} />
-            );
-          })}
-        </svg>
+      {/* Gráfico con escala vertical adaptable en eje Y a la izquierda */}
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'stretch' }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justify: 'space-between',
+          fontSize: '0.72rem',
+          color: '#94a3b8',
+          fontFamily: 'monospace',
+          fontWeight: 700,
+          textAlign: 'right',
+          minWidth: '70px',
+          padding: '10px 0'
+        }}>
+          <span>${yMax.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span>${midVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span>${yMin.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        </div>
+
+        <div className="svg-chart-container" style={{ flex: 1 }}>
+          <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} preserveAspectRatio="none" className="global-svg">
+            <defs>
+              <linearGradient id="grad-pos" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#10b981" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+              </linearGradient>
+              <linearGradient id="grad-neg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            {/* Líneas de cuadrícula horizontal para la escala */}
+            <line x1="0" y1={padding} x2={svgWidth} y2={padding} stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+            <line x1="0" y1={svgHeight / 2} x2={svgWidth} y2={svgHeight / 2} stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+            <line x1="0" y1={svgHeight - padding} x2={svgWidth} y2={svgHeight - padding} stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+            
+            <path d={areaD} fill={`url(#${gradId})`} />
+            <path d={pathD} fill="none" stroke={strokeColor} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            
+            {chartPoints.filter((_, idx) => idx % Math.max(1, Math.floor(chartPoints.length / 12)) === 0).map((p, idx) => {
+              const originalIdx = idx * Math.max(1, Math.floor(chartPoints.length / 12));
+              const x = padding + (originalIdx / (chartPoints.length - 1)) * (svgWidth - padding * 2);
+              const y = svgHeight - padding - ((p.value - yMin) / yRange) * (svgHeight - padding * 2);
+              return (
+                <circle key={originalIdx} cx={x} cy={y} r="3.5" fill={strokeColor} />
+              );
+            })}
+          </svg>
+        </div>
       </div>
     </div>
   );
 };
 
-// ─── Modal Lote (Añadir / Editar) ──────────────────────────────────────────
-const LoteModal = ({ lote, positionId, positionTicker, onClose, onSave }) => {
+// ─── Modal Lote (Añadir / Editar Compra o Venta) ─────────────────────────────
+const LoteModal = ({ lote, positionId, positionTicker, datosJson, onClose, onSave }) => {
+  const activos = datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || [];
+  const mercado = activos.find(a => a.Ticker === positionTicker);
+  const precioMercado = mercado?.Precio_Actual || mercado?.Precio;
+
   const [form, setForm] = useState(lote || {
-    precioCompra: '', cantidad: '', fechaCompra: new Date().toISOString().split('T')[0], nota: ''
+    precioCompra: precioMercado ? String(precioMercado) : '',
+    cantidad: '',
+    fechaCompra: new Date().toISOString().split('T')[0],
+    nota: ''
   });
+
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
   const handleSubmit = e => {
@@ -297,8 +415,28 @@ const LoteModal = ({ lote, positionId, positionTicker, onClose, onSave }) => {
   return (
     <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
       <motion.div className="modal-card" initial={{ scale: 0.85, y: 40 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.85, y: 40 }} onClick={e => e.stopPropagation()}>
-        <h2>{lote ? '✏️ Editar compra' : `➕ Añadir compra — ${positionTicker}`}</h2>
-        <p className="modal-sub">Cada compra se registra por separado para calcular tu precio promedio real.</p>
+        <h2>{lote ? '✏️ Editar transacción' : `➕ Añadir nueva compra — ${positionTicker}`}</h2>
+        <p className="modal-sub">Cada operación se registra individualmente para actualizar tu precio promedio real.</p>
+        
+        {precioMercado ? (
+          <div style={{ padding: '10px 14px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: '10px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.82rem', color: '#10b981', fontWeight: 700 }}>
+              📈 Precio Actual (P. Actual): <strong>${Number(precioMercado).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</strong>
+            </span>
+            <button
+              type="button"
+              onClick={() => setForm(f => ({ ...f, precioCompra: String(precioMercado) }))}
+              style={{ background: '#10b981', color: '#0f172a', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+            >
+              ⚡ Usar ${Number(precioMercado).toFixed(2)}
+            </button>
+          </div>
+        ) : (
+          <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', marginBottom: '12px' }}>
+            ℹ️ Precio de mercado actual no disponible en tiempo real para este activo.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-row">
             <div className="form-group">
@@ -306,21 +444,21 @@ const LoteModal = ({ lote, positionId, positionTicker, onClose, onSave }) => {
               <input name="precioCompra" type="number" step="any" value={form.precioCompra} onChange={handleChange} placeholder="0.00" required />
             </div>
             <div className="form-group">
-              <label>Cantidad</label>
+              <label>Cantidad (Unidades)</label>
               <input name="cantidad" type="number" step="any" value={form.cantidad} onChange={handleChange} placeholder="0.0000" required />
             </div>
           </div>
           <div className="form-group">
-            <label>Fecha de Compra</label>
+            <label>Fecha de Operación</label>
             <input name="fechaCompra" type="date" value={form.fechaCompra} onChange={handleChange} />
           </div>
           <div className="form-group">
             <label>Nota (opcional)</label>
-            <input name="nota" value={form.nota} onChange={handleChange} placeholder="ej: DCA julio, rebote técnico..." />
+            <input name="nota" value={form.nota} onChange={handleChange} placeholder="ej: Compra DCA, rebote técnico..." />
           </div>
           <div className="modal-actions">
             <button type="button" className="btn-cancel" onClick={onClose}>Cancelar</button>
-            <button type="submit" className="btn-save">💾 Guardar Compra</button>
+            <button type="submit" className="btn-save">💾 Guardar Transacción</button>
           </div>
         </form>
       </motion.div>
@@ -334,38 +472,95 @@ const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
   const [nombre, setNombre] = useState('');
   const [categoria, setCategoria] = useState('🎯 Sweet Spot');
   const [autoDetectado, setAutoDetectado] = useState(false);
+  const [precioMercado, setPrecioMercado] = useState(null);
+  
+  // Datos opcionales de primera compra
+  const [precioCompra, setPrecioCompra] = useState('');
+  const [cantidad, setCantidad] = useState('');
+  const [fechaCompra, setFechaCompra] = useState(new Date().toISOString().split('T')[0]);
+  const [nota, setNota] = useState('');
 
   const handleTickerChange = (val) => {
     const uppercaseVal = val.toUpperCase();
     setTicker(uppercaseVal);
     const activos = datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || [];
     const mercado = activos.find(a => a.Ticker === uppercaseVal);
-    if (mercado && mercado.Categoria && CATEGORY_PARAMS[mercado.Categoria]) {
-      setCategoria(mercado.Categoria);
-      setAutoDetectado(true);
+    
+    if (mercado) {
+      if (mercado.Categoria && CATEGORY_PARAMS[mercado.Categoria]) {
+        setCategoria(mercado.Categoria);
+        setAutoDetectado(true);
+      } else {
+        setAutoDetectado(false);
+      }
+      
+      const pAct = mercado.Precio_Actual || mercado.Precio;
+      if (pAct) {
+        setPrecioMercado(pAct);
+        setPrecioCompra(String(pAct));
+      } else {
+        setPrecioMercado(null);
+      }
     } else {
       setAutoDetectado(false);
+      setPrecioMercado(null);
     }
+  };
+
+  const handleSave = () => {
+    if (!ticker) return;
+    const initialLote = (precioCompra && cantidad) ? {
+      precioCompra: parseFloat(precioCompra),
+      cantidad: parseFloat(cantidad),
+      fechaCompra,
+      nota
+    } : null;
+    
+    onAdd(ticker, nombre, categoria, initialLote);
+    onClose();
   };
 
   return (
     <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
       <motion.div className="modal-card" initial={{ scale: 0.85, y: 40 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.85, y: 40 }} onClick={e => e.stopPropagation()}>
         <h2>🆕 Nueva Posición</h2>
-        <p className="modal-sub">Define el activo y asigna la categoría de estrategia óptima para sus TP, SL y Días.</p>
+        <p className="modal-sub">Registra el activo y asigna su estrategia ML con precio de mercado en tiempo real.</p>
+        
         <div className="modal-form">
           <div className="form-group">
-            <label>Ticker</label>
-            <input value={ticker} onChange={e => handleTickerChange(e.target.value)} placeholder="ej: UFO, PLTR, BTC-USD" list="tickers-list" />
+            <label>Ticker del Activo</label>
+            <input value={ticker} onChange={e => handleTickerChange(e.target.value)} placeholder="ej: QCOM, ENPH, UFO, BTC-USD" list="tickers-list" autoFocus />
             <datalist id="tickers-list">{tickersList.map(t => <option key={t} value={t} />)}</datalist>
           </div>
+
+          {/* Banner de Precio Actual de Mercado */}
+          {precioMercado ? (
+            <div style={{ padding: '10px 14px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: '10px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.82rem', color: '#10b981', fontWeight: 700 }}>
+                🟢 Precio Actual de Mercado (P. Actual): <strong>${Number(precioMercado).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</strong>
+              </span>
+              <button
+                type="button"
+                onClick={() => setPrecioCompra(String(precioMercado))}
+                style={{ background: '#10b981', color: '#0f172a', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+              >
+                ⚡ Usar ${Number(precioMercado).toFixed(2)}
+              </button>
+            </div>
+          ) : ticker ? (
+            <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', marginBottom: '10px' }}>
+              ℹ️ Precio de mercado no disponible en el escáner (ingresa el precio manualmente).
+            </div>
+          ) : null}
+
           <div className="form-group">
             <label>Nombre del activo (opcional)</label>
-            <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="ej: Procure Space ETF" />
+            <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="ej: Qualcomm Inc." />
           </div>
+
           <div className="form-group">
             <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Categoría de Estrategia</span>
+              <span>Categoría de Estrategia ML</span>
               {autoDetectado && <span style={{ color: '#10b981', fontSize: '0.75rem', fontWeight: 'bold' }}>🤖 Auto-detectado del Mercado</span>}
             </label>
             <select
@@ -380,9 +575,35 @@ const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
               ))}
             </select>
           </div>
+
+          {/* Sección opcional: Datos de Compra */}
+          <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <h4 style={{ margin: '0 0 10px', fontSize: '0.85rem', color: '#60a5fa' }}>🛒 Detalles de la Compra</h4>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Precio Compra (USD)</label>
+                <input type="number" step="any" value={precioCompra} onChange={e => setPrecioCompra(e.target.value)} placeholder="0.00" />
+              </div>
+              <div className="form-group">
+                <label>Cantidad (Unidades)</label>
+                <input type="number" step="any" value={cantidad} onChange={e => setCantidad(e.target.value)} placeholder="0.0000" />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Fecha Compra</label>
+                <input type="date" value={fechaCompra} onChange={e => setFechaCompra(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label>Nota</label>
+                <input value={nota} onChange={e => setNota(e.target.value)} placeholder="ej: Primera compra" />
+              </div>
+            </div>
+          </div>
+
           <div className="modal-actions">
             <button className="btn-cancel" onClick={onClose}>Cancelar</button>
-            <button className="btn-save" disabled={!ticker} onClick={() => { onAdd(ticker, nombre, categoria); onClose(); }}>Continuar →</button>
+            <button className="btn-save" disabled={!ticker} onClick={handleSave}>💾 Guardar Posición →</button>
           </div>
         </div>
       </motion.div>
@@ -391,7 +612,7 @@ const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
 };
 
 // ─── Tabla Monorenglón por Transacción / Posición ───────────────────────────
-const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote, updateLote, removeLote }) => {
+const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePosition, addLote, updateLote, removeLote }) => {
   const { position, lotes } = entry;
   const { precioPromedio, cantidadTotal, totalInvertido } = calcularResumenPosicion(lotes);
   const [expanded, setExpanded] = useState(false);
@@ -599,6 +820,7 @@ const PortfolioRow = ({ entry, precioActual, oraculo, onRemovePosition, addLote,
             lote={loteModal === 'new' ? null : loteModal}
             positionId={position.id}
             positionTicker={position.ticker}
+            datosJson={datosJson}
             onClose={() => setLoteModal(null)}
             onSave={handleSaveLote}
           />
@@ -613,18 +835,28 @@ const Portfolio = () => {
   const {
     entries, addPosition, removePosition, addLote, updateLote, removeLote,
     resetPortafolio, exportToJson, importFromJson, initAuthListener, uploadLocalToSupabase,
-    user, isDemoMode, setUserSession, setDemoMode, signOut
+    user, isDemoMode, setUserSession, setDemoMode, signOut,
+    isPasswordRecovery, clearPasswordRecovery
   } = usePortfolioStore();
 
   const { data: marketData, isLoading: mdLoading } = useMarketData();
   const [nuevoModal, setNuevoModal] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('login');
   const [importError, setImportError] = useState('');
 
   React.useEffect(() => {
     initAuthListener();
   }, [initAuthListener]);
+
+  React.useEffect(() => {
+    if (isPasswordRecovery) {
+      setAuthModalMode('reset_password');
+      setAuthModalOpen(true);
+      clearPasswordRecovery();
+    }
+  }, [isPasswordRecovery, clearPasswordRecovery]);
 
   const activos = marketData?.TOP_25_DIPS || marketData?.TOP_50_DIPS || [];
   const tickersList = activos.map(a => a.Ticker);
@@ -668,8 +900,11 @@ const Portfolio = () => {
     return { totalInvertido, valorActual, pnl, pnlPorc };
   }, [entriesConOraculo]);
 
-  const handleAddPosition = (ticker, nombre, categoria) => {
-    addPosition({ ticker, nombre, categoria });
+  const handleAddPosition = async (ticker, nombre, categoria, initialLote = null) => {
+    const posId = await addPosition({ ticker, nombre, categoria });
+    if (initialLote && initialLote.precioCompra && initialLote.cantidad) {
+      await addLote(posId, initialLote);
+    }
   };
 
   const handleExport = () => {
@@ -694,6 +929,24 @@ const Portfolio = () => {
     };
     reader.readAsText(file);
   };
+
+  const fechaActualizacionStr = useMemo(() => {
+    const rawDate = marketData?._fecha_db || marketData?.fecha_generacion;
+    if (!rawDate) return 'Tiempo Real';
+    try {
+      const d = new Date(rawDate);
+      if (isNaN(d.getTime())) return rawDate;
+      
+      const utcStr = d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }) +
+        ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC';
+
+      const cotStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' }) + ' COT';
+
+      return `${utcStr} · ${cotStr}`;
+    } catch (e) {
+      return rawDate;
+    }
+  }, [marketData]);
 
   return (
     <div className="portfolio-container">
@@ -720,7 +973,7 @@ const Portfolio = () => {
                 <button
                   className="add-asset-btn"
                   style={{ padding: '6px 14px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #2563eb, #7c3aed)' }}
-                  onClick={() => setAuthModalOpen(true)}
+                  onClick={() => { setAuthModalMode('login'); setAuthModalOpen(true); }}
                 >
                   🔑 Iniciar Sesión / Crear Cuenta
                 </button>
@@ -728,12 +981,10 @@ const Portfolio = () => {
             )}
           </div>
           <p className="subtitle">Seguimiento de compras y gestión táctica de posiciones reales</p>
-          {marketData?.fecha_generacion && (
-            <p className="data-date">
-              📡 Escáner: {marketData.fecha_generacion}
-              {tickersParaLive.length > 0 && !liveLoading && <span> · 🔴 Live: {tickersParaLive.filter(t => livePrices[t]).join(', ')}</span>}
-            </p>
-          )}
+          <p className="data-date">
+            🕒 Última actualización de datos: <strong>{fechaActualizacionStr}</strong> {marketData?._fuente === 'supabase' ? '⚡ (Supabase Real-Time)' : ''}
+            {tickersParaLive.length > 0 && !liveLoading && <span> · 🔴 Precios en vivo: {tickersParaLive.filter(t => livePrices[t]).join(', ')}</span>}
+          </p>
         </div>
 
         <div className="summary-cards">
@@ -756,7 +1007,7 @@ const Portfolio = () => {
       </header>
 
       {/* Gráfica Global de Rendimiento (Alta Resolución 5 pts/día) */}
-      <PortfolioPerformanceChart entriesConOraculo={entriesConOraculo} resumen={resumen} />
+      <PortfolioPerformanceChart entriesConOraculo={entriesConOraculo} resumen={resumen} fechaActualizacion={fechaActualizacionStr} />
 
       {/* Acciones */}
       <section className="portfolio-actions" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
@@ -824,6 +1075,7 @@ const Portfolio = () => {
                   entry={entry}
                   precioActual={precioActual}
                   oraculo={oraculo}
+                  datosJson={marketData}
                   onRemovePosition={removePosition}
                   addLote={addLote}
                   updateLote={updateLote}
@@ -855,7 +1107,9 @@ const Portfolio = () => {
       </AnimatePresence>
 
       <AuthModal
+        key={authModalMode}
         isOpen={authModalOpen}
+        initialMode={authModalMode}
         onClose={() => setAuthModalOpen(false)}
         onAuthSuccess={(u) => setUserSession(u)}
         onDemoMode={() => setDemoMode()}

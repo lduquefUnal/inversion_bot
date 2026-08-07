@@ -1,15 +1,13 @@
-name: Orquestador - Análisis de Acciones & Inferencia ML V2
+name: Orquestador - Inferencia ML V3.7 & Sync Supabase (Modo Ligero)
 
 on:
   schedule:
-    - cron: '0 11 * * *' # 11:00 UTC (6:00 AM Colombia/Perú UTC-5)
+    - cron: '0 13,16,19,21 * * 1-5' # 4x al día en días hábiles de mercado (UTC: 13:00, 16:00, 19:00, 21:00)
   workflow_dispatch:
 
 jobs:
   flujo-orquestado:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout del repositorio
@@ -26,27 +24,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requerimientos_bot.txt
 
-      - name: Paso 1 - Agente de Extracción de Datos de Mercado
-        run: python flujo/paso1_descargar.py
+      - name: Paso 1 - Extracción Ligera de Datos de Mercado
+        run: python flujo/paso1_descargar.py --ligero
 
-      - name: Paso 2 - Inferencia en Tiempo Real Modelo V3.7 (Modelos Especializados por Categoría)
+      - name: Paso 2 - Inferencia en Tiempo Real Modelo V3.7
         run: python flujo_ml/4_inferencia_oraculo.py
 
-      - name: Paso 3 - Sincronización a Frontend Public
-        run: |
-          cp flujo_datos/predicciones_v2.json frontend/public/predicciones_v2.json || true
-          cp Modelos/v3_backtest_reporte_consolidado.json Modelos/modelo_metadata_v3_cat.json Modelos/v3_thresholds_optimos.json Modelos/v3_shap_importances.json Modelos/feature_importance_shap.png frontend/public/ || true
-
-      - name: Paso 4 - Agente Analista (Gemini IA)
+      - name: Paso 3 - Publicar resultados en Supabase PostgreSQL
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python flujo/paso2_analizar.py || echo "Ignorando si Gemini API no está configurado"
-
-      - name: Auto-Commit de Datos Persistentes (Despliegue Automático en Vercel)
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action Bot"
-          git add flujo_datos/ Modelos/ frontend/public/
-          git commit -m "🤖 MLOps: Inferencia Diaria Modelo V3.7 y Actualización Web Vercel" || echo "No hay cambios para hacer commit"
-          git push
-
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python utils/publicar_supabase.py
