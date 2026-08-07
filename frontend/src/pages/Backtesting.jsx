@@ -147,7 +147,8 @@ const Backtesting = () => {
           ...t,
           Resultado: 'TIMEOUT',
           Precio_Salida: exitPrice,
-          PnL_Neto_%: pnlNeto,
+          'PnL_Neto_%': pnlNeto,
+
         };
       }
       return t;
