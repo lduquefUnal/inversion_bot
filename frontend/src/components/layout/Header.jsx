@@ -11,28 +11,24 @@ const Header = () => {
   const vix = data?.MACRO?.VIX || '18.3';
 
   React.useEffect(() => {
-    // Consulta TRM Oficial de Colombia en vivo desde dolar-colombia.com
+    // Consulta TRM Oficial en vivo con API pública con CORS habilitado
     const fetchTrmOficial = async () => {
       try {
-        const targetUrl = 'https://www.dolar-colombia.com/';
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-        const res = await fetch(proxyUrl);
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
         if (res.ok) {
-          const wrapper = await res.json();
-          if (wrapper?.contents) {
-            const match = wrapper.contents.match(/<span class="exchange-rate[^">]*>.*?([\d\.,]+)<\/span>/);
-            if (match && match[1]) {
-              setCopRate(match[1]);
-            }
+          const json = await res.json();
+          if (json?.rates?.COP) {
+            setCopRate(json.rates.COP.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
           }
         }
       } catch (e) {
-        // Mantener valor oficial TRM Colombia ($3.230,44) sin sobreescribir con APIs externas desfasadas
+        // Mantener valor por defecto ($4.050,00) si falla el servicio
       }
     };
 
     fetchTrmOficial();
   }, []);
+
 
   return (
     <header style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)' }}>

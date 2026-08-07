@@ -60,7 +60,7 @@ const fetchFlaskPrices = async (tickers) => {
   }
 };
 
-// ─── Fetch Stock Yahoo Finance con Proxy AllOrigins (Fallback) ───────────────
+// ─── Fetch Stock Yahoo Finance con Proxies CORS ──────────────────────────────
 const fetchStockPricesAllOrigins = async (stockTickers) => {
   if (stockTickers.length === 0) return {};
 
@@ -69,24 +69,41 @@ const fetchStockPricesAllOrigins = async (stockTickers) => {
     stockTickers.map(async (ticker) => {
       try {
         const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+        
+        // Intentar primero corsproxy.io
+        try {
+          const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
+          if (res.ok) {
+            const parsed = await res.json();
+            const price = parsed?.chart?.result?.[0]?.meta?.regularMarketPrice;
+            if (price != null) {
+              results[ticker] = Number(price);
+              return;
+            }
+          }
+        } catch (_) {}
+
+        // Fallback a allorigins
         const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
         const res = await fetch(proxyUrl);
-        if (!res.ok) throw new Error(`AllOrigins HTTP ${res.status}`);
-        const wrapper = await res.json();
-        if (wrapper?.contents) {
-          const parsed = JSON.parse(wrapper.contents);
-          const meta = parsed?.chart?.result?.[0]?.meta;
-          if (meta?.regularMarketPrice != null) {
-            results[ticker] = Number(meta.regularMarketPrice);
+        if (res.ok) {
+          const wrapper = await res.json();
+          if (wrapper?.contents) {
+            const parsed = JSON.parse(wrapper.contents);
+            const price = parsed?.chart?.result?.[0]?.meta?.regularMarketPrice;
+            if (price != null) {
+              results[ticker] = Number(price);
+            }
           }
         }
-      } catch (e) {
-        // Fallback silencioso
+      } catch (_) {
+        // Fallback silencioso sin spammear la consola
       }
     })
   );
   return results;
 };
+
 
 // ─── Hook principal ───────────────────────────────────────────────────────────
 export const useLivePrice = (tickers = []) => {
