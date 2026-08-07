@@ -140,7 +140,8 @@ const Backtesting = () => {
     const source = (execMode === 'TIMEOUT' && bt.trades_timeout) ? bt.trades_timeout : (bt.trades || []);
     return source.map(t => {
       if (execMode === 'TIMEOUT') {
-        const pnlNeto = t.PnL_Neto_Timeout_% ?? t['PnL_Neto_%'] ?? t['PnL_%'] ?? 0;
+        const pnlNeto = t['PnL_Neto_Timeout_%'] ?? t['PnL_Neto_%'] ?? t['PnL_%'] ?? 0;
+
         const exitPrice = t.Precio_Salida_Timeout ?? t.Precio_Salida ?? t.Precio_Entrada_Hist;
         return {
           ...t,
