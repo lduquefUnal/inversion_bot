@@ -623,25 +623,8 @@ const Backtesting = () => {
         )}
       </div>
 
-      {/* ── Comparativa entre categorías ────────────────────────────────── */}1px 12px', color: '#60a5fa', fontWeight: 600, fontSize: '0.82rem' }}>
-                            {t.Dias_Trade}d <span style={{ color: '#475569', fontSize: '0.72rem' }}>/ {maxDias}d máx</span>
-                          </td>
-                          <td style={{ padding: '11px 12px', fontWeight: 800, color: pnlColor }}>{pnl > 0 ? '+' : ''}{pnl}%</td>
-                          <td style={{ padding: '11px 12px' }}>
-                            <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 700, background: motivoSalida.bg, color: motivoSalida.color, border: `1px solid ${motivoSalida.border}`, whiteSpace: 'nowrap' }}>{motivoSalida.label}</span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
       {/* ── Comparativa entre categorías ────────────────────────────────── */}
+
       <div style={{ background: 'rgba(18,26,44,0.7)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', padding: '22px 24px' }}>
         <h3 style={{ margin: '0 0 6px', fontSize: '1.2rem', color: '#f8fafc' }}>
           🏆 Comparativa entre Categorías (Modelo V3.7)
