@@ -3,6 +3,7 @@ import json
 import os
 import glob
 import datetime
+import math
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -360,10 +361,6 @@ def main():
             except Exception as e:
                 pass
                 
-            import urllib.request
-            import urllib.parse
-            import datetime
-
             # --- NOTICIAS REALES DE YAHOO FINANCE ---
             try:
                 yf_news = stock.news
@@ -445,7 +442,6 @@ def main():
             del item["Historia_Precios"]
 
     def sanitize_json_data(obj):
-        import math
         if isinstance(obj, dict):
             return {k: sanitize_json_data(v) for k, v in obj.items()}
         elif isinstance(obj, list):
