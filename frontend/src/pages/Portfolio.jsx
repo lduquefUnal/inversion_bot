@@ -25,7 +25,7 @@ const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes 
     return { veredicto: 'SIN_DATA', color: 'nodata', señales: [], recomendacion: null, justificacion: 'Precio actual no disponible.' };
   }
 
-  const activos = datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || [];
+  const activos = datosJson?.predicciones || datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || datosJson?.TODOS_LOS_ACTIVOS || [];
   const mercado  = activos.find(a => a.Ticker === ticker);
   const gananciaPorc = ((precioActual - precioPromedio) / precioPromedio) * 100;
 
@@ -392,7 +392,7 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen, fechaActualizac
 
 // ─── Modal Lote (Añadir / Editar Compra o Venta) ─────────────────────────────
 const LoteModal = ({ lote, positionId, positionTicker, datosJson, onClose, onSave }) => {
-  const activos = datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || [];
+  const activos = datosJson?.predicciones || datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || datosJson?.TODOS_LOS_ACTIVOS || [];
   const mercado = activos.find(a => a.Ticker === positionTicker);
   const precioMercado = mercado?.Precio_Actual || mercado?.Precio;
 
@@ -483,12 +483,13 @@ const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
   const handleTickerChange = (val) => {
     const uppercaseVal = val.toUpperCase();
     setTicker(uppercaseVal);
-    const activos = datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || [];
+    const activos = datosJson?.predicciones || datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || datosJson?.TODOS_LOS_ACTIVOS || [];
     const mercado = activos.find(a => a.Ticker === uppercaseVal);
     
     if (mercado) {
-      if (mercado.Categoria && CATEGORY_PARAMS[mercado.Categoria]) {
-        setCategoria(mercado.Categoria);
+      if (mercado.Categoria) {
+        const catParams = getCategoryParams(mercado.Categoria);
+        setCategoria(catParams.catNombre);
         setAutoDetectado(true);
       } else {
         setAutoDetectado(false);
@@ -641,7 +642,8 @@ const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePositio
     else addLote(position.id, data);
   }, [position.id, addLote, updateLote]);
 
-  const catLabel = oraculo.catNombre || position.categoria || "🎯 Sweet Spot";
+  const catParams = getCategoryParams(position.categoria || oraculo.catNombre);
+  const catLabel = catParams.catNombre;
   const fechaOperacion = lotes[0]?.fechaCompra || '—';
 
   return (
@@ -652,7 +654,7 @@ const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePositio
           <div className="ticker-cell">
             <Link to={`/activo/${position.ticker}`} className="ticker-symbol">{position.ticker}</Link>
             <span className="asset-subname">{position.nombre}</span>
-            <span className="cat-badge">{catLabel.split(' ')[0]}</span>
+            <span className="cat-badge">{catLabel}</span>
           </div>
         </td>
 
@@ -858,7 +860,7 @@ const Portfolio = () => {
     }
   }, [isPasswordRecovery, clearPasswordRecovery]);
 
-  const activos = marketData?.TOP_25_DIPS || marketData?.TOP_50_DIPS || [];
+  const activos = marketData?.predicciones || marketData?.TOP_25_DIPS || marketData?.TOP_50_DIPS || marketData?.TODOS_LOS_ACTIVOS || [];
   const tickersList = activos.map(a => a.Ticker);
 
   const tickersParaLive = entries.map(e => e.position.ticker);

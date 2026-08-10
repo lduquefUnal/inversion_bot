@@ -18,7 +18,8 @@ const fetchMarketData = async () => {
           ? JSON.parse(data.payload)
           : data.payload;
 
-        payloadData.TOP_25_DIPS = payloadData.predicciones || [];
+        payloadData.predicciones = payloadData.predicciones || payloadData.TOP_25_DIPS || [];
+        payloadData.TOP_25_DIPS = payloadData.predicciones;
         payloadData._fuente = 'supabase';
         payloadData._fecha_db = data.fecha;
         return payloadData;
@@ -34,7 +35,8 @@ const fetchMarketData = async () => {
   const text = await res.text();
   const sanitized = text.replace(/:\s*NaN\b/g, ': null').replace(/:\s*Infinity\b/g, ': null');
   const data = JSON.parse(sanitized);
-  data.TOP_25_DIPS = data.predicciones || [];
+  data.predicciones = data.predicciones || data.TOP_25_DIPS || [];
+  data.TOP_25_DIPS = data.predicciones;
   data._fuente = 'json_local';
   return data;
 };
