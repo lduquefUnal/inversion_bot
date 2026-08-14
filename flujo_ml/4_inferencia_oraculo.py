@@ -108,6 +108,12 @@ def ejecutar_inferencia():
             seen_tickers.add(tk)
             unique_activos.append(a)
 
+    # Incluir TODOS los tickers del universo OHLCV para garantizar cobertura total de precios en el portafolio
+    for tk in latest_feats["Ticker"].unique():
+        if tk and tk not in seen_tickers:
+            seen_tickers.add(tk)
+            unique_activos.append({"Ticker": tk, "Nombre": tk})
+
     resultados = []
 
     for a in unique_activos:
