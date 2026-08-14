@@ -37,12 +37,18 @@ DRIFT_FEATURES = [
     "RS_Rating", "Consecutive_Down_Days", "ATR_Regime", "RR_Ratio"
 ]
 
-# Parámetros unificados por categoría (TP, SL, Días)
+sys.path.insert(0, os.path.dirname(__file__))
+from bt_honesto import CAT_PARAMS
+
+# Parámetros unificados derivados de la fuente única (bt_honesto.CAT_PARAMS)
 CAT_BENCHMARKS = {
-    "Recup. Rapida":     {"tp": 0.15, "sl": 0.05, "dias": 7,  "label": "⚡ Recup. Rápida"},
-    "Sweet Spot":        {"tp": 0.15, "sl": 0.08, "dias": 14, "label": "🎯 Sweet Spot"},
-    "Cazador Dips":      {"tp": 0.12, "sl": 0.08, "dias": 21, "label": "🔥 Cazador Dips"},
-    "Cuchillos Cayendo": {"tp": 0.08, "sl": 0.05, "dias": 7,  "label": "⚠️ Cuchillos Cayendo"}
+    cat: {
+        "tp": p["tp"],
+        "sl": p["sl"],
+        "dias": p["limite_dias"],
+        "label": cat
+    }
+    for cat, p in CAT_PARAMS.items()
 }
 
 

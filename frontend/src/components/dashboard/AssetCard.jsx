@@ -209,7 +209,6 @@ const TradingViewChart = ({ ticker }) => {
       style={{ width: '100%', height: '100%', border: 'none', borderRadius: '12px', display: 'block' }}
       title={`Chart ${ticker}`}
       loading="lazy"
-      allowTransparency
     />
   );
 };

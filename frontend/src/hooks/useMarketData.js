@@ -4,6 +4,21 @@ import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 const PREDICCIONES_URL = '/predicciones_v2.json';
 
 const fetchMarketData = async () => {
+  let localData = null;
+  try {
+    const res = await fetch(`${PREDICCIONES_URL}?t=${Date.now()}`);
+    if (res.ok) {
+      const text = await res.text();
+      const sanitized = text.replace(/:\s*NaN\b/g, ': null').replace(/:\s*Infinity\b/g, ': null');
+      localData = JSON.parse(sanitized);
+      localData.predicciones = localData.predicciones || localData.TOP_25_DIPS || [];
+      localData.TOP_25_DIPS = localData.predicciones;
+      localData._fuente = 'json_local';
+    }
+  } catch (e) {
+    console.warn('No se pudo cargar local predicciones_v2.json:', e);
+  }
+
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase
@@ -22,23 +37,23 @@ const fetchMarketData = async () => {
         payloadData.TOP_25_DIPS = payloadData.predicciones;
         payloadData._fuente = 'supabase';
         payloadData._fecha_db = data.fecha;
+
+        // Si tenemos datos locales y su fecha de inferencia es MÁS RECIENTE que la fecha de DB, preferir local
+        const dbTime = new Date(data.fecha).getTime();
+        const localTime = localData?.fecha_inferencia ? new Date(localData.fecha_inferencia).getTime() : 0;
+
+        if (localTime > dbTime) {
+          return localData;
+        }
+
         return payloadData;
       }
     } catch (e) {
-      console.warn('Fallback a JSON estático por error al consultar Supabase:', e);
+      console.warn('Fallback a JSON local por error al consultar Supabase:', e);
     }
   }
 
-  // Fallback a JSON estático local si Supabase no está activo o falla
-  const res = await fetch(`${PREDICCIONES_URL}?t=${Date.now()}`);
-  if (!res.ok) throw new Error('No se pudo cargar predicciones_v2.json');
-  const text = await res.text();
-  const sanitized = text.replace(/:\s*NaN\b/g, ': null').replace(/:\s*Infinity\b/g, ': null');
-  const data = JSON.parse(sanitized);
-  data.predicciones = data.predicciones || data.TOP_25_DIPS || [];
-  data.TOP_25_DIPS = data.predicciones;
-  data._fuente = 'json_local';
-  return data;
+  return localData || { predicciones: [], TOP_25_DIPS: [] };
 };
 
 export const useMarketData = () =>

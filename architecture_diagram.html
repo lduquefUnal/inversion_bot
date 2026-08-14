@@ -362,7 +362,7 @@
           <span>Daily Inference & Execution</span>
           <span style="font-size: 0.75rem;">Diario</span>
         </div>
-        <div class="flow-desc">GitHub Actions descarga métricas en vivo, ejecuta los modelos predictivos, genera el veredicto con Gemini y notifica mediante Telegram.</div>
+        <div class="flow-desc">GitHub Actions descarga métricas en vivo, ejecuta los modelos predictivos y genera el veredicto con Gemini, publicando los datos actualizados en el frontend.</div>
       </div>
 
       <!-- Flujo 2 -->
@@ -425,7 +425,6 @@
       { id: "predicciones_v2_json", label: "predicciones_v2.json", group: "database", path: "flujo_datos/predicciones_v2.json", desc: "Archivo JSON publicado con el Top 25 Dips, Kelly sizing, Take Profit, Stop Loss y umbrales óptimos." },
       { id: "paso2_analizar", label: "Paso 2: Analista\nGemini AI", group: "ml_model", path: "flujo/paso2_analizar.py", desc: "Genera reportes semánticos detallados y tesis de inversión (Bull/Bear) usando la API multimodal de Gemini." },
       { id: "ultimo_reporte_md", label: "ultimo_reporte.md", group: "database", path: "flujo_datos/ultimo_reporte.md", desc: "Reporte final y veredicto del analista de Inteligencia Artificial para cada activo del Top 25." },
-      { id: "paso3_enviar", label: "Paso 3: Notificador\nTelegram", group: "utility", path: "flujo/paso3_enviar.py", desc: "Envía el reporte simplificado junto con las gráficas de velas de mayor relevancia al chat de Telegram del usuario." },
       { id: "orquestador_acciones", label: "GitHub Action:\nOrquestador Diario", group: "workflow", path: ".github/workflows/orquestador_acciones.yml", desc: "Acción automática programada que coordina el flujo diario de descarga, inferencia, análisis semántico, envío y publicación estática." },
       { id: "descargar_historial", label: "Descarga\nHistorial OHLCV", group: "extractor", path: "flujo_ml/11_descargar_ohclv.py", desc: "Descarga masiva de 5 años de datos de cotizaciones históricas de 227 tickers para reentrenamiento." },
       { id: "ohclv_cache_csv", label: "ohclv_cache.csv", group: "database", path: "Modelos/ohclv_cache.csv", desc: "Almacenamiento local en caché del historial crudo descargado para acelerar la extracción de features." },
@@ -450,9 +449,7 @@
       { from: "orquestador_acciones", to: "paso2_analizar", label: "ejecuta", type: "workflow_step" },
       { from: "mercado_json", to: "paso2_analizar", label: "lee", type: "data_flow" },
       { from: "paso2_analizar", to: "ultimo_reporte_md", label: "genera", type: "data_flow" },
-      { from: "orquestador_acciones", to: "paso3_enviar", label: "ejecuta", type: "workflow_step" },
-      { from: "ultimo_reporte_md", to: "paso3_enviar", label: "procesa", type: "data_flow" },
-      
+
       { from: "reentrenamiento_ml_v3", to: "descargar_historial", label: "ejecuta", type: "workflow_step" },
       { from: "descargar_historial", to: "ohclv_cache_csv", label: "descarga", type: "data_flow" },
       { from: "reentrenamiento_ml_v3", to: "dataset_features", label: "ejecuta", type: "workflow_step" },
@@ -476,7 +473,7 @@
 
     // Mapeo de Flujos
     const flows = {
-      daily_inference: ["orquestador_acciones", "paso1_descargar", "mercado_json", "inferencia_oraculo", "predicciones_v2_json", "paso2_analizar", "ultimo_reporte_md", "paso3_enviar", "vite_spa"],
+      daily_inference: ["orquestador_acciones", "paso1_descargar", "mercado_json", "inferencia_oraculo", "predicciones_v2_json", "paso2_analizar", "ultimo_reporte_md", "vite_spa"],
       monthly_retraining: ["reentrenamiento_ml_v3", "descargar_historial", "ohclv_cache_csv", "dataset_features", "dataset_completo_csv", "optimizador_umbrales", "entrenamiento_lgb", "analisis_shap", "evaluacion_backtest", "predicciones_v2_json", "vite_spa"],
       interactive_frontend: ["vite_spa", "predicciones_v2_json", "ultimo_reporte_md", "supabase"]
     };

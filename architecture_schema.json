@@ -43,13 +43,6 @@
       "description": "Reporte final y veredicto del analista de Inteligencia Artificial para cada activo del Top 25."
     },
     {
-      "id": "paso3_enviar",
-      "label": "Notificador Telegram (Paso 3)",
-      "type": "utility",
-      "path": "flujo/paso3_enviar.py",
-      "description": "Envía el reporte simplificado junto con las gráficas de velas de mayor relevancia al chat de Telegram del usuario."
-    },
-    {
       "id": "orquestador_acciones",
       "label": "Orquestador Diario (GitHub Actions)",
       "type": "workflow",
@@ -143,10 +136,7 @@
     { "from": "orquestador_acciones", "to": "paso2_analizar", "label": "desencadena", "type": "workflow_step" },
     { "from": "mercado_json", "to": "paso2_analizar", "label": "lee de", "type": "data_flow" },
     { "from": "paso2_analizar", "to": "ultimo_reporte_md", "label": "escribe", "type": "data_flow" },
-    { "from": "orquestador_acciones", "to": "paso3_enviar", "label": "desencadena", "type": "workflow_step" },
-    { "from": "ultimo_reporte_md", "to": "paso3_enviar", "label": "lee de", "type": "data_flow" },
-    { "from": "paso3_enviar", "to": "ultimo_reporte_md", "label": "envía a Telegram", "type": "data_flow" },
-    
+
     { "from": "reentrenamiento_ml_v3", "to": "descargar_historial", "label": "desencadena", "type": "workflow_step" },
     { "from": "descargar_historial", "to": "ohclv_cache_csv", "label": "escribe", "type": "data_flow" },
     { "from": "reentrenamiento_ml_v3", "to": "dataset_features", "label": "desencadena", "type": "workflow_step" },
@@ -171,8 +161,8 @@
     {
       "id": "daily_inference",
       "name": "Daily Inference & Executive Flow",
-      "description": "Flujo de actualización diario activado por GitHub Actions. Descarga métricas en vivo, ejecuta los modelos predictivos, genera el veredicto con Gemini y notifica mediante Telegram, publicando los archivos de datos actualizados en el frontend.",
-      "steps": ["orquestador_acciones", "paso1_descargar", "mercado_json", "inferencia_oraculo", "predicciones_v2_json", "paso2_analizar", "ultimo_reporte_md", "paso3_enviar", "vite_spa"]
+      "description": "Flujo de actualización diario activado por GitHub Actions. Descarga métricas en vivo, ejecuta los modelos predictivos, genera el veredicto con Gemini y publica los archivos de datos actualizados en el frontend.",
+      "steps": ["orquestador_acciones", "paso1_descargar", "mercado_json", "inferencia_oraculo", "predicciones_v2_json", "paso2_analizar", "ultimo_reporte_md", "vite_spa"]
     },
     {
       "id": "monthly_retraining",

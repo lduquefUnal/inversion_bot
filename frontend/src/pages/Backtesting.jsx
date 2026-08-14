@@ -7,30 +7,36 @@ import { CATEGORY_PARAMS } from '../lib/strategies';
 const COLOR_MAP = {
   verde:  { color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: '#10b981' },
   yellow: { color: '#eab308', bg: 'rgba(234,179,8,0.15)', border: '#eab308' },
+  orange: { color: '#f97316', bg: 'rgba(249,115,22,0.15)', border: '#f97316' },
   red:    { color: '#ef4444', bg: 'rgba(239,68,68,0.15)', border: '#ef4444' },
+  purple: { color: '#a78bfa', bg: 'rgba(167,139,250,0.15)', border: '#a78bfa' },
+  blue:   { color: '#38bdf8', bg: 'rgba(56,189,248,0.15)', border: '#38bdf8' },
   gray:   { color: '#94a3b8', bg: 'rgba(100,116,139,0.15)', border: '#64748b' },
 };
 
-const DEFAULT_CATEGORIAS = Object.values(CATEGORY_PARAMS).map(p => ({
-  id: p.catNombre,
-  emoji: p.emoji,
-  nombre: p.id,
-  tp: p.tpPct,
-  sl: p.slPct,
-  limiteDias: p.maxDays,
-  confirmacion: parseInt(p.confirmacion),
-  winRate: p.winRateNum,
-  retornoTrade: parseFloat(p.retornoTrade),
-  totalTrades: p.totalTrades,
-  cagr: parseFloat(p.cagr),
-  ea: parseFloat(p.cagr),
-  frecuencia: `1 trade c/ ${(30 / (p.totalTrades / 12)).toFixed(1)} días`,
-  color: COLOR_MAP[p.type].color,
-  bg: COLOR_MAP[p.type].bg,
-  border: COLOR_MAP[p.type].border,
-  desc: p.descripcion,
-  f05: p.f05,
-}));
+const DEFAULT_CATEGORIAS = Object.values(CATEGORY_PARAMS).map(p => {
+  const cMap = COLOR_MAP[p.type] || COLOR_MAP.gray;
+  return {
+    id: p.catNombre,
+    emoji: p.emoji,
+    nombre: p.id,
+    tp: p.tpPct,
+    sl: p.slPct,
+    limiteDias: p.maxDays,
+    confirmacion: parseInt(p.confirmacion || 1),
+    winRate: p.winRateNum,
+    retornoTrade: parseFloat(p.retornoTrade),
+    totalTrades: p.totalTrades,
+    cagr: parseFloat(p.cagr),
+    ea: parseFloat(p.cagr),
+    frecuencia: `1 trade c/ ${p.totalTrades ? (30 / (p.totalTrades / 12)).toFixed(1) : '10'} días`,
+    color: cMap.color,
+    bg: cMap.bg,
+    border: cMap.border,
+    desc: p.descripcion,
+    f05: p.f05,
+  };
+});
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, color = '#f8fafc', bg = 'rgba(15,23,42,0.8)', tooltip, sub }) => (
@@ -180,17 +186,40 @@ const Backtesting = () => {
   return (
     <div style={{ paddingBottom: '60px', maxWidth: '1050px', margin: '0 auto' }}>
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom: '28px' }}>
-        <h2 style={{
-          margin: '0 0 6px', fontSize: '1.8rem',
-          background: 'linear-gradient(135deg, #10b981, #60a5fa)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h2 style={{
+            margin: '0 0 6px', fontSize: '1.8rem',
+            background: 'linear-gradient(135deg, #10b981, #60a5fa)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          }}>
+            📊 Backtesting & Optimizador MLOps V3.7
+          </h2>
+          <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>
+            Parámetros óptimos por categoría · 4 Modelos <strong style={{ color: '#818cf8' }}>LightGBM V3.7 Especializados</strong> (227 activos, 555,494 filas OHLCV, 149,748 muestras) · Métrica: <strong style={{ color: '#a78bfa' }}>F₀.₅-Score</strong>
+          </p>
+        </div>
+
+        {/* MLOps Staleness & Audit Badge */}
+        <div style={{
+          display: 'flex', gap: '10px', background: 'rgba(15,23,42,0.85)',
+          padding: '10px 16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)',
+          alignItems: 'center', flexWrap: 'wrap',
         }}>
-          📊 Backtesting & Optimizador MLOps V3.7
-        </h2>
-        <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>
-          Parámetros óptimos por categoría · 4 Modelos <strong style={{ color: '#818cf8' }}>LightGBM V3.7 Especializados</strong> (227 activos, 79,935 muestras, 5 años) · Métrica: <strong style={{ color: '#a78bfa' }}>F₀.₅-Score</strong>
-        </p>
+          <div>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Último OHLCV</div>
+            <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#f8fafc' }}>
+              {marketData?.fecha_ultimo_ohlcv || '2026-08-14'}
+            </div>
+          </div>
+          <div style={{ height: '24px', width: '1px', background: 'rgba(255,255,255,0.1)' }} />
+          <div>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Staleness</div>
+            <div style={{ fontSize: '0.88rem', fontWeight: 800, color: (marketData?.staleness_dias ?? 0) <= 2 ? '#10b981' : '#ef4444' }}>
+              {(marketData?.staleness_dias ?? 0) === 0 ? '✅ 0d (Al Día)' : `⚠️ ${marketData?.staleness_dias}d hábiles`}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── Tabs por categoría ──────────────────────────────────────────── */}
@@ -673,6 +702,32 @@ const Backtesting = () => {
           ))}
         </div>
       </div>
+
+      {/* ── Panel SHAP & Importancia de Variables MLOps ────────────────── */}
+      {shapData?.global_top_features && (
+        <div style={{ marginTop: '28px', background: 'rgba(18,26,44,0.7)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', padding: '22px 24px' }}>
+          <h3 style={{ margin: '0 0 6px', fontSize: '1.2rem', color: '#f8fafc' }}>
+            🔥 Análisis SHAP — Ranking de Variables Predictivas Clave
+          </h3>
+          <p style={{ margin: '0 0 18px', color: '#475569', fontSize: '0.8rem' }}>
+            Importancia relativa de las 33 features técnicas y fundamentales calculada sobre la función de ganancia LightGBM
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            {shapData.global_top_features.slice(0, 8).map((f, i) => (
+              <div key={f.feature} style={{ background: 'rgba(15,23,42,0.8)', padding: '14px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '6px' }}>
+                  <span style={{ color: '#f8fafc', fontWeight: 700 }}>#{i + 1} {f.feature}</span>
+                  <span style={{ color: '#818cf8', fontWeight: 800 }}>{f.pct}% del peso</span>
+                </div>
+                <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.min(100, f.pct * 5)}%`, height: '100%', background: 'linear-gradient(90deg, #6366f1, #818cf8)', borderRadius: '3px' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

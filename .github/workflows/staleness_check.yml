@@ -1,0 +1,43 @@
+name: Auditoría de Staleness OHLCV & Salud MLOps
+
+on:
+  schedule:
+    - cron: '0 22 * * 1-5' # Revisa al final del día hábil de mercado (22:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  check-staleness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Verificar Staleness de Datos OHLCV
+        run: |
+          python -c "
+          import json, sys, os
+          path = 'frontend/public/predicciones_v2.json'
+          if not os.path.exists(path):
+              path = 'flujo_datos/predicciones_v2.json'
+          if not os.path.exists(path):
+              print('❌ Archivo de predicciones no encontrado.')
+              sys.exit(1)
+
+          with open(path, 'r', encoding='utf-8') as f:
+              data = json.load(f)
+
+          staleness = data.get('staleness_dias', 0)
+          ultimo_ohlcv = data.get('fecha_ultimo_ohlcv', 'Desconocido')
+          print(f'📊 Estado MLOps: Último OHLCV={ultimo_ohlcv} | Staleness={staleness} días hábiles')
+
+          if staleness > 2:
+              print(f'🚨 ALERTA: Datos OHLCV desactualizados por {staleness} días hábiles!')
+              sys.exit(1)
+          else:
+              print('✅ Salud MLOps OK: OHLCV al día.')
+          "

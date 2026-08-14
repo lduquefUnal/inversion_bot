@@ -1,42 +1,62 @@
 {
   "Sweet Spot": {
     "model_path": "/home/lduque/Documentos/proyectos/repositorios/inversion_bot/flujo_ml/../Modelos/lightgbm_cat_sweet_spot.pkl",
-    "th_optimo": 0.36,
-    "f05_score": 0.2941,
+    "th_optimo": 0.37,
+    "f05_score": 0.3125,
+    "tp_pct": 15.0,
+    "sl_pct": 6.0,
+    "limite_dias": 11,
+    "fecha_entrenamiento": "2026-08-14 01:04:15",
+    "fecha_ultimo_ohlcv": "2026-08-14",
     "metrics": {
-      "n": 12,
-      "wr_%": 33.3,
-      "f05": 0.2941
+      "n": 11,
+      "wr_%": 36.4,
+      "f05": 0.3125
     }
   },
   "Cazador Dips": {
     "model_path": "/home/lduque/Documentos/proyectos/repositorios/inversion_bot/flujo_ml/../Modelos/lightgbm_cat_cazador_dips.pkl",
-    "th_optimo": 0.51,
-    "f05_score": 0.3906,
+    "th_optimo": 0.46,
+    "f05_score": 0.2604,
+    "tp_pct": 12.0,
+    "sl_pct": 5.0,
+    "limite_dias": 11,
+    "fecha_entrenamiento": "2026-08-14 01:04:38",
+    "fecha_ultimo_ohlcv": "2026-08-14",
     "metrics": {
-      "n": 11,
-      "wr_%": 45.5,
-      "f05": 0.3906
+      "n": 19,
+      "wr_%": 26.3,
+      "f05": 0.2604
     }
   },
   "Recup. Rapida": {
     "model_path": "/home/lduque/Documentos/proyectos/repositorios/inversion_bot/flujo_ml/../Modelos/lightgbm_cat_recup_rapida.pkl",
-    "th_optimo": 0.4,
-    "f05_score": 0.4514,
+    "th_optimo": 0.46,
+    "f05_score": 0.3409,
+    "tp_pct": 10.0,
+    "sl_pct": 4.0,
+    "limite_dias": 11,
+    "fecha_entrenamiento": "2026-08-14 01:05:02",
+    "fecha_ultimo_ohlcv": "2026-08-14",
     "metrics": {
-      "n": 31,
-      "wr_%": 41.9,
-      "f05": 0.4514
+      "n": 28,
+      "wr_%": 32.1,
+      "f05": 0.3409
     }
   },
   "Cuchillos Cayendo": {
     "model_path": "/home/lduque/Documentos/proyectos/repositorios/inversion_bot/flujo_ml/../Modelos/lightgbm_cat_cuchillos_cayendo.pkl",
-    "th_optimo": 0.37,
-    "f05_score": 0.5189,
+    "th_optimo": 0.43,
+    "f05_score": 0.5682,
+    "tp_pct": 8.0,
+    "sl_pct": 4.0,
+    "limite_dias": 11,
+    "fecha_entrenamiento": "2026-08-14 01:05:28",
+    "fecha_ultimo_ohlcv": "2026-08-14",
     "metrics": {
-      "n": 48,
-      "wr_%": 45.8,
-      "f05": 0.5189
+      "n": 61,
+      "wr_%": 49.2,
+      "f05": 0.5682
     }
   }
 }

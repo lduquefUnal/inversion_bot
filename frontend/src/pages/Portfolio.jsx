@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { usePortfolioStore, calcularResumenPosicion } from '../store/usePortfolioStore';
+import { usePortfolioStore, calcularResumenPosicion, calcularMetricasTrades, calcularCapital, calcularXirr } from '../store/usePortfolioStore';
 import { useMarketData } from '../hooks/useMarketData';
 import { useLivePrice } from '../hooks/useLivePrice';
 import { AuthModal } from '../components/AuthModal';
@@ -117,19 +117,47 @@ const VEREDICTO_TOOLTIP = {
 };
 
 // ─── Componente Gráfica Global de Rendimiento (Alta Resolución 5 pts/día) ───
-const PortfolioPerformanceChart = ({ entriesConOraculo, resumen, fechaActualizacion }) => {
+const PortfolioPerformanceChart = ({ entriesConOraculo, resumen, fechaActualizacion, movimientos = [] }) => {
   const [windowKey, setWindowKey] = useState('1D');
   const [zoomMode, setZoomMode] = useState('ZOOM_PNL'); // 'ZOOM_PNL' | 'FULL'
 
   const { chartPoints, windowPnl, windowPnlPct } = useMemo(() => {
-    if (!resumen || resumen.totalInvertido <= 0) return { chartPoints: [], windowPnl: 0, windowPnlPct: 0 };
+    if (!resumen || resumen.capitalInvertido <= 0) return { chartPoints: [], windowPnl: 0, windowPnlPct: 0 };
+
+    const useCapital = Array.isArray(movimientos) && movimientos.length > 0;
+
+    // Efectivo en cuenta en una fecha: capital aportado − compras + ventas
+    const capitalBaseAt = (date) => {
+      if (!useCapital) return 0;
+      return movimientos.reduce((s, m) => {
+        if (new Date(m.fecha) <= date) s += m.tipo === 'deposito' ? Number(m.monto) : -Number(m.monto);
+        return s;
+      }, 0);
+    };
+    const cashAt = (date) => {
+      if (!useCapital) return 0;
+      let cash = capitalBaseAt(date);
+      entriesConOraculo.forEach(({ entry }) => {
+        (entry.lotes || []).forEach(l => {
+          if (new Date(l.fechaCompra) <= date) cash -= Number(l.precioCompra) * Number(l.cantidad);
+        });
+        (entry.ventas || []).forEach(v => {
+          if (new Date(v.fechaVenta) <= date) cash += Number(v.precioVenta) * Number(v.cantidad);
+        });
+      });
+      return cash;
+    };
     
     const allLotes = [];
     (entriesConOraculo || []).forEach(({ entry, precioActual, oraculo }) => {
       const ticker = entry.position.ticker;
+      const r = calcularResumenPosicion(entry.lotes, entry.ventas);
+      if (r.cantidadTotal <= 0) return;
+      // Fracción vigente de cada lote (para posiciones con ventas parciales)
+      const frac = r.cantidadComprada > 0 ? r.cantidadTotal / r.cantidadComprada : 1;
       const cambio1D = oraculo?.cambio5D ? (oraculo.cambio5D / 5) : 0.5;
       (entry.lotes || []).forEach(l => {
-        const cantidad = Number(l.cantidad) || 0;
+        const cantidad = (Number(l.cantidad) || 0) * frac;
         const pCompra = Number(l.precioCompra) || 0;
         const pNow = (precioActual ? Number(precioActual) : pCompra);
         const cost = pCompra * cantidad;
@@ -220,7 +248,16 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen, fechaActualizac
       });
 
       const dateStr = currentDate.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-      points.push({ date: dateStr, value: totalValAtDate, cost: totalCostAtDate, profit: totalValAtDate - totalCostAtDate });
+
+      // Con movimientos de capital: la curva representa el patrimonio real
+      // (efectivo + posiciones) y la base el capital aportado hasta la fecha.
+      if (useCapital) {
+        const baseAtDate = capitalBaseAt(currentDate);
+        const value = cashAt(currentDate) + totalValAtDate;
+        points.push({ date: dateStr, value, cost: baseAtDate, profit: value - baseAtDate });
+      } else {
+        points.push({ date: dateStr, value: totalValAtDate, cost: totalCostAtDate, profit: totalValAtDate - totalCostAtDate });
+      }
     }
 
     let winPnl = resumen.pnl;
@@ -230,12 +267,12 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen, fechaActualizac
       const startProfit = points[0].profit;
       const endProfit = points[points.length - 1].profit;
       winPnl = endProfit - startProfit;
-      const baseCost = points[points.length - 1].cost || resumen.totalInvertido || 1;
+      const baseCost = points[points.length - 1].cost || resumen.capitalInvertido || 1;
       winPnlPct = (winPnl / baseCost) * 100;
     }
 
     return { chartPoints: points, windowPnl: winPnl, windowPnlPct: winPnlPct };
-  }, [entriesConOraculo, resumen, windowKey]);
+  }, [entriesConOraculo, resumen, windowKey, movimientos]);
 
   // ─── Calculo de Escala Y (Zoom PnL vs Escala Absoluta) ────────────────────
   const { minVal, maxVal, yMin, yMax, yRange } = useMemo(() => {
@@ -466,6 +503,106 @@ const LoteModal = ({ lote, positionId, positionTicker, datosJson, onClose, onSav
   );
 };
 
+// ─── Modal Venta ──────────────────────────────────────────────────────────────
+const VentaModal = ({ positionTicker, positionNombre, precioActual, cantidadDisponible, costoPromedio, onClose, onSave }) => {
+  const [form, setForm] = useState({
+    precioVenta: precioActual ? String(precioActual) : '',
+    cantidad: cantidadDisponible ? String(cantidadDisponible) : '',
+    fechaVenta: new Date().toISOString().split('T')[0],
+    tipoSalida: 'MANUAL',
+    nota: ''
+  });
+
+  const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+  const cantidadNum = parseFloat(form.cantidad) || 0;
+  const precioVentaNum = parseFloat(form.precioVenta) || 0;
+  const pnlProyectadoPct = (costoPromedio > 0 && precioVentaNum > 0) ? ((precioVentaNum - costoPromedio) / costoPromedio) * 100 : null;
+  const pnlProyectadoUsd = (precioVentaNum > 0 && cantidadNum > 0) ? (precioVentaNum - costoPromedio) * cantidadNum : null;
+  const excede = cantidadNum > cantidadDisponible;
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (!form.precioVenta || !form.cantidad) return;
+    if (excede) return;
+    onSave({ ...form, precioVenta: precioVentaNum, cantidad: cantidadNum });
+    onClose();
+  };
+
+  return (
+    <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+      <motion.div className="modal-card" initial={{ scale: 0.85, y: 40 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.85, y: 40 }} onClick={e => e.stopPropagation()}>
+        <h2>🔴 Vender — {positionTicker}{positionNombre ? ` (${positionNombre})` : ''}</h2>
+        <p className="modal-sub">Registra la venta para calcular tu P&L realizado y días sostenidos.</p>
+        <p style={{ margin: '0 0 12px', fontSize: '0.78rem', color: '#94a3b8' }}>💼 Disponible: <strong>{cantidadDisponible.toFixed(4)}</strong> un. · Costo promedio: <strong>${Number(costoPromedio).toFixed(2)}</strong></p>
+
+        {precioActual ? (
+          <div style={{ padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '10px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.82rem', color: '#f87171', fontWeight: 700 }}>
+              📉 Precio Actual (P. Actual): <strong>${Number(precioActual).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</strong>
+            </span>
+            <button
+              type="button"
+              onClick={() => setForm(f => ({ ...f, precioVenta: String(precioActual) }))}
+              style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+            >
+              ⚡ Usar ${Number(precioActual).toFixed(2)}
+            </button>
+          </div>
+        ) : (
+          <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', marginBottom: '12px' }}>
+            ℹ️ Precio de mercado actual no disponible. Ingresa el precio de venta manualmente.
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="modal-form">
+          <div className="form-row">
+            <div className="form-group">
+              <label>Precio de Venta (USD)</label>
+              <input name="precioVenta" type="number" step="any" value={form.precioVenta} onChange={handleChange} placeholder="0.00" required />
+            </div>
+            <div className="form-group">
+              <label>Cantidad (disponible: {cantidadDisponible.toFixed(4)})</label>
+              <input name="cantidad" type="number" step="any" max={cantidadDisponible} value={form.cantidad} onChange={handleChange} placeholder="0.0000" required />
+            </div>
+          </div>
+          {excede && (
+            <div style={{ color: '#f87171', fontSize: '0.75rem', marginBottom: '8px', fontWeight: 700 }}>
+              ⚠️ La cantidad excede lo disponible ({cantidadDisponible.toFixed(4)}).
+            </div>
+          )}
+          {pnlProyectadoPct != null && !excede && (
+            <div style={{ padding: '10px 14px', background: pnlProyectadoPct >= 0 ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${pnlProyectadoPct >= 0 ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`, borderRadius: '10px', marginBottom: '12px', fontSize: '0.82rem', fontWeight: 700, color: pnlProyectadoPct >= 0 ? '#34d399' : '#f87171' }}>
+              📊 P&L Realizado Proyectado: {pnlProyectadoPct >= 0 ? '+' : ''}{pnlProyectadoPct.toFixed(2)}% ({pnlProyectadoPct >= 0 ? '+' : ''}${(pnlProyectadoUsd || 0).toFixed(2)})
+            </div>
+          )}
+          <div className="form-group">
+            <label>Fecha de Venta</label>
+            <input name="fechaVenta" type="date" value={form.fechaVenta} onChange={handleChange} />
+          </div>
+          <div className="form-group">
+            <label>Tipo de Salida</label>
+            <select name="tipoSalida" value={form.tipoSalida} onChange={handleChange} style={{ background: 'rgba(15,23,42,0.9)', color: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', width: '100%' }}>
+              <option value="MANUAL">Manual / Mercado</option>
+              <option value="TP">🎯 Take Profit</option>
+              <option value="SL">🛑 Stop Loss</option>
+              <option value="TIME">⏱️ Límite de Días (Time Stop)</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Nota (opcional)</label>
+            <input name="nota" value={form.nota} onChange={handleChange} placeholder="ej: Venta estratégica, DCA parcial..." />
+          </div>
+          <div className="modal-actions">
+            <button type="button" className="btn-cancel" onClick={onClose}>Cancelar</button>
+            <button type="submit" className="btn-save" style={{ background: '#ef4444' }} disabled={excede}>🔴 Confirmar Venta</button>
+          </div>
+        </form>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 // ─── Modal Nueva Posición ───────────────────────────────────────────────────
 const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
   const [ticker, setTicker] = useState('');
@@ -613,11 +750,12 @@ const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
 };
 
 // ─── Tabla Monorenglón por Transacción / Posición ───────────────────────────
-const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePosition, addLote, updateLote, removeLote }) => {
-  const { position, lotes } = entry;
-  const { precioPromedio, cantidadTotal, totalInvertido } = calcularResumenPosicion(lotes);
+const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePosition, addLote, updateLote, removeLote, addVenta, removeVenta }) => {
+  const { position, lotes, ventas = [] } = entry;
+  const { precioPromedio, cantidadTotal } = calcularResumenPosicion(lotes, ventas);
   const [expanded, setExpanded] = useState(false);
   const [loteModal, setLoteModal] = useState(null);
+  const [ventaModal, setVentaModal] = useState(false);
 
   const valorActual = precioActual ? precioActual * cantidadTotal : null;
   const pnlCalcPct = (precioActual && precioPromedio) ? ((precioActual - precioPromedio) / precioPromedio * 100) : (oraculo.gananciaPorc ?? 0);
@@ -641,6 +779,10 @@ const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePositio
     if (data.id) updateLote(position.id, data.id, data);
     else addLote(position.id, data);
   }, [position.id, addLote, updateLote]);
+
+  const handleSaveVenta = useCallback(async (data) => {
+    await addVenta(position.id, data);
+  }, [position.id, addVenta]);
 
   const catParams = getCategoryParams(position.categoria || oraculo.catNombre);
   const catLabel = catParams.catNombre;
@@ -700,7 +842,7 @@ const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePositio
         {/* Col 6: Invertido vs Mercado */}
         <td className="col-inversion">
           <div className="cell-flex">
-            <span className="val-sub font-mono">${totalInvertido.toFixed(2)}</span>
+            <span className="val-sub font-mono">${(precioPromedio * cantidadTotal).toFixed(2)}</span>
             <span className="val-main font-mono">${valorActual ? valorActual.toFixed(2) : '—'}</span>
           </div>
         </td>
@@ -767,6 +909,11 @@ const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePositio
         {/* Col 12: Acciones */}
         <td className="col-acciones">
           <div className="row-actions">
+            {cantidadTotal > 0 && (
+              <button className="btn-sell" onClick={() => setVentaModal(true)} title="Vender posición (parcial o total)">
+                🔴 Vender
+              </button>
+            )}
             <button className="icon-btn" onClick={() => setExpanded(!expanded)} title="Ver Lotes">
               {expanded ? '▲' : '▼'}
             </button>
@@ -812,6 +959,39 @@ const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePositio
                 })}
               </div>
             </div>
+
+            {ventas.length > 0 && (
+              <div className="lotes-expanded-container" style={{ marginTop: '10px', borderTop: '1px dashed rgba(239,68,68,0.25)' }}>
+                <div className="lotes-header">
+                  <span style={{ color: '#f87171' }}>🔴 Historial de Ventas — {position.ticker} ({ventas.length})</span>
+                </div>
+                <div className="lotes-mini-table">
+                  <div className="lotes-mini-row header">
+                    <span>Fecha</span><span>P. Compra → Venta</span><span>Cantidad</span><span>P&L Realizado</span><span>Días</span><span>Salida</span><span>Acciones</span>
+                  </div>
+                  {ventas.map(venta => {
+                    const isVentaPos = Number(venta.realizedPnl ?? 0) >= 0;
+                    return (
+                      <div key={venta.id} className="lotes-mini-row ventas">
+                        <span className="font-mono">{venta.fechaVenta}</span>
+                        <span className="font-mono" style={{ fontSize: '0.82rem' }}>
+                          ${Number(venta.costoUnitario || precioPromedio || 0).toFixed(2)} → <span style={{ color: isVentaPos ? '#10b981' : '#ef4444', fontWeight: 800 }}>${Number(venta.precioVenta).toFixed(2)}</span>
+                        </span>
+                        <span className="font-mono">{venta.cantidad}</span>
+                        <span className={`font-mono ${isVentaPos ? 'pos' : 'neg'}`}>
+                          {Number(venta.realizedPnlPct ?? 0) >= 0 ? '+' : ''}{Number(venta.realizedPnlPct ?? 0).toFixed(1)}% ({isVentaPos ? '+' : ''}$${Number(venta.realizedPnl ?? 0).toFixed(2)})
+                        </span>
+                        <span className="font-mono">{venta.diasHeld ?? '—'}d</span>
+                        <span>{venta.tipoSalida || 'MANUAL'}</span>
+                        <span className="lote-actions">
+                          <button className="icon-btn delete" onClick={() => removeVenta(position.id, venta.id)}>🗑️</button>
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </td>
         </tr>
       )}
@@ -828,7 +1008,89 @@ const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePositio
           />
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {ventaModal && (
+          <VentaModal
+            positionTicker={position.ticker}
+            positionNombre={position.nombre}
+            precioActual={precioActual}
+            cantidadDisponible={cantidadTotal}
+            costoPromedio={precioPromedio}
+            onClose={() => setVentaModal(false)}
+            onSave={handleSaveVenta}
+          />
+        )}
+      </AnimatePresence>
     </>
+  );
+};
+
+// ─── Panel de Ingresos / Egresos de Capital (Depósitos y Retiros) ────────────
+const MovimientosPanel = ({ movimientos, onAdd, onRemove }) => {
+  const [tipo, setTipo] = useState('deposito');
+  const [monto, setMonto] = useState('');
+  const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
+  const [nota, setNota] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const m = Number(monto);
+    if (!(m > 0)) return;
+    const ok = await onAdd({ tipo, monto: m, fecha, nota });
+    if (ok) { setMonto(''); setNota(''); }
+  };
+
+  const sorted = useMemo(
+    () => [...(movimientos || [])].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)),
+    [movimientos]
+  );
+
+  return (
+    <section className="movimientos-panel">
+      <div className="movimientos-header">
+        <h3>💰 Ingresos / Egresos de Capital</h3>
+        <span className="movimientos-hint">Depósitos y retiros hacia tu cuenta de inversión (Trii / Hapi / Exchange).</span>
+      </div>
+      <div className="movimientos-body">
+        <form className="movimientos-form" onSubmit={handleSubmit}>
+          <select value={tipo} onChange={e => setTipo(e.target.value)} title="Tipo de movimiento">
+            <option value="deposito">➕ Depósito (ingreso)</option>
+            <option value="retiro">➖ Retiro (egreso)</option>
+          </select>
+          <input type="number" step="0.01" min="0.01" placeholder="Monto USD" value={monto} onChange={e => setMonto(e.target.value)} required />
+          <input type="date" value={fecha} onChange={e => setFecha(e.target.value)} required />
+          <input type="text" placeholder="Nota (opcional)" value={nota} onChange={e => setNota(e.target.value)} />
+          <button className="add-asset-btn" type="submit">Registrar</button>
+        </form>
+        {sorted.length > 0 && (
+          <table className="portfolio-monorenglon-table movimientos-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Monto</th>
+                <th>Nota</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map(m => (
+                <tr key={m.id} className="table-row-monorenglon">
+                  <td><span className="text-fecha">{m.fecha}</span></td>
+                  <td>{m.tipo === 'deposito' ? <span className="badge-pos">Depósito</span> : <span className="badge-danger">Retiro</span>}</td>
+                  <td className={`font-mono ${m.tipo === 'deposito' ? 'pos' : 'neg'}`}>
+                    {m.tipo === 'deposito' ? '+' : '−'}${Number(m.monto).toFixed(2)}
+                  </td>
+                  <td>{m.nota || '—'}</td>
+                  <td><button className="icon-btn delete" onClick={() => onRemove(m.id)}>🗑️</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </section>
   );
 };
 
@@ -836,6 +1098,8 @@ const PortfolioRow = ({ entry, precioActual, oraculo, datosJson, onRemovePositio
 const Portfolio = () => {
   const {
     entries, addPosition, removePosition, addLote, updateLote, removeLote,
+    addVenta, removeVenta,
+    movimientos, addMovimiento, removeMovimiento,
     resetPortafolio, exportToJson, importFromJson, initAuthListener, uploadLocalToSupabase,
     user, isDemoMode, setUserSession, setDemoMode, signOut,
     isPasswordRecovery, clearPasswordRecovery
@@ -883,24 +1147,67 @@ const Portfolio = () => {
 
   const entriesConOraculo = useMemo(() => {
     return entries.map(entry => {
-      const { precioPromedio } = calcularResumenPosicion(entry.lotes);
+      const { precioPromedio } = calcularResumenPosicion(entry.lotes, entry.ventas);
       const precioActual = precioMap[entry.position.ticker];
       const oraculo = calcularOraculo(precioPromedio, precioActual, marketData, entry.position.ticker, entry.lotes, entry.position.categoria);
       return { entry, precioActual, oraculo };
     });
   }, [entries, precioMap, marketData]);
 
+  const metricasTrades = useMemo(() => calcularMetricasTrades(entries), [entries]);
+
+  const posicionesAbiertas = useMemo(
+    () => entriesConOraculo.filter(({ entry }) => calcularResumenPosicion(entry.lotes, entry.ventas).cantidadTotal > 0),
+    [entriesConOraculo]
+  );
+
   const resumen = useMemo(() => {
-    let totalInvertido = 0, valorActual = 0;
+    let capitalInvertido = 0, valorActual = 0, totalComprado = 0, ingresosVentas = 0;
     entriesConOraculo.forEach(({ entry, precioActual }) => {
-      const { cantidadTotal, totalInvertido: inv } = calcularResumenPosicion(entry.lotes);
-      totalInvertido += inv;
-      if (precioActual) valorActual += precioActual * cantidadTotal;
+      const r = calcularResumenPosicion(entry.lotes, entry.ventas);
+      totalComprado += r.totalInvertido;
+      if (r.cantidadTotal > 0) {
+        capitalInvertido += r.precioPromedio * r.cantidadTotal;
+        if (precioActual) valorActual += precioActual * r.cantidadTotal;
+      }
     });
-    const pnl = valorActual - totalInvertido;
-    const pnlPorc = totalInvertido > 0 ? (pnl / totalInvertido) * 100 : 0;
-    return { totalInvertido, valorActual, pnl, pnlPorc };
-  }, [entriesConOraculo]);
+    entries.forEach(e => (e.ventas || []).forEach(v => {
+      ingresosVentas += Number(v.precioVenta || 0) * Number(v.cantidad || 0);
+    }));
+    // Retorno global honesto: (valorActual de posiciones abiertas + ingreso por ventas) - capital comprado total
+    const pnlNoRealizado = valorActual - capitalInvertido;
+    const pnlRealizado = metricasTrades.realizedTotUSD;
+    const pnl = pnlNoRealizado + pnlRealizado;
+    const pnlPorc = totalComprado > 0 ? (pnl / totalComprado) * 100 : 0;
+    return { capitalInvertido, valorActual, totalComprado, pnlNoRealizado, pnlRealizado, pnl, pnlPorc, ingresosVentas };
+  }, [entriesConOraculo, entries, metricasTrades]);
+
+  // ─── Capital (Depósitos/Retiros), Patrimonio y Rentabilidad Real ───────────
+  const capital = useMemo(() => {
+    const { aportado, retirado, neto: capitalNeto } = calcularCapital(movimientos);
+    const cash = capitalNeto - resumen.totalComprado + resumen.ingresosVentas;
+    const patrimonio = cash + resumen.valorActual;
+    const ganancia = patrimonio - capitalNeto;
+    const retornoCapital = capitalNeto > 0 ? (ganancia / capitalNeto) * 100 : null;
+
+    // XIRR: depósitos = -monto, retiros = +monto, patrimonio actual = flujo final +
+    const today = new Date().toISOString().split('T')[0];
+    const xirrFlows = (movimientos || []).map(m => ({
+      fecha: m.fecha,
+      monto: m.tipo === 'deposito' ? -Number(m.monto) : Number(m.monto),
+    }));
+    if (xirrFlows.length > 0 && patrimonio > 0) xirrFlows.push({ fecha: today, monto: patrimonio });
+    const xirr = xirrFlows.length >= 2 ? calcularXirr(xirrFlows) : null;
+
+    // Días transcurridos desde el primer movimiento (para contextualizar la anualización)
+    let daysWindow = 0;
+    if (movimientos.length > 0) {
+      const first = Math.min(...movimientos.map(m => new Date(m.fecha).getTime()));
+      if (isFinite(first)) daysWindow = Math.max(0, Math.floor((new Date().getTime() - first) / 86400000));
+    }
+
+    return { aportado, retirado, capitalNeto, cash, patrimonio, ganancia, retornoCapital, xirr, daysWindow };
+  }, [movimientos, resumen]);
 
   const handleAddPosition = async (ticker, nombre, categoria, initialLote = null) => {
     const posId = await addPosition({ ticker, nombre, categoria });
@@ -985,31 +1292,103 @@ const Portfolio = () => {
           <p className="subtitle">Seguimiento de compras y gestión táctica de posiciones reales</p>
           <p className="data-date">
             🕒 Última actualización de datos: <strong>{fechaActualizacionStr}</strong> {marketData?._fuente === 'supabase' ? '⚡ (Supabase Real-Time)' : ''}
-            {tickersParaLive.length > 0 && !liveLoading && <span> · 🔴 Precios en vivo: {tickersParaLive.filter(t => livePrices[t]).join(', ')}</span>}
+            {tickersParaLive.some(t => livePrices[t]) && !liveLoading && (
+              <span> · 🔴 Criptos en vivo: {tickersParaLive.filter(t => livePrices[t]).join(', ')}</span>
+            )}
+            {tickersParaLive.some(t => !livePrices[t]) && <span> · 📦 Acciones: snapshot Supabase (4x/día)</span>}
           </p>
         </div>
 
         <div className="summary-cards">
           <div className="summary-card">
-            <span className="label">Capital Invertido</span>
-            <span className="val neutral">${resumen.totalInvertido.toFixed(2)}</span>
+            <span className="label">Capital Invertido (abierto)</span>
+            <span className="val neutral">${resumen.capitalInvertido.toFixed(2)}</span>
+            <small style={{ fontSize: '0.68rem', color: '#64748b', display: 'block' }}>costo actual de posiciones abiertas</small>
           </div>
           <div className="summary-card">
             <span className="label">Valor Actual</span>
             <span className="val">${resumen.valorActual.toFixed(2)}</span>
           </div>
+          <div className={`summary-card ${resumen.pnlRealizado >= 0 ? 'highlight-pos' : 'highlight-neg'}`}>
+            <span className="label">P&L Realizado (ventas)</span>
+            <span className={`val ${resumen.pnlRealizado >= 0 ? 'pos' : 'neg'}`}>
+              {resumen.pnlRealizado >= 0 ? '+' : ''}${resumen.pnlRealizado.toFixed(2)}
+            </span>
+          </div>
           <div className={`summary-card ${resumen.pnl >= 0 ? 'highlight-pos' : 'highlight-neg'}`}>
-            <span className="label">Retorno Total</span>
+            <span className="label">Retorno Total (realiz. + no realiz.)</span>
             <span className={`val big ${resumen.pnl >= 0 ? 'pos' : 'neg'}`}>
               {resumen.pnl >= 0 ? '+' : ''}{resumen.pnlPorc.toFixed(2)}%
               <small> ({resumen.pnl >= 0 ? '+' : ''}${resumen.pnl.toFixed(2)})</small>
             </span>
           </div>
         </div>
+
+        {/* Capital aportado, efectivo y rentabilidad real */}
+        <div className="capital-cards">
+          <div className={`capital-card ${capital.capitalNeto >= 0 ? 'highlight-pos' : 'highlight-neg'}`}>
+            <span className="label">💰 Capital Aportado Neto</span>
+            <span className="val neutral">${capital.capitalNeto.toFixed(2)}</span>
+            <small className="capital-sub">+${capital.aportado.toFixed(2)} dep. · −${capital.retirado.toFixed(2)} ret.</small>
+          </div>
+          <div className="capital-card">
+            <span className="label">🏦 Efectivo en Cuenta</span>
+            <span className="val neutral">${capital.cash.toFixed(2)}</span>
+            <small className="capital-sub">disponible sin invertir</small>
+          </div>
+          <div className="capital-card">
+            <span className="label">📦 Patrimonio Total</span>
+            <span className="val">${capital.patrimonio.toFixed(2)}</span>
+            <small className="capital-sub">efectivo + posiciones</small>
+          </div>
+          <div className={`capital-card ${capital.ganancia >= 0 ? 'highlight-pos' : 'highlight-neg'}`}>
+            <span className="label">📈 Ganancia Total vs Capital</span>
+            <span className={`val big ${capital.ganancia >= 0 ? 'pos' : 'neg'}`}>
+              {capital.retornoCapital != null ? (capital.retornoCapital >= 0 ? '+' : '') + capital.retornoCapital.toFixed(2) + '%' : '—'}
+              <small> ({capital.ganancia >= 0 ? '+' : ''}${capital.ganancia.toFixed(2)})</small>
+            </span>
+            <small className="capital-sub">retorno sobre capital neto aportado</small>
+          </div>
+          <div className={`capital-card ${capital.xirr != null && capital.xirr >= 0 ? 'highlight-pos' : 'highlight-neg'}`}>
+            <span className="label">📐 XIRR (Rend. Anual Real)</span>
+            <span className={`val big ${capital.xirr != null && capital.xirr >= 0 ? 'pos' : 'neg'}`}>
+              {capital.xirr != null ? (capital.xirr >= 0 ? '+' : '') + capital.xirr.toFixed(1) + '%' : '—'}
+            </span>
+            <small className="capital-sub">
+              {capital.xirr == null
+                ? 'registra un depósito para calcular'
+                : capital.daysWindow > 0 && capital.daysWindow < 90
+                  ? `⚠️ solo ${capital.daysWindow} días: anualiza (usa % vs Capital como referencia)`
+                  : 'tasa interna anualizada (TIR)'}
+            </small>
+          </div>
+        </div>
+
+        {/* Métricas de Trades Cerrados */}
+        <div className="trade-stats-row">
+          <div className="trade-stat">
+            <span className="trade-stat-label">📊 Trades Cerrados</span>
+            <span className="trade-stat-val">{metricasTrades.totalTrades}</span>
+          </div>
+          <div className="trade-stat">
+            <span className="trade-stat-label">💰 Retorno Promedio / Trade</span>
+            <span className={`trade-stat-val ${metricasTrades.promedioRetornoTrade >= 0 ? 'pos' : 'neg'}`}>
+              {metricasTrades.promedioRetornoTrade >= 0 ? '+' : ''}{metricasTrades.promedioRetornoTrade.toFixed(2)}%
+            </span>
+          </div>
+          <div className="trade-stat">
+            <span className="trade-stat-label">🕐 Promedio Días / Trade</span>
+            <span className="trade-stat-val">{metricasTrades.promedioDiasTrade.toFixed(1)}d</span>
+          </div>
+          <div className="trade-stat">
+            <span className="trade-stat-label">🏆 Win Rate</span>
+            <span className="trade-stat-val">{metricasTrades.winRate.toFixed(0)}%</span>
+          </div>
+        </div>
       </header>
 
       {/* Gráfica Global de Rendimiento (Alta Resolución 5 pts/día) */}
-      <PortfolioPerformanceChart entriesConOraculo={entriesConOraculo} resumen={resumen} fechaActualizacion={fechaActualizacionStr} />
+      <PortfolioPerformanceChart entriesConOraculo={entriesConOraculo} resumen={resumen} movimientos={movimientos} fechaActualizacion={fechaActualizacionStr} />
 
       {/* Acciones */}
       <section className="portfolio-actions" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
@@ -1019,6 +1398,9 @@ const Portfolio = () => {
           {mdLoading && <span className="status-chip loading">⏳ Cargando datos...</span>}
         </div>
       </section>
+
+      {/* Panel de Ingresos / Egresos de Capital */}
+      <MovimientosPanel movimientos={movimientos} onAdd={addMovimiento} onRemove={removeMovimiento} />
 
       {/* Panel de Configuración */}
       <AnimatePresence>
@@ -1051,7 +1433,7 @@ const Portfolio = () => {
       </AnimatePresence>
 
       {/* Tabla Monorenglón de Posiciones / Transacciones con Metas Estrategia ML */}
-      <div className="portfolio-table-wrapper">
+      <div className="portfolio-table-wrapper main-table-wrapper">
         <table className="portfolio-monorenglon-table">
           <thead>
             <tr>
@@ -1070,8 +1452,8 @@ const Portfolio = () => {
             </tr>
           </thead>
           <tbody>
-            {entriesConOraculo.length > 0 ? (
-              entriesConOraculo.map(({ entry, precioActual, oraculo }) => (
+            {posicionesAbiertas.length > 0 ? (
+              posicionesAbiertas.map(({ entry, precioActual, oraculo }) => (
                 <PortfolioRow
                   key={entry.position.id}
                   entry={entry}
@@ -1082,13 +1464,15 @@ const Portfolio = () => {
                   addLote={addLote}
                   updateLote={updateLote}
                   removeLote={removeLote}
+                  addVenta={addVenta}
+                  removeVenta={removeVenta}
                 />
               ))
             ) : (
               <tr>
                 <td colSpan="12" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                   {user
-                    ? 'No tienes posiciones registradas en tu cuenta personal. Haz clic en "+ Nueva Posición" para añadir una.'
+                    ? 'No tienes posiciones abiertas. Haz clic en "+ Nueva Posición" para añadir una.'
                     : 'Modo Demo. Puedes agregar posiciones de prueba o hacer clic en "Iniciar Sesión" para acceder a tu cuenta personal.'}
                 </td>
               </tr>
@@ -1096,6 +1480,63 @@ const Portfolio = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Historial de Trades Cerrados */}
+      {metricasTrades.trades.length > 0 && (
+        <div className="portfolio-table-wrapper history-table-wrapper" style={{ marginTop: '1.8rem' }}>
+          <h3 className="historial-title">📋 Historial de Trades Cerrados ({metricasTrades.trades.length})</h3>
+          <table className="portfolio-monorenglon-table">
+            <thead>
+              <tr>
+                <th>Fecha Venta</th>
+                <th>Activo</th>
+                <th>Cantidad</th>
+                <th>P. Compra (costo)</th>
+                <th>P. Venta</th>
+                <th>Retorno Realizado</th>
+                <th>Días Sostenido</th>
+                <th>Salida</th>
+                <th>Nota</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...metricasTrades.trades].sort((a, b) => new Date(b.fechaVenta) - new Date(a.fechaVenta)).map((t, i) => {
+                const isPos = t.realizedPnl >= 0;
+                return (
+                  <tr key={`${t.ticker}-${t.fechaVenta}-${i}`} className="table-row-monorenglon">
+                    <td><span className="text-fecha">{t.fechaVenta}</span></td>
+                    <td>
+                      <div className="ticker-cell">
+                        <span className="ticker-symbol">{t.ticker}</span>
+                        <span className="asset-subname">{t.nombre}</span>
+                        <span className="cat-badge">{t.categoria}</span>
+                      </div>
+                    </td>
+                    <td><span className="cell-number font-mono">{t.cantidad.toFixed(4)}</span></td>
+                    <td><span className="cell-number font-mono">${Number(t.costoUnitario || 0).toFixed(2)}</span></td>
+                    <td><span className="cell-number font-mono">${Number(t.precioVenta).toFixed(2)}</span></td>
+                    <td>
+                      <span className={`pnl-pill ${isPos ? 'pos' : 'neg'}`} style={{ padding: '4px 10px', borderRadius: '12px', fontWeight: 800 }}>
+                        {isPos ? '▲ +' : '▼ '}{Number(t.realizedPnlPct).toFixed(2)}%
+                        <small style={{ display: 'block', fontSize: '0.68rem', opacity: 0.9 }}>
+                          ({isPos ? '+' : ''}${Number(t.realizedPnl).toFixed(2)})
+                        </small>
+                      </span>
+                    </td>
+                    <td><span className="font-mono">{t.diasHeld}d</span></td>
+                    <td>
+                      <span className={`cat-badge ${t.tipoSalida === 'TP' ? '' : t.tipoSalida === 'SL' ? 'badge-danger' : 'badge-neutral'}`}>
+                        {t.tipoSalida === 'TP' ? '🎯 TP' : t.tipoSalida === 'SL' ? '🛑 SL' : t.tipoSalida === 'TIME' ? '⏱️ Time Stop' : 'Manual'}
+                      </span>
+                    </td>
+                    <td><span style={{ fontSize: '0.78rem', color: '#64748b' }}>{t.nota || '—'}</span></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <AnimatePresence>
         {nuevoModal && (

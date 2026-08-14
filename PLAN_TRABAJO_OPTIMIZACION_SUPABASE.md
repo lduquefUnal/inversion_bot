@@ -55,7 +55,7 @@ flowchart LR
 ### 4. 🤖 Workflow GitHub Actions Simplificado
 **Archivo:** `.github/workflows/orquestador_acciones.yml`
 - **Cron:** `0 13,16,19,21 * * 1-5` (4x/día de Lunes a Viernes, en rango de pre-market a cierre de NYSE/NASDAQ).
-- **Pasos Eliminados:** Gemini (`paso2_analizar.py`), Telegram bot en cron y el `Auto-Commit / Push` a git.
+- **Pasos Eliminados:** Gemini (`paso2_analizar.py`) y el `Auto-Commit / Push` a git.
 - **Flujo Nuevo:**
   1. `python flujo/paso1_descargar.py --ligero`
   2. `python flujo_ml/4_inferencia_oraculo.py`

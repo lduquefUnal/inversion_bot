@@ -27,6 +27,9 @@ jobs:
       - name: Paso 1 - Extracción Ligera de Datos de Mercado
         run: python flujo/paso1_descargar.py --ligero
 
+      - name: Paso 1.5 - Actualización Incremental de Caché OHLCV (1x/día o Idempotente)
+        run: python flujo_ml/12_actualizar_ohlcv.py
+
       - name: Paso 2 - Inferencia en Tiempo Real Modelo V3.7
         run: python flujo_ml/4_inferencia_oraculo.py
 

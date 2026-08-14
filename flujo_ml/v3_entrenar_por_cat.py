@@ -116,10 +116,19 @@ def main():
         model_path = os.path.join(MODELOS, f"lightgbm_cat_{slug}.pkl")
         joblib.dump(model, model_path)
         cat_models[cat] = model_path
+        
+        p = CAT_PARAMS.get(cat, {"tp": 0.10, "sl": 0.04, "limite_dias": 11})
+        max_ohlcv_str = ohlcv["Date"].max().strftime("%Y-%m-%d") if not ohlcv.empty else "N/A"
+
         cat_metadata[cat] = {
             "model_path": model_path,
             "th_optimo": best_th,
             "f05_score": round(best_f05, 4),
+            "tp_pct": round(p["tp"] * 100.0, 1),
+            "sl_pct": round(p["sl"] * 100.0, 1),
+            "limite_dias": p["limite_dias"],
+            "fecha_entrenamiento": pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "fecha_ultimo_ohlcv": max_ohlcv_str,
             "metrics": best_m
         }
 

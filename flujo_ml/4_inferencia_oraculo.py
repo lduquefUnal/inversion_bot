@@ -69,17 +69,34 @@ def ejecutar_inferencia():
     mercado_data = json.load(open(MERCADO_JSON_PATH, "r", encoding="utf-8"))
     ohlcv = pd.read_csv(CACHE, parse_dates=["Date"]) if os.path.exists(CACHE) else None
 
-    if ohlcv is None:
+    if ohlcv is None or ohlcv.empty:
         print("❌ Error: ohclv_cache.csv no existe para inferencia.")
         return
 
-    print("📡 [2/3] Calculando features V3 y ejecutando inferencia por micro-régimen...")
+    # Trazabilidad de Staleness en días hábiles (Market Business Days)
+    ohlcv["Date"] = pd.to_datetime(ohlcv["Date"])
+    max_ohlcv_dt = ohlcv["Date"].max()
+    max_ohlcv_str = max_ohlcv_dt.strftime("%Y-%m-%d")
+    now_dt = pd.Timestamp.now().normalize()
+
+    if max_ohlcv_dt.normalize() >= now_dt:
+        staleness_dias = 0
+    else:
+        # Medir días hábiles entre la última fecha OHLCV y hoy
+        b_range = pd.bdate_range(start=max_ohlcv_dt.normalize() + pd.Timedelta(days=1), end=now_dt)
+        staleness_dias = len(b_range)
+
+    print(f"📊 [2/3] Calculando features V3 · Último OHLCV: {max_ohlcv_str} · Staleness: {staleness_dias} días hábiles...")
     
+    # Mapeo del último precio de cierre absoluto en OHLCV por Ticker (independiente de categorías)
+    latest_ohlcv_df = ohlcv.sort_values("Date").groupby("Ticker").last().reset_index()
+    price_map_ohlcv = dict(zip(latest_ohlcv_df["Ticker"], latest_ohlcv_df["Close"]))
+
     feat_all = compute_features(ohlcv)
     feat_all = enrich_derived(feat_all)
     feat_all = enrich_fundamentals(feat_all)
 
-    # Último vector de cada ticker
+    # Último vector de cada ticker para features
     latest_feats = feat_all.groupby("Ticker").last().reset_index()
 
     activos = mercado_data.get("TOP_25_DIPS", []) + mercado_data.get("TOP_50_DIPS", [])
@@ -95,13 +112,18 @@ def ejecutar_inferencia():
 
     for a in unique_activos:
         ticker = a.get("Ticker")
-        precio_actual = limpiar_float(a.get("Precio Actual"), 100.0)
 
         # Buscar fila de features
         row = latest_feats[latest_feats["Ticker"] == ticker]
         if row.empty:
             continue
         r = row.iloc[0]
+
+        # Priorizar el último precio de cierre de OHLCV (fresco) del mapa absoluto
+        precio_ohlcv = float(price_map_ohlcv.get(ticker, r.get("Close", 0.0))) if pd.notna(price_map_ohlcv.get(ticker)) else 0.0
+        precio_mercado = limpiar_float(a.get("Precio Actual"), 0.0)
+        precio_actual = precio_ohlcv if precio_ohlcv > 0 else (precio_mercado if precio_mercado > 0 else 100.0)
+        precio_actual = round(precio_actual, 2)
 
         cat = r["Categoria"] if pd.notna(r["Categoria"]) else "Sweet Spot"
         model = cat_models.get(cat, list(cat_models.values())[0])
@@ -157,12 +179,17 @@ def ejecutar_inferencia():
             "FCF": fcf,
             "PE_Ratio": pe_ratio,
             "Beta": beta,
+            "Fecha_Ultimo_OHLCV": max_ohlcv_str,
+            "Staleness_Dias": staleness_dias,
         })
 
     resultados = sorted(resultados, key=lambda x: x["Probabilidad_Exito_%"], reverse=True)
 
     payload = {
         "fecha_inferencia": pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "fecha_ultimo_ohlcv": max_ohlcv_str,
+        "staleness_dias": staleness_dias,
+        "staleness_warning": f"⚠️ Atención: Datos OHLCV congelados hace {staleness_dias} días hábiles." if staleness_dias > 2 else None,
         "total_analizados": len(resultados),
         "total_buys": len([x for x in resultados if x["Veredicto"] == "BUY"]),
         "predicciones": resultados
@@ -176,6 +203,7 @@ def ejecutar_inferencia():
             json.dump(payload, f, indent=2, ensure_ascii=False)
 
     print(f"✅ [3/3] Inferencia completada: {len(resultados)} predichos · {payload['total_buys']} señales BUY.")
+    print(f"   Último OHLCV: {max_ohlcv_str} | Staleness: {staleness_dias}d hábiles")
     print(f"   Saved to: {PREDICCIONES_JSON_PATH} & {FRONTEND_PUBLIC_PATH}")
 
 

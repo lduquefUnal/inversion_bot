@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 
 /**
- * Estrategia de precios en vivo altamente confiable:
- * 1. Criptos → CoinGecko API (gratuita, sin CORS)
- * 2. Backend /api/precio → yfinance en Python (local / Vercel Serverless)
- * 3. Fallback → Yahoo Finance Proxy AllOrigins
+ * Precios en vivo SOLO para criptomonedas → CoinGecko API (gratuita, sin CORS).
+ * Las acciones ya no se consultan aquí: su precio viene del snapshot de Supabase
+ * (`predicciones.Precio_Actual`) que el workflow GitHub Actions actualiza 4x/día.
+ * Esto elimina los proxies CORS lentos (AllOrigins/corsproxy) y el endpoint
+ * `/api/precio` eliminado en commit 0fc1835.
  */
 
 // ─── Mapeo Cripto → CoinGecko IDs ────────────────────────────────────────────
@@ -47,93 +48,17 @@ const fetchCryptoPrices = async (cryptoTickers) => {
   }
 };
 
-// ─── Fetch Backend `/api/precio` (yfinance Python) ───────────────────────────
-const fetchFlaskPrices = async (tickers) => {
-  if (!tickers.length) return {};
-  try {
-    const res = await fetch(`/api/precio?tickers=${encodeURIComponent(tickers.join(','))}`);
-    if (!res.ok) throw new Error(`API HTTP ${res.status}`);
-    const data = await res.json();
-    return data && typeof data === 'object' ? data : {};
-  } catch (e) {
-    return {};
-  }
-};
-
-// ─── Fetch Stock Yahoo Finance con Proxies CORS ──────────────────────────────
-const fetchStockPricesAllOrigins = async (stockTickers) => {
-  if (stockTickers.length === 0) return {};
-
-  const results = {};
-  await Promise.allSettled(
-    stockTickers.map(async (ticker) => {
-      try {
-        const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-        
-        // Intentar primero corsproxy.io
-        try {
-          const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
-          if (res.ok) {
-            const parsed = await res.json();
-            const price = parsed?.chart?.result?.[0]?.meta?.regularMarketPrice;
-            if (price != null) {
-              results[ticker] = Number(price);
-              return;
-            }
-          }
-        } catch (_) {}
-
-        // Fallback a allorigins
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-        const res = await fetch(proxyUrl);
-        if (res.ok) {
-          const wrapper = await res.json();
-          if (wrapper?.contents) {
-            const parsed = JSON.parse(wrapper.contents);
-            const price = parsed?.chart?.result?.[0]?.meta?.regularMarketPrice;
-            if (price != null) {
-              results[ticker] = Number(price);
-            }
-          }
-        }
-      } catch (_) {
-        // Fallback silencioso sin spammear la consola
-      }
-    })
-  );
-  return results;
-};
-
-
 // ─── Hook principal ───────────────────────────────────────────────────────────
 export const useLivePrice = (tickers = []) => {
   return useQuery({
-    queryKey: ['livePrices', [...tickers].sort().join(',')],
-    enabled: tickers.length > 0,
+    queryKey: ['livePricesCrypto', [...tickers].sort().join(',')],
+    enabled: tickers.some(t => COINGECKO_IDS[t]),
     staleTime: 1 * 60 * 1000,
     refetchInterval: 2 * 60 * 1000,
     retry: 0,
     queryFn: async () => {
       const cryptoTickers = tickers.filter(t => COINGECKO_IDS[t]);
-      const stockTickers  = tickers.filter(t => !COINGECKO_IDS[t]);
-
-      // 1. Criptos en vivo → CoinGecko API
-      const cryptoPrices = await fetchCryptoPrices(cryptoTickers);
-
-      // 2. Acciones en vivo → Backend API /api/precio (yfinance Python)
-      const backendPrices = await fetchFlaskPrices(stockTickers);
-
-      // 3. Fallback a AllOrigins si alguna acción no vino del backend
-      const sinPrecio = stockTickers.filter(t => backendPrices[t] == null);
-      const stockPricesProxy = await fetchStockPricesAllOrigins(sinPrecio);
-
-      const combined = {
-        ...cryptoPrices,
-        ...stockPricesProxy,
-        ...backendPrices,
-      };
-
-      return combined;
+      return fetchCryptoPrices(cryptoTickers);
     },
   });
 };

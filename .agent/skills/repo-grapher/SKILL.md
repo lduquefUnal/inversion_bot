@@ -38,9 +38,7 @@ El archivo JSON generado debe estructurarse con la siguiente estructura exacta:
       "description": "Flujo diario ejecutado por GitHub Actions que realiza inferencia y sube predicciones.",
       "steps": [
         "paso1_descargar",
-        "inferencia_oraculo",
-        "paso2_analizar",
-        "paso3_enviar"
+        "inferencia_oraculo"
       ]
     }
   ]

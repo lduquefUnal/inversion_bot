@@ -10,10 +10,6 @@ try:
 except ImportError:
     pass
 
-try:
-    import telebot
-except ImportError:
-    telebot = None
 import sys
 import pandas as pd
 try:
@@ -124,18 +120,12 @@ def main():
     parser.add_argument("--ligero", action="store_true", help="Modo ligero: omite mpf y scraping de noticias/reddit")
     args = parser.parse_args()
 
-    TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
-    CHAT_ID = os.environ.get('CHAT_ID')
-    bot = telebot.TeleBot(TELEGRAM_TOKEN) if TELEGRAM_TOKEN and CHAT_ID else None
+    bot = None
     
     os.makedirs("flujo_datos", exist_ok=True)
-    # Limpiar PNGs y MDs antiguos para evitar que se envíen más de 3 gráficas acumuladas
+    # Limpiar PNGs y MDs antiguos para evitar archivos acumulados
     for file in glob.glob("flujo_datos/*.png") + glob.glob("flujo_datos/*.md"):
         try: os.remove(file)
-        except: pass
-
-    if bot:
-        try: bot.send_message(CHAT_ID, "🚀 *10%* - `Orquestador Robusto`: Limpieza inicial lista. Escaneando 52-Week Drawdown y Valoración Estructural...", parse_mode="Markdown")
         except: pass
 
     universe = get_expanded_universe()
@@ -309,7 +299,8 @@ def main():
     top_50_mercado = datos_completos[:50]
     
     # Asegurar que mis activos se agreguen ADICIONALMENTE si no entraron en el Top 50
-    mis_tickers = ["PLTR", "MSFT", "TGLS", "MELI", "TSLA", "URNJ", "ETH-USD", "BTC-USD", "GLD"]
+    # (incluye las posiciones reales del portafolio: UFO, QCOM, ENPH, GOLD)
+    mis_tickers = ["PLTR", "MSFT", "TGLS", "MELI", "TSLA", "URNJ", "ETH-USD", "BTC-USD", "GLD", "UFO", "QCOM", "ENPH", "GOLD"]
     tickers_en_top = [d["Ticker"] for d in top_50_mercado]
     activos_faltantes = [d for d in datos_completos if d["Ticker"] in mis_tickers and d["Ticker"] not in tickers_en_top]
     
@@ -467,11 +458,7 @@ def main():
             json.dump(resultado_final, f, indent=4, ensure_ascii=False)
     except: pass
         
-    if bot:
-        try: bot.send_message(CHAT_ID, "✅ *40%* - `Data Procesada`: Macro, RSI, Reddit, Polymarket y Gráficas de Velas listas. Nutriendo IA...", parse_mode="Markdown")
-        except: pass
-    else:
-        print("✅ Data Procesada correctamente (Modo Autónomo sin Telegram).")
+    print("✅ Data Procesada correctamente.")
 
 if __name__ == "__main__":
     main()

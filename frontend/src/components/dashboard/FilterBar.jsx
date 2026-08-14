@@ -39,7 +39,10 @@ const COLOR_CFG = {
   veredicto: { bg: 'rgba(34,197,94,0.2)',   color: '#22c55e', border: '#22c55e' },
   verde:     { bg: 'rgba(16,185,129,0.2)',  color: '#10b981', border: '#10b981' },
   yellow:    { bg: 'rgba(234,179,8,0.2)',   color: '#eab308', border: '#eab308' },
+  orange:    { bg: 'rgba(249,115,22,0.2)',  color: '#f97316', border: '#f97316' },
   red:       { bg: 'rgba(239,68,68,0.2)',   color: '#ef4444', border: '#ef4444' },
+  purple:    { bg: 'rgba(167,139,250,0.2)', color: '#a78bfa', border: '#a78bfa' },
+  blue:      { bg: 'rgba(56,189,248,0.2)',  color: '#38bdf8', border: '#38bdf8' },
   gray:      { bg: 'rgba(100,116,139,0.2)', color: '#94a3b8', border: '#64748b' },
   all:       { bg: '#3b82f6',               color: 'white',   border: '#3b82f6' },
 };
@@ -47,7 +50,7 @@ const COLOR_CFG = {
 // ─── Tarjeta expandida de estrategia ─────────────────────────────────────────
 const EstrategiaCard = ({ est }) => {
   if (!est.tp) return null; // 'Todos' y 'veredicto' no tienen métricas de modelo
-  const cfg = COLOR_CFG[est.type];
+  const cfg = COLOR_CFG[est.type] || COLOR_CFG.gray;
   const winNum = parseFloat(est.winRate);
   const winColor = winNum >= 75 ? '#10b981' : winNum >= 40 ? '#eab308' : '#ef4444';
 
@@ -154,7 +157,7 @@ const FilterBar = () => {
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
         {ESTRATEGIAS_MODELO.map(est => {
           const isActive = activeCategory === est.id;
-          const cfg = COLOR_CFG[est.type];
+          const cfg = COLOR_CFG[est.type] || COLOR_CFG.gray;
           const hasMetrics = !!est.tp;
 
           return (

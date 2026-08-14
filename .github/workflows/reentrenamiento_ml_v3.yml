@@ -50,9 +50,8 @@ jobs:
       - name: 8. Inferencia en Vivo V3 (Oráculo MLOps)
         run: python flujo_ml/4_inferencia_oraculo.py
 
-      - name: 9. Sincronización de Artefactos MLOps al Frontend
-        run: |
-          cp flujo_datos/historico_modelos_mlops.json Modelos/modelo_metadata_v3_cat.json Modelos/v3_backtest_reporte_consolidado.json frontend/public/ || true
+      - name: 9. Sincronización Automática de Artefactos MLOps & Registros
+        run: python mlops/sync_artifacts.py
 
       - name: Commit y Push de Artefactos de Modelo V3, Registro & Drift Report
         run: |
