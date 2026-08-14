@@ -38,15 +38,117 @@ const DEFAULT_CATEGORIAS = Object.values(CATEGORY_PARAMS).map(p => {
   };
 });
 
+// ─── Diccionario Explicativo SHAP & Métricas Predictivas ────────────────────
+const SHAP_DESCRIPTIONS = {
+  'ATR_%': {
+    titulo: 'ATR % (Rango Verdadero Promedio en %)',
+    desc: 'Mide la volatilidad diaria esperada del activo. Un ATR alto indica oscilaciones amplias de precio, crucial para colocar Stop Loss dinámicos y ajustar el tamaño de posición.',
+    categoria: 'Volatilidad & Riesgo'
+  },
+  'Dist_SMA200_%': {
+    titulo: 'Distancia a Media Móvil de 200 días (%)',
+    desc: 'Porcentaje de desviación del precio respecto a su tendencia de largo plazo (200D). Valores muy negativos señalan sobreventa masiva (oportunidad de rebote técnico).',
+    categoria: 'Tendencia & Desviación'
+  },
+  'TP_ATR': {
+    titulo: 'Take Profit Adaptativo por ATR ($)',
+    desc: 'Precio objetivo dinámico de ganancia calculado en función de la volatilidad real (ATR) del activo, adaptando la salida a las condiciones del mercado.',
+    categoria: 'Gestión de Salida'
+  },
+  'RSI_7': {
+    titulo: 'RSI de 7 Días (Momentum Rápido)',
+    desc: 'Oscilador rápido de fuerza relativa (7 días). Lecturas por debajo de 30 detectan sobreventa inminente para entradas tácticas de corto plazo.',
+    categoria: 'Momentum'
+  },
+  'RSI_2D': {
+    titulo: 'RSI de 2 Días (Estrategia Connors)',
+    desc: 'RSI ultra-corto de 2 días usado para identificar picos de capitulación extrema en 24-48 horas.',
+    categoria: 'Momentum'
+  },
+  'RSI_14D': {
+    titulo: 'RSI Clásico de 14 Días',
+    desc: 'Mide la fuerza del impulso a mediano plazo (14 días). < 30 = Sobrevendido | > 70 = Sobrecomprado.',
+    categoria: 'Momentum'
+  },
+  'RSI_14': {
+    titulo: 'RSI Clásico de 14 Días',
+    desc: 'Mide la fuerza del impulso a mediano plazo (14 días). < 30 = Sobrevendido | > 70 = Sobrecomprado.',
+    categoria: 'Momentum'
+  },
+  'HVOL_10_%': {
+    titulo: 'Volatilidad Histórica de 10 Días (%)',
+    desc: 'Variación estandarizada de retornos en los últimos 10 días comerciales. Determina la velocidad del movimiento.',
+    categoria: 'Volatilidad'
+  },
+  'HVOL_5D': {
+    titulo: 'Volatilidad Histórica de 5 Días (%)',
+    desc: 'Mide el comportamiento de volatilidad en la última semana para anticipar compresión o expansión de rango.',
+    categoria: 'Volatilidad'
+  },
+  'HVOL_SD': {
+    titulo: 'Desviación Estándar de Volatilidad Histórica',
+    desc: 'Estabilidad de la volatilidad del activo. Valores muy elevados corresponden a regímenes inestables de mercado.',
+    categoria: 'Volatilidad'
+  },
+  'Drawdown_52W_%': {
+    titulo: 'Drawdown Máximo de 52 Semanas (%)',
+    desc: 'Caída máxima acumulada desde el punto más alto del último año. Mide el nivel de descuento actual del activo.',
+    categoria: 'Riesgo & Descuento'
+  },
+  'FCF': {
+    titulo: 'Free Cash Flow (Flujo de Caja Libre)',
+    desc: 'Efectivo real generado tras gastos operativos y de capital. Mide la solidez financiera de la empresa.',
+    categoria: 'Fundamentales'
+  },
+  'PE_Ratio': {
+    titulo: 'P/E Ratio (Precio / Ganancia)',
+    desc: 'Múltiplo de valoración sobre ganancias netas. < 15 indica valoración atractiva; > 30 alto crecimiento o sobrevaloración.',
+    categoria: 'Fundamentales'
+  },
+  'Beta': {
+    titulo: 'Beta de Mercado',
+    desc: 'Sensibilidad vs S&P 500. Beta > 1 significa que el activo se mueve más agresivamente que el mercado general.',
+    categoria: 'Fundamentales'
+  },
+  'Tendencia_Sana': {
+    titulo: 'Filtro de Tendencia Sana (Binary)',
+    desc: 'Valida si el activo cotiza en una estructura alcista de largo plazo o si está en colapso estructural.',
+    categoria: 'Filtro Técnico'
+  }
+};
+
+const getShapMeta = (featureName) => {
+  if (SHAP_DESCRIPTIONS[featureName]) return SHAP_DESCRIPTIONS[featureName];
+  if (featureName.includes('RSI')) {
+    return { titulo: `RSI (${featureName})`, desc: 'Indicador de Momentum que mide sobrecompra o sobreventa del precio.', categoria: 'Momentum' };
+  }
+  if (featureName.includes('ATR')) {
+    return { titulo: `ATR (${featureName})`, desc: 'Métrica basada en el Rango Verdadero Promedio para medir volatilidad.', categoria: 'Volatilidad' };
+  }
+  if (featureName.includes('VOL') || featureName.includes('HVOL')) {
+    return { titulo: `Volatilidad (${featureName})`, desc: 'Medición de variación de retorno histórico del activo.', categoria: 'Volatilidad' };
+  }
+  if (featureName.includes('SMA') || featureName.includes('EMA')) {
+    return { titulo: `Media Móvil (${featureName})`, desc: 'Desviación del precio con respecto a promedios móviles.', categoria: 'Tendencia' };
+  }
+  return { titulo: featureName, desc: 'Variable predictiva técnica/fundamental utilizada por LightGBM para calcular el scoring de entrada.', categoria: 'Feature ML' };
+};
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, color = '#f8fafc', bg = 'rgba(15,23,42,0.8)', tooltip, sub }) => (
-  <div title={tooltip || ''} style={{
+  <div className={tooltip ? "has-tooltip" : ""} style={{
     background: bg, padding: '18px 20px', borderRadius: '14px',
     border: '1px solid rgba(255,255,255,0.06)', cursor: tooltip ? 'help' : 'default',
   }}>
     <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '6px' }}>{label}</div>
     <div style={{ fontSize: '1.5rem', fontWeight: 900, color }}>{value}</div>
     {sub && <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '3px' }}>{sub}</div>}
+    {tooltip && (
+      <div className="tooltip-box">
+        <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: '3px' }}>💡 {label}</div>
+        <div>{tooltip}</div>
+      </div>
+    )}
   </div>
 );
 
@@ -724,15 +826,60 @@ const Backtesting = () => {
             <thead>
               <tr style={{ background: 'rgba(15,23,42,0.9)', color: '#94a3b8', borderBottom: '1px solid rgba(255,255,255,0.08)', textAlign: 'left' }}>
                 <th style={{ padding: '12px 14px' }}>Categoría</th>
-                <th style={{ padding: '12px 14px' }}>Umbral ($th^*$)</th>
-                <th style={{ padding: '12px 14px' }}>TP %</th>
-                <th style={{ padding: '12px 14px' }}>SL %</th>
-                <th style={{ padding: '12px 14px' }}>Time Stop</th>
-                <th style={{ padding: '12px 14px' }}>Trades OOS</th>
-                <th style={{ padding: '12px 14px' }}>Win Rate</th>
-                <th style={{ padding: '12px 14px' }}>Avg Win</th>
-                <th style={{ padding: '12px 14px' }}>Avg Loss</th>
-                <th style={{ padding: '12px 14px' }}>Expectancia / Trade</th>
+                <th className="has-tooltip" style={{ padding: '12px 14px', cursor: 'help' }}>
+                  Umbral ($th^*$)
+                  <div className="tooltip-box">
+                    <strong>Umbral (th*)</strong>: Probabilidad mínima de éxito exigida al modelo ML para activar alerta.
+                  </div>
+                </th>
+                <th className="has-tooltip" style={{ padding: '12px 14px', cursor: 'help' }}>
+                  TP %
+                  <div className="tooltip-box">
+                    <strong>Take Profit (%)</strong>: Porcentaje objetivo de ganancia para cerrar automáticamente con ganancia.
+                  </div>
+                </th>
+                <th className="has-tooltip" style={{ padding: '12px 14px', cursor: 'help' }}>
+                  SL %
+                  <div className="tooltip-box">
+                    <strong>Stop Loss (%)</strong>: Pérdida máxima tolerada antes de cerrar la posición defensivamente.
+                  </div>
+                </th>
+                <th className="has-tooltip" style={{ padding: '12px 14px', cursor: 'help' }}>
+                  Time Stop
+                  <div className="tooltip-box">
+                    <strong>Time Stop</strong>: Días hábiles máximos. Si no toca TP/SL en este plazo, vende a precio de mercado.
+                  </div>
+                </th>
+                <th className="has-tooltip" style={{ padding: '12px 14px', cursor: 'help' }}>
+                  Trades OOS
+                  <div className="tooltip-box">
+                    <strong>Trades Out-Of-Sample</strong>: Cantidad total de operaciones reales simuladas fuera de muestra.
+                  </div>
+                </th>
+                <th className="has-tooltip" style={{ padding: '12px 14px', cursor: 'help' }}>
+                  Win Rate
+                  <div className="tooltip-box">
+                    <strong>Win Rate (%)</strong>: Porcentaje de operaciones cerradas en positivo.
+                  </div>
+                </th>
+                <th className="has-tooltip" style={{ padding: '12px 14px', cursor: 'help' }}>
+                  Avg Win
+                  <div className="tooltip-box">
+                    <strong>Ganancia Promedio</strong>: Rendimiento medio de las operaciones ganadoras.
+                  </div>
+                </th>
+                <th className="has-tooltip" style={{ padding: '12px 14px', cursor: 'help' }}>
+                  Avg Loss
+                  <div className="tooltip-box">
+                    <strong>Pérdida Promedio</strong>: Caída media registrada en las operaciones en pérdida.
+                  </div>
+                </th>
+                <th className="has-tooltip" style={{ padding: '12px 14px', cursor: 'help' }}>
+                  Expectancia / Trade
+                  <div className="tooltip-box">
+                    <strong>Esperanza Matemática Net</strong>: Retorno esperado por operación descontando comisiones ($0.15 USD).
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -768,25 +915,61 @@ const Backtesting = () => {
       {/* ── Panel SHAP & Importancia de Variables MLOps ────────────────── */}
       {shapData?.global_top_features && (
         <div style={{ marginTop: '28px', background: 'rgba(18,26,44,0.7)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', padding: '22px 24px' }}>
-          <h3 style={{ margin: '0 0 6px', fontSize: '1.2rem', color: '#f8fafc' }}>
-            🔥 Análisis SHAP — Ranking de Variables Predictivas Clave
-          </h3>
-          <p style={{ margin: '0 0 18px', color: '#475569', fontSize: '0.8rem' }}>
-            Importancia relativa de las 33 features técnicas y fundamentales calculada sobre la función de ganancia LightGBM
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '6px' }}>
+            <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              🔥 Análisis SHAP — Ranking de Variables Predictivas Clave
+            </h3>
+            <span style={{ fontSize: '0.76rem', background: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)', padding: '3px 12px', borderRadius: '14px', fontWeight: 600 }}>
+              💡 Pasa el cursor sobre cualquier variable para ver la explicación detallada
+            </span>
+          </div>
+          <p style={{ margin: '0 0 18px', color: '#64748b', fontSize: '0.8rem' }}>
+            Importancia relativa de las 33 features técnicas y fundamentales calculada sobre la función de ganancia del modelo especializado LightGBM.
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-            {shapData.global_top_features.slice(0, 8).map((f, i) => (
-              <div key={f.feature} style={{ background: 'rgba(15,23,42,0.8)', padding: '14px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '6px' }}>
-                  <span style={{ color: '#f8fafc', fontWeight: 700 }}>#{i + 1} {f.feature}</span>
-                  <span style={{ color: '#818cf8', fontWeight: 800 }}>{f.pct}% del peso</span>
+            {shapData.global_top_features.slice(0, 12).map((f, i) => {
+              const meta = getShapMeta(f.feature);
+              return (
+                <div
+                  key={f.feature}
+                  className="has-tooltip"
+                  style={{
+                    background: 'rgba(15,23,42,0.85)',
+                    padding: '14px 16px',
+                    borderRadius: '14px',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    cursor: 'help',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.84rem', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ color: '#f8fafc', fontWeight: 800 }}>#{i + 1} {f.feature}</span>
+                      <span style={{ fontSize: '0.66rem', background: 'rgba(99,102,241,0.15)', color: '#a5b4fc', padding: '1px 6px', borderRadius: '6px', fontWeight: 600 }}>
+                        {meta.categoria}
+                      </span>
+                    </div>
+                    <span style={{ color: '#818cf8', fontWeight: 800, fontSize: '0.85rem' }}>{f.pct}% del peso</span>
+                  </div>
+
+                  <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden', marginBottom: '6px' }}>
+                    <div style={{ width: `${Math.min(100, f.pct * 5)}%`, height: '100%', background: 'linear-gradient(90deg, #6366f1, #818cf8)', borderRadius: '3px' }} />
+                  </div>
+
+                  {/* Glassmorphic Interactive Tooltip */}
+                  <div className="tooltip-box">
+                    <div style={{ fontWeight: 800, color: '#38bdf8', fontSize: '0.82rem', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>📊 {meta.titulo}</span>
+                      <span style={{ color: '#818cf8', fontSize: '0.72rem' }}>{f.pct}% peso</span>
+                    </div>
+                    <div style={{ color: '#cbd5e1', fontSize: '0.76rem', lineHeight: '1.4' }}>
+                      {meta.desc}
+                    </div>
+                  </div>
                 </div>
-                <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-                  <div style={{ width: `${Math.min(100, f.pct * 5)}%`, height: '100%', background: 'linear-gradient(90deg, #6366f1, #818cf8)', borderRadius: '3px' }} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
