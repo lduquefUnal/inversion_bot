@@ -10,10 +10,18 @@ const fetchMarketData = async () => {
     if (res.ok) {
       const text = await res.text();
       const sanitized = text.replace(/:\s*NaN\b/g, ': null').replace(/:\s*Infinity\b/g, ': null');
-      localData = JSON.parse(sanitized);
-      localData.predicciones = localData.predicciones || localData.TOP_25_DIPS || [];
-      localData.TOP_25_DIPS = localData.predicciones;
-      localData._fuente = 'json_local';
+      const parsed = JSON.parse(sanitized);
+      const list = Array.isArray(parsed)
+        ? parsed
+        : (parsed.predicciones || parsed.TOP_25_DIPS || parsed.TOP_50_DIPS || parsed.TODOS_LOS_ACTIVOS || parsed.todos_los_activos || []);
+      if (!Array.isArray(parsed)) {
+        localData = parsed;
+        localData.predicciones = list;
+        localData.TOP_25_DIPS = list;
+        localData._fuente = 'json_local';
+      } else {
+        localData = { predicciones: list, TOP_25_DIPS: list, _fuente: 'json_local' };
+      }
     }
   } catch (e) {
     console.warn('No se pudo cargar local predicciones_v2.json:', e);
@@ -29,12 +37,21 @@ const fetchMarketData = async () => {
         .maybeSingle();
 
       if (!error && data && data.payload) {
-        const payloadData = typeof data.payload === 'string'
+        let payloadData = typeof data.payload === 'string'
           ? JSON.parse(data.payload)
           : data.payload;
 
-        payloadData.predicciones = payloadData.predicciones || payloadData.TOP_25_DIPS || [];
-        payloadData.TOP_25_DIPS = payloadData.predicciones;
+        const list = Array.isArray(payloadData)
+          ? payloadData
+          : (payloadData.predicciones || payloadData.TOP_25_DIPS || payloadData.TOP_50_DIPS || payloadData.TODOS_LOS_ACTIVOS || payloadData.todos_los_activos || []);
+
+        if (Array.isArray(payloadData)) {
+          payloadData = { predicciones: list, TOP_25_DIPS: list };
+        } else {
+          payloadData.predicciones = list;
+          payloadData.TOP_25_DIPS = list;
+        }
+
         payloadData._fuente = 'supabase';
         payloadData._fecha_db = data.fecha;
 

@@ -20,13 +20,20 @@ const UMBRALES = {
   SEÑALES_SELL:      3,    // mínimo señales para SELL
 };
 
+const getActivosFromData = (datosJson) => {
+  if (!datosJson) return [];
+  if (Array.isArray(datosJson)) return datosJson;
+  return datosJson.predicciones || datosJson.TOP_25_DIPS || datosJson.TOP_50_DIPS || datosJson.TODOS_LOS_ACTIVOS || datosJson.todos_los_activos || [];
+};
+
 const calcularOraculo = (precioPromedio, precioActual, datosJson, ticker, lotes = [], posCategory = null) => {
   if (!precioActual || !precioPromedio) {
     return { veredicto: 'SIN_DATA', color: 'nodata', señales: [], recomendacion: null, justificacion: 'Precio actual no disponible.' };
   }
 
-  const activos = datosJson?.predicciones || datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || datosJson?.TODOS_LOS_ACTIVOS || [];
-  const mercado  = activos.find(a => a.Ticker === ticker);
+  const activos = getActivosFromData(datosJson);
+  const tkUpper = String(ticker || '').trim().toUpperCase();
+  const mercado  = activos.find(a => String(a.Ticker || a.ticker || a.symbol || '').trim().toUpperCase() === tkUpper);
   const gananciaPorc = ((precioActual - precioPromedio) / precioPromedio) * 100;
 
   const catNombre = posCategory || mercado?.Categoria || "🎯 Sweet Spot";
@@ -429,9 +436,10 @@ const PortfolioPerformanceChart = ({ entriesConOraculo, resumen, fechaActualizac
 
 // ─── Modal Lote (Añadir / Editar Compra o Venta) ─────────────────────────────
 const LoteModal = ({ lote, positionId, positionTicker, datosJson, onClose, onSave }) => {
-  const activos = datosJson?.predicciones || datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || datosJson?.TODOS_LOS_ACTIVOS || [];
-  const mercado = activos.find(a => a.Ticker === positionTicker);
-  const precioMercado = mercado?.Precio_Actual || mercado?.Precio;
+  const activos = getActivosFromData(datosJson);
+  const tkUpper = String(positionTicker || '').trim().toUpperCase();
+  const mercado = activos.find(a => String(a.Ticker || a.ticker || a.symbol || '').trim().toUpperCase() === tkUpper);
+  const precioMercado = mercado ? (mercado.Precio_Actual ?? mercado['Precio Actual'] ?? mercado.precio_actual ?? mercado.Precio ?? mercado.close ?? mercado.Close) : null;
 
   const [form, setForm] = useState(lote || {
     precioCompra: precioMercado ? String(precioMercado) : '',
@@ -620,8 +628,8 @@ const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
   const handleTickerChange = (val) => {
     const uppercaseVal = val.toUpperCase();
     setTicker(uppercaseVal);
-    const activos = datosJson?.predicciones || datosJson?.TOP_25_DIPS || datosJson?.TOP_50_DIPS || datosJson?.TODOS_LOS_ACTIVOS || [];
-    const mercado = activos.find(a => a.Ticker === uppercaseVal);
+    const activos = getActivosFromData(datosJson);
+    const mercado = activos.find(a => String(a.Ticker || a.ticker || a.symbol || '').trim().toUpperCase() === uppercaseVal);
     
     if (mercado) {
       if (mercado.Categoria) {
@@ -632,7 +640,7 @@ const NuevaPosicionModal = ({ tickersList, datosJson, onClose, onAdd }) => {
         setAutoDetectado(false);
       }
       
-      const pAct = mercado.Precio_Actual || mercado.Precio;
+      const pAct = mercado ? (mercado.Precio_Actual ?? mercado['Precio Actual'] ?? mercado.precio_actual ?? mercado.Precio ?? mercado.close ?? mercado.Close) : null;
       if (pAct) {
         setPrecioMercado(pAct);
         setPrecioCompra(String(pAct));
@@ -1124,8 +1132,8 @@ const Portfolio = () => {
     }
   }, [isPasswordRecovery, clearPasswordRecovery]);
 
-  const activos = marketData?.predicciones || marketData?.TOP_25_DIPS || marketData?.TOP_50_DIPS || marketData?.TODOS_LOS_ACTIVOS || [];
-  const tickersList = activos.map(a => a.Ticker);
+  const activos = useMemo(() => getActivosFromData(marketData), [marketData]);
+  const tickersList = activos.map(a => a.Ticker || a.ticker || a.symbol).filter(Boolean);
 
   const tickersParaLive = entries.map(e => e.position.ticker);
 
@@ -1133,14 +1141,26 @@ const Portfolio = () => {
 
   const precioMap = useMemo(() => {
     const map = {};
-    activos.forEach(a => {
-      const p = a['Precio_Actual'] ?? a['Precio Actual'] ?? a['Precio'] ?? a['precio_actual'];
-      if (p != null && !isNaN(Number(p))) {
-        map[a.Ticker] = Number(p);
+    (activos || []).forEach(a => {
+      if (!a) return;
+      const rawTicker = a.Ticker || a.ticker || a.symbol;
+      const p = a['Precio_Actual'] ?? a['Precio Actual'] ?? a['Precio'] ?? a['precio_actual'] ?? a['price'] ?? a['close'] ?? a['Close'];
+      if (rawTicker && p != null && !isNaN(Number(p))) {
+        const val = Number(p);
+        const tk = String(rawTicker).trim();
+        map[tk] = val;
+        map[tk.toUpperCase()] = val;
+        map[tk.toLowerCase()] = val;
       }
     });
     Object.entries(livePrices).forEach(([t, p]) => {
-      if (p != null && !isNaN(Number(p))) map[t] = Number(p);
+      if (p != null && !isNaN(Number(p))) {
+        const val = Number(p);
+        const tk = String(t).trim();
+        map[tk] = val;
+        map[tk.toUpperCase()] = val;
+        map[tk.toLowerCase()] = val;
+      }
     });
     return map;
   }, [activos, livePrices]);
@@ -1148,7 +1168,8 @@ const Portfolio = () => {
   const entriesConOraculo = useMemo(() => {
     return entries.map(entry => {
       const { precioPromedio } = calcularResumenPosicion(entry.lotes, entry.ventas);
-      const precioActual = precioMap[entry.position.ticker];
+      const rawTk = String(entry.position.ticker || '').trim();
+      const precioActual = precioMap[rawTk] ?? precioMap[rawTk.toUpperCase()] ?? precioMap[rawTk.toLowerCase()];
       const oraculo = calcularOraculo(precioPromedio, precioActual, marketData, entry.position.ticker, entry.lotes, entry.position.categoria);
       return { entry, precioActual, oraculo };
     });
