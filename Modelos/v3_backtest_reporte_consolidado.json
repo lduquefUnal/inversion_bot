@@ -14,6 +14,40 @@
     "Recup. Rapida": 0.46,
     "Cuchillos Cayendo": 0.43
   },
+  "por_categoria": {
+    "Sweet Spot": {
+      "total_trades": 38,
+      "win_rate_%": 39.5,
+      "avg_win_%": 14.76,
+      "avg_loss_%": -5.94,
+      "expectancia_%": 2.23,
+      "pnl_promedio_%": 2.23
+    },
+    "Cazador Dips": {
+      "total_trades": 11,
+      "win_rate_%": 0.0,
+      "avg_win_%": 0.0,
+      "avg_loss_%": -5.26,
+      "expectancia_%": -5.26,
+      "pnl_promedio_%": -5.26
+    },
+    "Recup. Rapida": {
+      "total_trades": 27,
+      "win_rate_%": 37.0,
+      "avg_win_%": 9.86,
+      "avg_loss_%": -4.12,
+      "expectancia_%": 1.05,
+      "pnl_promedio_%": 1.05
+    },
+    "Cuchillos Cayendo": {
+      "total_trades": 60,
+      "win_rate_%": 20.0,
+      "avg_win_%": 7.83,
+      "avg_loss_%": -4.2,
+      "expectancia_%": -1.79,
+      "pnl_promedio_%": -1.79
+    }
+  },
   "total_trades": 136,
   "win_rate_global_%": 27.2,
   "pnl_promedio_%": -0.38

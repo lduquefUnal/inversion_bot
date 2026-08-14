@@ -91,6 +91,27 @@ def main():
             print(f"│ {cat:21s} │ {len(ct):>5} │ {wr:>7.1f}% │ {aw:>+7.2f}% │ {al:>+7.2f}% │   {e:>+6.2f}%   │")
         print("└───────────────────────┴───────┴──────────┴──────────┴──────────┴─────────────┘\n")
 
+    cat_summary = {}
+    for cat in CATS:
+        ct = [t for t in all_trades if t["Categoria"] == cat]
+        if not ct:
+            cat_summary[cat] = {"total_trades": 0, "win_rate_%": 0.0, "pnl_promedio_%": 0.0, "expectancia_%": 0.0}
+            continue
+        wins = [t for t in ct if t["Resultado"] == "WIN"]
+        losses = [t for t in ct if t["Resultado"] in ("LOSS", "TIMEOUT")]
+        wr = len(wins) / len(ct) * 100.0
+        aw = float(np.mean([t["PnL_Neto_%"] for t in wins])) if wins else 0.0
+        al = float(np.mean([t["PnL_Neto_%"] for t in losses])) if losses else 0.0
+        e = (wr/100.0) * aw + (1.0 - wr/100.0) * al
+        pnl_prom = float(np.mean([t["PnL_Neto_%"] for t in ct]))
+        cat_summary[cat] = {
+            "total_trades": len(ct),
+            "win_rate_%": round(wr, 1),
+            "avg_win_%": round(aw, 2),
+            "avg_loss_%": round(al, 2),
+            "expectancia_%": round(e, 2),
+            "pnl_promedio_%": round(pnl_prom, 2)
+        }
 
     # Guardar reporte consolidado
     report_file = os.path.join(MODELOS, "v3_backtest_reporte_consolidado.json")
@@ -98,6 +119,7 @@ def main():
         json.dump({
             "metrica_global": m_global,
             "umbral_por_categoria": thresholds,
+            "por_categoria": cat_summary,
             "total_trades": m_global['total'],
             "win_rate_global_%": m_global['win_rate_%'],
             "pnl_promedio_%": m_global['pnl_promedio_%'],

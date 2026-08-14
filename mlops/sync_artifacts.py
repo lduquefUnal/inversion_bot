@@ -57,6 +57,17 @@ def sync_category_params():
         with open(METADATA_CAT_PATH, "r", encoding="utf-8") as f:
             metadata = json.load(f)
 
+    # Cargar reporte consolidado de backtest si existe
+    bt_report_path = os.path.join(MODELOS_DIR, "v3_backtest_reporte_consolidado.json")
+    bt_cat_metrics = {}
+    if os.path.exists(bt_report_path):
+        try:
+            with open(bt_report_path, "r", encoding="utf-8") as f:
+                bt_data = json.load(f)
+                bt_cat_metrics = bt_data.get("por_categoria", {})
+        except Exception as e:
+            print(f"⚠️ No se pudo leer {bt_report_path}: {e}")
+
     # Definir etiquetas y emojis por categoría
     category_meta_ui = {
         "Recup. Rapida": {"label": "⚡ Recup. Rápida", "shortLabel": "Recup. Rápida", "emoji": "⚡", "type": "verde", "confirmacion": "1 Día"},
@@ -70,13 +81,16 @@ def sync_category_params():
         ui = category_meta_ui.get(cat_name, {"label": cat_name, "shortLabel": cat_name, "emoji": "📊", "type": "blue", "confirmacion": "1 Día"})
         cat_meta = metadata.get(cat_name, {})
         metrics = cat_meta.get("metrics", {})
+        bt_cat = bt_cat_metrics.get(cat_name, {})
 
         th_optimo = cat_meta.get("th_optimo", 0.50)
         f05 = cat_meta.get("f05_score", metrics.get("f05", 0.0))
-        wr = metrics.get("wr_%", 50.0)
-        n_trades = metrics.get("n", 0)
+        
+        # Preferir Win Rate y Total Trades del backtest barra a barra OOS
+        wr = bt_cat.get("win_rate_%", metrics.get("wr_%", 50.0))
+        n_trades = bt_cat.get("total_trades", metrics.get("n", 0))
 
-        cagr_est = round((1.0 + (params["tp"] * (wr / 100.0) - params["sl"] * (1 - wr / 100.0))) ** min(30, max(5, n_trades)) - 1, 3) * 100
+        cagr_est = round((1.0 + (params["tp"] * (wr / 100.0) - params["sl"] * (1.0 - wr / 100.0))) ** min(30, max(5, n_trades)) - 1, 3) * 100
 
         out_params[ui["label"]] = {
             "id": cat_name,

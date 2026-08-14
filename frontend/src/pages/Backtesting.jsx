@@ -703,6 +703,68 @@ const Backtesting = () => {
         </div>
       </div>
 
+      {/* ── Tabla de Auditoría OOS Consolidada (v3_backtest_eval.py) ────── */}
+      <div style={{ marginTop: '28px', background: 'rgba(18,26,44,0.7)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', padding: '22px 24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#f8fafc' }}>
+              📊 Auditoría Barra a Barra OOS (Consolidado de v3_backtest_eval.py)
+            </h3>
+            <p style={{ margin: '4px 0 0', color: '#475569', fontSize: '0.8rem' }}>
+              Simulación diaria honesta en ventana Out-of-Sample con Take Profit, Stop Loss, Fricción $0.15 USD y Límite de Días
+            </p>
+          </div>
+          <span style={{ padding: '6px 14px', borderRadius: '20px', background: 'rgba(56,189,248,0.12)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.3)', fontSize: '0.78rem', fontWeight: 700 }}>
+            ⚡ Fuente Canónica MLOps
+          </span>
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ background: 'rgba(15,23,42,0.9)', color: '#94a3b8', borderBottom: '1px solid rgba(255,255,255,0.08)', textAlign: 'left' }}>
+                <th style={{ padding: '12px 14px' }}>Categoría</th>
+                <th style={{ padding: '12px 14px' }}>Umbral ($th^*$)</th>
+                <th style={{ padding: '12px 14px' }}>TP %</th>
+                <th style={{ padding: '12px 14px' }}>SL %</th>
+                <th style={{ padding: '12px 14px' }}>Time Stop</th>
+                <th style={{ padding: '12px 14px' }}>Trades OOS</th>
+                <th style={{ padding: '12px 14px' }}>Win Rate</th>
+                <th style={{ padding: '12px 14px' }}>Avg Win</th>
+                <th style={{ padding: '12px 14px' }}>Avg Loss</th>
+                <th style={{ padding: '12px 14px' }}>Expectancia / Trade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categoriasDyn.map(c => {
+                const catKey = c.id;
+                const bMet = v3Meta?.consolidado?.por_categoria?.[catKey] || {};
+                const exp = bMet['expectancia_%'] !== undefined ? bMet['expectancia_%'] : (c.retornoTrade || 0);
+                const expColor = exp > 0 ? '#10b981' : exp < 0 ? '#ef4444' : '#94a3b8';
+                return (
+                  <tr key={c.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: 'rgba(15,23,42,0.4)' }}>
+                    <td style={{ padding: '12px 14px', fontWeight: 800, color: c.color }}>{c.emoji} {c.nombre}</td>
+                    <td style={{ padding: '12px 14px', color: '#cbd5e1', fontWeight: 700 }}>≥ {c.threshold}</td>
+                    <td style={{ padding: '12px 14px', color: '#10b981', fontWeight: 700 }}>+{c.tp}%</td>
+                    <td style={{ padding: '12px 14px', color: '#ef4444', fontWeight: 700 }}>-{c.sl}%</td>
+                    <td style={{ padding: '12px 14px', color: '#60a5fa', fontWeight: 700 }}>{c.limiteDias} días</td>
+                    <td style={{ padding: '12px 14px', color: '#f8fafc', fontWeight: 700 }}>{bMet.total_trades ?? c.totalTrades}</td>
+                    <td style={{ padding: '12px 14px', color: c.color, fontWeight: 800 }}>{bMet['win_rate_%'] ?? c.winRate}%</td>
+                    <td style={{ padding: '12px 14px', color: '#10b981', fontWeight: 600 }}>+{bMet['avg_win_%'] ?? c.tp}%</td>
+                    <td style={{ padding: '12px 14px', color: '#ef4444', fontWeight: 600 }}>{bMet['avg_loss_%'] ?? `-${c.sl}%`}</td>
+                    <td style={{ padding: '12px 14px', fontWeight: 900, color: expColor, fontSize: '0.92rem' }}>
+                      <span style={{ padding: '3px 10px', borderRadius: '8px', background: `${expColor}18`, border: `1px solid ${expColor}40` }}>
+                        {exp > 0 ? '+' : ''}{exp}%
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* ── Panel SHAP & Importancia de Variables MLOps ────────────────── */}
       {shapData?.global_top_features && (
         <div style={{ marginTop: '28px', background: 'rgba(18,26,44,0.7)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', padding: '22px 24px' }}>
