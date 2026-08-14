@@ -1183,10 +1183,12 @@ const Portfolio = () => {
   );
 
   const resumen = useMemo(() => {
-    let capitalInvertido = 0, valorActual = 0, totalComprado = 0, ingresosVentas = 0;
+    let capitalInvertido = 0, valorActual = 0, totalComprado = 0, ingresosVentas = 0, totalLotes = 0, totalVentas = 0;
     entriesConOraculo.forEach(({ entry, precioActual }) => {
       const r = calcularResumenPosicion(entry.lotes, entry.ventas);
       totalComprado += r.totalInvertido;
+      totalLotes += (entry.lotes || []).length;
+      totalVentas += (entry.ventas || []).length;
       if (r.cantidadTotal > 0) {
         capitalInvertido += r.precioPromedio * r.cantidadTotal;
         if (precioActual) valorActual += precioActual * r.cantidadTotal;
@@ -1195,18 +1197,20 @@ const Portfolio = () => {
     entries.forEach(e => (e.ventas || []).forEach(v => {
       ingresosVentas += Number(v.precioVenta || 0) * Number(v.cantidad || 0);
     }));
-    // Retorno global honesto: (valorActual de posiciones abiertas + ingreso por ventas) - capital comprado total
+
+    const totalComisiones = (totalLotes + totalVentas) * 0.15; // $0.15 por compra de lote y $0.15 por cierre de venta
     const pnlNoRealizado = valorActual - capitalInvertido;
     const pnlRealizado = metricasTrades.realizedTotUSD;
     const pnl = pnlNoRealizado + pnlRealizado;
     const pnlPorc = totalComprado > 0 ? (pnl / totalComprado) * 100 : 0;
-    return { capitalInvertido, valorActual, totalComprado, pnlNoRealizado, pnlRealizado, pnl, pnlPorc, ingresosVentas };
+    return { capitalInvertido, valorActual, totalComprado, ingresosVentas, totalLotes, totalVentas, totalComisiones, pnlNoRealizado, pnlRealizado, pnl, pnlPorc };
   }, [entriesConOraculo, entries, metricasTrades]);
 
   // ─── Capital (Depósitos/Retiros), Patrimonio y Rentabilidad Real ───────────
   const capital = useMemo(() => {
     const { aportado, retirado, neto: capitalNeto } = calcularCapital(movimientos);
-    const cash = capitalNeto - resumen.totalComprado + resumen.ingresosVentas;
+    // Efectivo real descontando comisiones ($0.15 USD por operación de compra o venta)
+    const cash = capitalNeto - resumen.totalComprado + resumen.ingresosVentas - resumen.totalComisiones;
     const patrimonio = cash + resumen.valorActual;
     const ganancia = patrimonio - capitalNeto;
     const retornoCapital = capitalNeto > 0 ? (ganancia / capitalNeto) * 100 : null;
@@ -1286,13 +1290,24 @@ const Portfolio = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <h1 style={{ margin: 0 }}>🔮 El Oráculo — Portafolio</h1>
             {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', padding: '4px 6px 4px 12px', borderRadius: '20px' }}>
-                <span style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 600 }}>👤 {user.email}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', padding: '4px 6px 4px 12px', borderRadius: '20px' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 600 }}>👤 {user.email}</span>
+                  <button
+                    onClick={signOut}
+                    style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.4)', padding: '3px 10px', borderRadius: '12px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold' }}
+                  >
+                    🚪 Salir
+                  </button>
+                </div>
                 <button
-                  onClick={signOut}
-                  style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.4)', padding: '3px 10px', borderRadius: '12px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold' }}
+                  onClick={async () => {
+                    await uploadLocalToSupabase();
+                    alert('✅ ¡Tu portafolio actual fue guardado exitosamente en tu cuenta personal!');
+                  }}
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '16px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, boxShadow: '0 2px 10px rgba(16,185,129,0.3)' }}
                 >
-                  🚪 Salir
+                  ☁️ Copiar Portafolio Demo a mi Cuenta
                 </button>
               </div>
             ) : (
@@ -1355,7 +1370,7 @@ const Portfolio = () => {
           <div className="capital-card">
             <span className="label">🏦 Efectivo en Cuenta</span>
             <span className="val neutral">${capital.cash.toFixed(2)}</span>
-            <small className="capital-sub">disponible sin invertir</small>
+            <small className="capital-sub">disponible · incl. -${resumen.totalComisiones.toFixed(2)} comisiones ($0.15/op)</small>
           </div>
           <div className="capital-card">
             <span className="label">📦 Patrimonio Total</span>

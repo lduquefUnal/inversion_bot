@@ -84,15 +84,18 @@ export const calcularXirr = (flows = []) => {
   return r == null || !isFinite(r) || r <= -0.99 ? null : r * 100;
 };
 
+export const FEE_PER_TRADE = 0.15; // $0.15 USD por operación (compra/venta)
+
 // ─── Helpers ────────────────────────────────────────────────────────────────
 export const calcularResumenPosicion = (lotes, ventas = []) => {
-  if (!lotes || lotes.length === 0) return { precioPromedio: 0, cantidadTotal: 0, totalInvertido: 0, cantidadComprada: 0, cantidadVendida: 0 };
+  if (!lotes || lotes.length === 0) return { precioPromedio: 0, cantidadTotal: 0, totalInvertido: 0, cantidadComprada: 0, cantidadVendida: 0, totalComisiones: 0 };
   const cantidadComprada = lotes.reduce((s, l) => s + Number(l.cantidad), 0);
   const totalInvertido   = lotes.reduce((s, l) => s + Number(l.precioCompra) * Number(l.cantidad), 0);
   const cantidadVendida  = (ventas || []).reduce((s, v) => s + Number(v.cantidad || 0), 0);
   const precioPromedio   = cantidadComprada > 0 ? totalInvertido / cantidadComprada : 0;
   const cantidadTotal    = Math.max(0, cantidadComprada - cantidadVendida);
-  return { precioPromedio, cantidadTotal, totalInvertido, cantidadComprada, cantidadVendida };
+  const totalComisiones  = ((lotes || []).length + (ventas || []).length) * FEE_PER_TRADE;
+  return { precioPromedio, cantidadTotal, totalInvertido, cantidadComprada, cantidadVendida, totalComisiones };
 };
 
 // ─── Métricas de trades cerrados (basadas en las ventas registradas) ────────
@@ -105,8 +108,10 @@ export const calcularMetricasTrades = (entries = []) => {
     ventasArr.forEach(v => {
       const precioVenta = Number(v.precioVenta);
       const cantidad = Number(v.cantidad);
-      // Para ventas registradas con la versión anterior (sin P&L precomputado)
-      const realizedPnl = v.realizedPnl ?? ((precioVenta - precioPromedio) * cantidad);
+      // Fee de $0.30 por trade completo cerrado ($0.15 de compra + $0.15 de venta)
+      const feeTrade = FEE_PER_TRADE * 2;
+      const realizedPnlBruto = (precioVenta - precioPromedio) * cantidad;
+      const realizedPnl = v.realizedPnl ?? (realizedPnlBruto - feeTrade);
       const realizedPnlPct = v.realizedPnlPct ?? (precioPromedio > 0 ? ((precioVenta - precioPromedio) / precioPromedio) * 100 : 0);
       const diasHeld = v.diasHeld ?? calcularDiasSostenido(lotes, v.fechaVenta, cantidadComprada);
 
