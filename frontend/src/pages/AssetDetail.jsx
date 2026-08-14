@@ -179,7 +179,12 @@ const AssetDetail = () => {
   const { data: compareData } = useHistorico(activeCompare, period, !!activeCompare);
   const { data: marketData } = useMarketData();
 
-  const assetInfo = marketData?.TOP_25_DIPS?.find(a => a.Ticker === ticker);
+  const activosList = Array.isArray(marketData)
+    ? marketData
+    : (marketData?.predicciones || marketData?.TOP_25_DIPS || marketData?.TOP_50_DIPS || marketData?.TODOS_LOS_ACTIVOS || []);
+  const tkUpper = String(ticker || '').trim().toUpperCase();
+  const assetInfo = activosList.find(a => String(a.Ticker || a.ticker || a.symbol || '').trim().toUpperCase() === tkUpper);
+
   const periods = ['1S', '1M', '3M', '1A', '3A', '5A'];
   const toggleIndicator = name => setIndicators(prev => ({ ...prev, [name]: !prev[name] }));
 
@@ -192,20 +197,20 @@ const AssetDetail = () => {
   const betaVal = assetInfo?.Beta;
   const probVal = assetInfo?.['Probabilidad_Exito_%'];
   const kellyVal = assetInfo?.['Position_Sizing_Kelly_%'];
-  const stopVal = assetInfo?.Stop_Loss_ATR_USD;
+  const stopVal = assetInfo?.['Stop_Loss_ATR_$'] ?? assetInfo?.Stop_Loss_ATR_USD ?? assetInfo?.['Stop Loss ATR $'];
 
   const metrics = [
     {
       label: 'Prob. Éxito ML',
       value: probVal != null ? `${probVal}%` : 'N/A',
       color: probVal >= 60 ? '#10b981' : probVal >= 40 ? '#eab308' : '#ef4444',
-      tip: 'Probabilidad de éxito calculada por el modelo LightGBM V2 (Win Rate 80%). ≥40% = BUY signal.'
+      tip: 'Probabilidad de éxito calculada por el modelo LightGBM V3.7. ≥46% = BUY signal.'
     },
     {
       label: 'Drawdown 52W',
       value: dd52 != null ? `${dd52}%` : 'N/A',
       color: '#ef4444',
-      tip: 'Caída máxima desde el precio más alto de las últimas 52 semanas. Un dip > 40% puede ser zona de acumulación agresiva.'
+      tip: 'Caída máxima desde el precio más alto de las últimas 52 semanas. Un dip > 25% indica descuento atractivo.'
     },
     {
       label: 'RSI 14D',
@@ -217,23 +222,23 @@ const AssetDetail = () => {
       label: 'RSI 2D (Connors)',
       value: rsi2val != null ? String(rsi2val) : 'N/A',
       color: Number(rsi2val) < 10 ? '#10b981' : '#a78bfa',
-      tip: 'RSI de 2 días (estrategia Connors). < 10 = señal de entrada extrema de corto plazo.'
+      tip: 'RSI de 2 días (estrategia Connors). < 10 = señal de entrada táctica de corto plazo.'
     },
     {
       label: 'FCF',
       value: fcfVal ?? 'N/A',
       color: fcfVal && !String(fcfVal).includes('-') && fcfVal !== 'N/A' ? '#10b981' : '#ef4444',
-      tip: 'Flujo de Caja Libre. Positivo = empresa genera dinero real. Negativo en growth = puede ser normal.'
+      tip: 'Flujo de Caja Libre. Positivo = la empresa genera caja real tras CapEx.'
     },
     {
       label: 'P/E Ratio',
-      value: peVal && peVal !== 'N/A' ? parseFloat(peVal).toFixed(1) : 'N/A',
+      value: peVal && peVal !== 'N/A' ? (isNaN(Number(peVal)) ? peVal : Number(peVal).toFixed(1)) : 'N/A',
       color: '#eab308',
-      tip: 'Precio / Beneficio. < 15 = barato | 15-30 = razonable | > 30 = caro o alto crecimiento esperado.'
+      tip: 'Precio / Beneficio. < 15 = barato | 15-30 = razonable | > 30 = alto crecimiento o sobrevalorado.'
     },
     {
       label: 'Beta (Vol.)',
-      value: betaVal != null && betaVal !== 'N/A' ? Number(betaVal).toFixed(2) : 'N/A',
+      value: betaVal != null && betaVal !== 'N/A' ? (isNaN(Number(betaVal)) ? betaVal : Number(betaVal).toFixed(2)) : 'N/A',
       color: '#a78bfa',
       tip: 'Volatilidad vs S&P 500. > 1 = más agresivo que el mercado. > 2 = especulativo.'
     },
@@ -241,13 +246,13 @@ const AssetDetail = () => {
       label: 'Kelly %',
       value: kellyVal != null ? `${kellyVal}%` : 'N/A',
       color: '#818cf8',
-      tip: 'Position sizing Half-Kelly: % del capital sugerido para esta posición según la probabilidad del modelo.'
+      tip: 'Position sizing Half-Kelly: % del capital sugerido para esta posición según el modelo ML.'
     },
     {
       label: 'Stop Loss ATR',
       value: stopVal != null ? `$${stopVal}` : 'N/A',
       color: '#ef4444',
-      tip: 'Precio de stop loss calculado a 2x ATR bajo el precio de entrada.'
+      tip: 'Precio de stop loss defensivo calculado según la volatilidad diaria (ATR).'
     },
   ];
 
@@ -322,10 +327,32 @@ const AssetDetail = () => {
             <div style={{ background: 'var(--panel-bg)', padding: '25px', borderRadius: '15px', border: '1px solid var(--border-color)', lineHeight: '1.8' }}>
               <h3 style={{ marginTop: 0 }}>🧠 Tesis de Inversión</h3>
               <div dangerouslySetInnerHTML={{
-                __html: (assetInfo?.AI_Details || 'No hay detalles disponibles.')
-                  .replace(/\*\s+\*\*(.*?):\*\*(.*)/g, "<li style='margin-bottom:8px;'><strong style='color:#a78bfa;'>$1:</strong>$2</li>")
-                  .replace(/<strong style='color:#a78bfa;'>Caso Bull(?: \(Alcista\))?:<\/strong>/g, "<strong style='color:#10b981;'>📈 Caso Bull:</strong>")
-                  .replace(/<strong style='color:#a78bfa;'>Caso Bear(?: \(Bajista\))?:<\/strong>/g, "<strong style='color:#ef4444;'>📉 Caso Bear:</strong>")
+                __html: (() => {
+                  if (assetInfo?.AI_Details) {
+                    return assetInfo.AI_Details
+                      .replace(/\*\s+\*\*(.*?):\*\*(.*)/g, "<li style='margin-bottom:8px;'><strong style='color:#a78bfa;'>$1:</strong>$2</li>")
+                      .replace(/<strong style='color:#a78bfa;'>Caso Bull(?: \(Alcista\))?:<\/strong>/g, "<strong style='color:#10b981;'>📈 Caso Bull:</strong>")
+                      .replace(/<strong style='color:#a78bfa;'>Caso Bear(?: \(Bajista\))?:<\/strong>/g, "<strong style='color:#ef4444;'>📉 Caso Bear:</strong>");
+                  }
+                  const tk = ticker || assetInfo?.Ticker || 'este activo';
+                  const veredicto = assetInfo?.Veredicto || 'HOLD';
+                  const prob = assetInfo?.['Probabilidad_Exito_%'] ?? 'N/A';
+                  const cat = assetInfo?.Categoria || 'Sweet Spot';
+                  const dd = assetInfo?.['Drawdown_52W_%'] ?? assetInfo?.['Drawdown 52W %'] ?? 'N/A';
+                  const rsi14 = assetInfo?.RSI_14D ?? assetInfo?.['RSI 14D'] ?? 'N/A';
+                  const tp = assetInfo?.['Take_Profit_%'] ?? '10';
+                  const sl = assetInfo?.['Stop_Loss_%'] ?? '4';
+                  const kelly = assetInfo?.['Position_Sizing_Kelly_%'] ?? '0';
+
+                  return `
+                    <ul style="padding-left:18px; margin:0; list-style:none;">
+                      <li style="margin-bottom:10px;"><strong style="color:#a78bfa;">🎯 Algoritmo ML V3.7:</strong> Categorizado en <span style="color:#38bdf8; font-weight:700;">${cat}</span> con recomendación <strong style="color:${veredicto === 'BUY' ? '#10b981' : '#eab308'};">${veredicto}</strong> (Probabilidad de Éxito: <strong>${prob}%</strong>).</li>
+                      <li style="margin-bottom:10px;"><strong style="color:#10b981;">📈 Caso Alcista (Bull Case):</strong> ${tk} acumula un descuento del <strong>${dd}%</strong> desde su máximo de 52 semanas, registrando un RSI 14D de <strong>${rsi14}</strong>. El modelo proyecta un objetivo de Take Profit de <strong style="color:#10b981;">+${tp}%</strong> al recuperar la tendencia.</li>
+                      <li style="margin-bottom:10px;"><strong style="color:#ef4444;">📉 Caso Bajista (Bear Case):</strong> Si la presión vendedora persiste y rompe la estructura de soporte, se activa el umbral defensivo de Stop Loss en <strong style="color:#ef4444;">-${sl}%</strong>.</li>
+                      <li style="margin-bottom:10px;"><strong style="color:#818cf8;">🛡️ Gestión de Capital:</strong> Asignación sugerida Half-Kelly de <strong>${kelly}%</strong> sobre la liquidez disponible.</li>
+                    </ul>
+                  `;
+                })()
               }} />
             </div>
 
