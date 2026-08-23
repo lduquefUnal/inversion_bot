@@ -202,7 +202,7 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-# Marimo
-marimo/_static/
-marimo/_lsp/
-__marimo__/
+# Datasets pesados de entrenamiento
+Modelos/*.csv
+*.csv.gz
+

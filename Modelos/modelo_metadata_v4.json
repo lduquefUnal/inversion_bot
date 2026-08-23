@@ -1,0 +1,31 @@
+{
+  "modelo_version": "V4.0_Tactical",
+  "selected_features": [
+    "TP_ATR",
+    "ATR_%",
+    "Dist_SMA200_%",
+    "Drawdown_52W_%",
+    "Drawdown_10W_%",
+    "Drawdown_5W_%",
+    "Abs_Drawdown",
+    "Dist_SMA50_%",
+    "GARCH_Regime",
+    "MACD_Hist",
+    "ATR_Risk_Pct",
+    "Vol_Ratio_20_50"
+  ],
+  "best_threshold": 0.45,
+  "metrics_oos": {
+    "threshold": 0.45,
+    "f0.5": 0.3222,
+    "win_rate_%": 34.7,
+    "ea_anual_%": 132.1,
+    "pnl_promedio_%": 0.29,
+    "total_trades": 72,
+    "freq_anual": 292.0,
+    "wins": 25,
+    "losses": 47
+  },
+  "train_samples": 235232,
+  "test_samples": 17116
+}

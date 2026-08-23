@@ -47,7 +47,13 @@ FEATURES = [
 # Features de riesgo QUANT_RISK (derivadas) + fundamentales
 RISK_FEATURES = ["RR_Ratio", "ATR_Risk_Pct", "TP_ATR", "Abs_Drawdown", "RSI2_DD", "RSI2_RSI14"]
 FUND_FEATURES = ["FCF_log", "Beta"]
-FULL_FEATURES = FEATURES + RISK_FEATURES + FUND_FEATURES
+TACTICAL_FEATURES = [
+    "Dist_SMA50_%", "Drawdown_10W_%", "Drawdown_5W_%", "Dist_52W_High_%",
+    "MACD_Hist", "RSI2_Trend", "Vol_Ratio_20_50", "Kalman_Slope", "GARCH_Regime", "Beta_60D"
+]
+
+CANDIDATE_FEATURES = FEATURES + RISK_FEATURES + FUND_FEATURES + TACTICAL_FEATURES
+FULL_FEATURES = CANDIDATE_FEATURES
 
 # TP/SL y límites ALINEADOS con 1_extraer_dataset.py (ventana target = 11 días)
 CAT_PARAMS = {
@@ -69,14 +75,61 @@ def rsi(close, window):
     return 100 - (100 / (1 + rs))
 
 
+def kalman_slope(prices):
+    """Filtro de Kalman de 2 estados (precio x, velocidad v) para estimación de tendencia sin lag."""
+    n = len(prices)
+    if n < 10:
+        return pd.Series(0.0, index=prices.index)
+    x = np.array([prices.iloc[0], 0.0])
+    P = np.eye(2) * 10.0
+    F = np.array([[1.0, 1.0], [0.0, 1.0]])
+    H = np.array([[1.0, 0.0]])
+    Q = np.diag([1e-4, 1e-3])
+    R = np.array([[1e-2]])
+    slopes = np.zeros(n)
+    p_vals = prices.values
+    for t in range(n):
+        z = p_vals[t]
+        if np.isnan(z):
+            continue
+        x = F @ x
+        P = F @ P @ F.T + Q
+        y = z - (H @ x)[0]
+        S = (H @ P @ H.T)[0, 0] + R[0, 0]
+        K = (P @ H.T) / S
+        x = x + K.flatten() * y
+        P = (np.eye(2) - K @ H) @ P
+        slopes[t] = (x[1] / (x[0] + 1e-9)) * 100.0
+    return pd.Series(slopes, index=prices.index)
+
+
 def atr(df, window=14):
     h, l, c = df["High"], df["Low"], df["Close"]
     tr = pd.concat([h - l, (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
     return tr.rolling(window).mean()
 
 
-def asignar_categoria(dd_52w, rsi14, rsi2, tendencia_sana):
-    """Lógica IDÉNTICA a 1_extraer_dataset.py (incluye condiciones de RSI_2)."""
+def asignar_categoria_v4(dd_52w, dd_10w, dd_5w, rsi14, rsi2, tendencia_sana, dist_sma50, kalman_slope=0.0):
+    """
+    Reglas flexibilizadas V4:
+    Se relajan las restricciones duras estáticas para permitir mayor cobertura
+    de candidatos sin anular prematuramente señales tácticas de 5W y 10W.
+    El árbol de decisión (LightGBM) aprende la frontera óptima probabilística.
+    """
+    if (dd_52w < -30 and rsi14 < 35) or (dd_10w < -20 and rsi14 < 32):
+        return "Cazador Dips"
+    elif tendencia_sana and (dd_52w <= -15 or dist_sma50 <= -3.5 or dd_10w <= -8.0):
+        return "Sweet Spot"
+    elif tendencia_sana and (rsi2 < 20 or dd_5w <= -5.0):
+        return "Recup. Rapida"
+    elif not tendencia_sana and (rsi2 < 12 or dd_10w <= -12.0):
+        return "Cuchillos Cayendo"
+    return None
+
+
+def asignar_categoria(dd_52w, rsi14, rsi2, tendencia_sana, dd_10w=None, dd_5w=None, dist_sma50=None, kalman_slope=0.0):
+    if dd_10w is not None and dist_sma50 is not None and dd_5w is not None:
+        return asignar_categoria_v4(dd_52w, dd_10w, dd_5w, rsi14, rsi2, tendencia_sana, dist_sma50, kalman_slope)
     if dd_52w < -35 and rsi14 < 32:
         return "Cazador Dips"
     elif tendencia_sana and dd_52w <= -20:
@@ -134,17 +187,48 @@ def compute_features(ohlcv):
         g["SMA_200"] = g["Close"].rolling(200).mean()
         g["SMA_50"] = g["Close"].rolling(50).mean()
         g["EMA_20"] = g["Close"].ewm(span=20, adjust=False).mean()
-        g["Dist_SMA200_%"] = (g["Close"] - g["SMA_200"]) / g["SMA_200"] * 100.0
+        g["EMA_12"] = g["Close"].ewm(span=12, adjust=False).mean()
+        g["EMA_26"] = g["Close"].ewm(span=26, adjust=False).mean()
+        macd = g["EMA_12"] - g["EMA_26"]
+        macd_sig = macd.ewm(span=9, adjust=False).mean()
+        g["MACD_Hist"] = (macd - macd_sig) / (g["Close"] + 1e-9) * 100.0
+
+        g["Dist_SMA200_%"] = (g["Close"] - g["SMA_200"]) / (g["SMA_200"] + 1e-9) * 100.0
+        g["Dist_SMA50_%"] = (g["Close"] - g["SMA_50"]) / (g["SMA_50"] + 1e-9) * 100.0
+
+        vol_sma50 = g["Volume"].rolling(50, min_periods=20).mean()
         g["Vol_SMA20"] = g["Volume"].rolling(20).mean()
         g["RVOL_5D"] = g["Volume"] / (g["Vol_SMA20"] + 1e-5)
-        g["Return_5D_%"] = g["Close"].pct_change(5) * 100.0
-        hi52 = g["High"].rolling(252, min_periods=40).max()
-        g["Drawdown_52W_%"] = (g["Close"] - hi52) / hi52 * 100.0
-        g["Tendencia_Sana"] = ((g["Close"] >= g["SMA_200"]) & (g["EMA_20"] >= g["SMA_50"])).astype(int)
-        g = g.dropna(subset=["RSI_2", "RSI_14", "ATR_%", "Dist_SMA200_%", "Drawdown_52W_%"]).reset_index(drop=True)
+        g["Vol_Ratio_20_50"] = g["Vol_SMA20"] / (vol_sma50 + 1e-5)
 
-        for _, r in g.iterrows():
-            cat = asignar_categoria(r["Drawdown_52W_%"], r["RSI_14"], r["RSI_2"], bool(r["Tendencia_Sana"]))
+        g["Return_5D_%"] = g["Close"].pct_change(5) * 100.0
+
+        hi52 = g["High"].rolling(252, min_periods=40).max()
+        hi10w = g["High"].rolling(50, min_periods=20).max()
+        hi5w = g["High"].rolling(25, min_periods=12).max()
+
+        g["Drawdown_52W_%"] = (g["Close"] - hi52) / (hi52 + 1e-9) * 100.0
+        g["Dist_52W_High_%"] = g["Drawdown_52W_%"]
+        g["Drawdown_10W_%"] = (g["Close"] - hi10w) / (hi10w + 1e-9) * 100.0
+        g["Drawdown_5W_%"] = (g["Close"] - hi5w) / (hi5w + 1e-9) * 100.0
+
+        g["RSI2_Trend"] = g["RSI_2"] - g["RSI_14"]
+        g["Kalman_Slope"] = kalman_slope(g["Close"])
+        g["Beta_60D"] = (g["Close"].pct_change(1).rolling(60, min_periods=20).std() * np.sqrt(252)).clip(0.1, 5.0)
+
+        hl_sq = (np.log(g["High"] / (g["Low"] + 1e-9))) ** 2
+        vol10 = np.sqrt(hl_sq.rolling(10).mean() / (4 * np.log(2))) * 100.0
+        vol60 = np.sqrt(hl_sq.rolling(60, min_periods=20).mean() / (4 * np.log(2))) * 100.0
+        g["GARCH_Regime"] = vol10 / (vol60 + 1e-5)
+
+        g["Tendencia_Sana"] = ((g["Close"] >= g["SMA_200"]) & (g["EMA_20"] >= g["SMA_50"])).astype(int)
+        g = g.dropna(subset=["RSI_2", "RSI_14", "ATR_%", "Dist_SMA200_%", "Dist_SMA50_%", "Drawdown_52W_%", "Drawdown_10W_%", "Drawdown_5W_%"]).reset_index(drop=True)
+
+        for r in g.to_dict("records"):
+            cat = asignar_categoria_v4(
+                r["Drawdown_52W_%"], r["Drawdown_10W_%"], r["Drawdown_5W_%"],
+                r["RSI_14"], r["RSI_2"], bool(r["Tendencia_Sana"]), r["Dist_SMA50_%"], r["Kalman_Slope"]
+            )
             if cat is None:
                 continue
             rows.append({
@@ -158,6 +242,11 @@ def compute_features(ohlcv):
                 "ATR_%": r["ATR_%"], "Dist_SMA200_%": r["Dist_SMA200_%"],
                 "RVOL_5D": r["RVOL_5D"], "Return_5D_%": r["Return_5D_%"],
                 "Tendencia_Sana": int(r["Tendencia_Sana"]), "Drawdown_52W_%": r["Drawdown_52W_%"],
+                "Dist_SMA50_%": r["Dist_SMA50_%"], "Drawdown_10W_%": r["Drawdown_10W_%"],
+                "Drawdown_5W_%": r["Drawdown_5W_%"], "Dist_52W_High_%": r["Dist_52W_High_%"],
+                "MACD_Hist": r["MACD_Hist"], "RSI2_Trend": r["RSI2_Trend"],
+                "Vol_Ratio_20_50": r["Vol_Ratio_20_50"], "Kalman_Slope": r["Kalman_Slope"],
+                "GARCH_Regime": r["GARCH_Regime"], "Beta_60D": r["Beta_60D"],
             })
     return pd.DataFrame(rows)
 
@@ -207,33 +296,67 @@ def build_dataset(ohlcv, horizon=11):
         g["SMA_200"] = g["Close"].rolling(200).mean()
         g["SMA_50"] = g["Close"].rolling(50).mean()
         g["EMA_20"] = g["Close"].ewm(span=20, adjust=False).mean()
-        g["Dist_SMA200_%"] = (g["Close"] - g["SMA_200"]) / g["SMA_200"] * 100.0
+        g["EMA_12"] = g["Close"].ewm(span=12, adjust=False).mean()
+        g["EMA_26"] = g["Close"].ewm(span=26, adjust=False).mean()
+        macd = g["EMA_12"] - g["EMA_26"]
+        macd_sig = macd.ewm(span=9, adjust=False).mean()
+        g["MACD_Hist"] = (macd - macd_sig) / (g["Close"] + 1e-9) * 100.0
+
+        g["Dist_SMA200_%"] = (g["Close"] - g["SMA_200"]) / (g["SMA_200"] + 1e-9) * 100.0
+        g["Dist_SMA50_%"] = (g["Close"] - g["SMA_50"]) / (g["SMA_50"] + 1e-9) * 100.0
+
+        vol_sma50 = g["Volume"].rolling(50, min_periods=20).mean()
         g["Vol_SMA20"] = g["Volume"].rolling(20).mean()
         g["RVOL_5D"] = g["Volume"] / (g["Vol_SMA20"] + 1e-5)
-        g["Return_5D_%"] = g["Close"].pct_change(5) * 100.0
-        hi52 = g["High"].rolling(252, min_periods=40).max()
-        g["Drawdown_52W_%"] = (g["Close"] - hi52) / hi52 * 100.0
-        g["Tendencia_Sana"] = ((g["Close"] >= g["SMA_200"]) & (g["EMA_20"] >= g["SMA_50"])).astype(int)
-        g = g.dropna(subset=["RSI_2", "RSI_14", "ATR_%", "Dist_SMA200_%", "Drawdown_52W_%"]).reset_index(drop=True)
+        g["Vol_Ratio_20_50"] = g["Vol_SMA20"] / (vol_sma50 + 1e-5)
 
-        for i in range(len(g) - horizon):
-            r = g.iloc[i]
-            cat = asignar_categoria(r["Drawdown_52W_%"], r["RSI_14"], r["RSI_2"], bool(r["Tendencia_Sana"]))
+        g["Return_5D_%"] = g["Close"].pct_change(5) * 100.0
+
+        hi52 = g["High"].rolling(252, min_periods=40).max()
+        hi10w = g["High"].rolling(50, min_periods=20).max()
+        hi5w = g["High"].rolling(25, min_periods=12).max()
+
+        g["Drawdown_52W_%"] = (g["Close"] - hi52) / (hi52 + 1e-9) * 100.0
+        g["Dist_52W_High_%"] = g["Drawdown_52W_%"]
+        g["Drawdown_10W_%"] = (g["Close"] - hi10w) / (hi10w + 1e-9) * 100.0
+        g["Drawdown_5W_%"] = (g["Close"] - hi5w) / (hi5w + 1e-9) * 100.0
+
+        g["RSI2_Trend"] = g["RSI_2"] - g["RSI_14"]
+        g["Kalman_Slope"] = kalman_slope(g["Close"])
+        g["Beta_60D"] = (g["Close"].pct_change(1).rolling(60, min_periods=20).std() * np.sqrt(252)).clip(0.1, 5.0)
+
+        hl_sq = (np.log(g["High"] / (g["Low"] + 1e-9))) ** 2
+        vol10 = np.sqrt(hl_sq.rolling(10).mean() / (4 * np.log(2))) * 100.0
+        vol60 = np.sqrt(hl_sq.rolling(60, min_periods=20).mean() / (4 * np.log(2))) * 100.0
+        g["GARCH_Regime"] = vol10 / (vol60 + 1e-5)
+
+        g["Tendencia_Sana"] = ((g["Close"] >= g["SMA_200"]) & (g["EMA_20"] >= g["SMA_50"])).astype(int)
+        g = g.dropna(subset=["RSI_2", "RSI_14", "ATR_%", "Dist_SMA200_%", "Dist_SMA50_%", "Drawdown_52W_%", "Drawdown_10W_%", "Drawdown_5W_%"]).reset_index(drop=True)
+
+        g_records = g.to_dict("records")
+        n_g = len(g_records)
+        max_d = ohlcv["Date"].max()
+        for i in range(n_g - horizon):
+            r = g_records[i]
+            cat = asignar_categoria_v4(
+                r["Drawdown_52W_%"], r["Drawdown_10W_%"], r["Drawdown_5W_%"],
+                r["RSI_14"], r["RSI_2"], bool(r["Tendencia_Sana"]), r["Dist_SMA50_%"], r["Kalman_Slope"]
+            )
             if cat is None:
                 continue
             p = CAT_PARAMS[cat]
             tp_price = r["Close"] * (1 + p["tp"])
             sl_price = r["Close"] * (1 - p["sl"])
-            fut = g.iloc[i + 1: i + 1 + horizon]
             target = 0
-            for _, f in fut.iterrows():
-                if f["Low"] <= sl_price:      # SL primero (igual que 1_extraer)
+            for k in range(i + 1, i + 1 + horizon):
+                f = g_records[k]
+                if f["Low"] <= sl_price:
                     target = 0
                     break
                 if f["High"] >= tp_price:
                     target = 1
                     break
-            days_old = (ohlcv["Date"].max() - r["Date"]).days
+            days_old = (max_d - r["Date"]).days
             w = math.exp(-math.log(2) * (days_old / HALFLIFE_DAYS))
             rows.append({
                 "Date": r["Date"], "Ticker": ticker, "Categoria": cat,
@@ -241,11 +364,16 @@ def build_dataset(ohlcv, horizon=11):
                 "Cat_Cazador_Dips": int(cat == "Cazador Dips"),
                 "Cat_Recup_Rapida": int(cat == "Recup. Rapida"),
                 "Cat_Cuchillos_Cayendo": int(cat == "Cuchillos Cayendo"),
-                "Close": r["Close"],
+                "Close": r["Close"], "High": r["High"], "Low": r["Low"],
                 "RSI_2": r["RSI_2"], "RSI_7": r["RSI_7"], "RSI_14": r["RSI_14"],
                 "ATR_%": r["ATR_%"], "Dist_SMA200_%": r["Dist_SMA200_%"],
                 "RVOL_5D": r["RVOL_5D"], "Return_5D_%": r["Return_5D_%"],
                 "Tendencia_Sana": int(r["Tendencia_Sana"]), "Drawdown_52W_%": r["Drawdown_52W_%"],
+                "Dist_SMA50_%": r["Dist_SMA50_%"], "Drawdown_10W_%": r["Drawdown_10W_%"],
+                "Drawdown_5W_%": r["Drawdown_5W_%"], "Dist_52W_High_%": r["Dist_52W_High_%"],
+                "MACD_Hist": r["MACD_Hist"], "RSI2_Trend": r["RSI2_Trend"],
+                "Vol_Ratio_20_50": r["Vol_Ratio_20_50"], "Kalman_Slope": r["Kalman_Slope"],
+                "GARCH_Regime": r["GARCH_Regime"], "Beta_60D": r["Beta_60D"],
                 "Sample_Weight": round(w, 4), "Target": target,
                 "TP_Pct": p["tp"] * 100.0, "SL_Pct": p["sl"] * 100.0,
             })

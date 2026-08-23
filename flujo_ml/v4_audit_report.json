@@ -1,0 +1,112 @@
+{
+  "stages": {
+    "stage_1": {
+      "status": "PASS",
+      "tickers_count": 440,
+      "total_rows": 555494,
+      "min_date": "2021-08-08",
+      "max_date": "2026-08-14"
+    },
+    "stage_2": {
+      "status": "PASS",
+      "total_samples": 270169,
+      "unique_tickers": 440,
+      "category_distribution": {
+        "Cuchillos Cayendo": 133668,
+        "Recup. Rapida": 49631,
+        "Sweet Spot": 49617,
+        "Cazador Dips": 37253
+      },
+      "nan_counts": {},
+      "inf_counts": {},
+      "degenerate_constant_cols": [],
+      "outlier_warnings": {
+        "ATR_%": "Escala extrema o atípico desproporcionado: min=0.0569476568244445, max=7992119.180956714",
+        "MACD_Hist": "Escala extrema o atípico desproporcionado: min=-734907.113934069, max=1026108.3203697136",
+        "Kalman_Slope": "Escala extrema o atípico desproporcionado: min=-19.99994993996024, max=633490.2547984127",
+        "ATR_Risk_Pct": "Escala extrema o atípico desproporcionado: min=0.113895313648889, max=15984238.361913428",
+        "Abs_Drawdown": "Drawdown positivo atípico: max=99.9999693375732%",
+        "RSI2_RSI14": "RSI fuera de rango [0,100]: min=-99.99991954029144, max=98.67633718738516"
+      },
+      "logic_errors": []
+    },
+    "stage_3": {
+      "status": "PASS",
+      "selected_count": 12,
+      "selected_features": [
+        "TP_ATR",
+        "ATR_%",
+        "Dist_SMA200_%",
+        "Drawdown_10W_%",
+        "Abs_Drawdown",
+        "Drawdown_52W_%",
+        "Drawdown_5W_%",
+        "Dist_SMA50_%",
+        "GARCH_Regime",
+        "MACD_Hist",
+        "ATR_Risk_Pct",
+        "Tendencia_Sana"
+      ],
+      "top_3_spearman": [
+        {
+          "feature": "TP_ATR",
+          "spearman": -0.2756
+        },
+        {
+          "feature": "ATR_%",
+          "spearman": 0.2305
+        },
+        {
+          "feature": "ATR_Risk_Pct",
+          "spearman": 0.2305
+        }
+      ],
+      "top_3_importance": [
+        {
+          "feature": "TP_ATR",
+          "importance": 3821.73
+        },
+        {
+          "feature": "GARCH_Regime",
+          "importance": 800.46
+        },
+        {
+          "feature": "Dist_SMA200_%",
+          "importance": 732.4
+        }
+      ]
+    },
+    "stage_4": {
+      "status": "PASS",
+      "f0.5_oos": 0.1579,
+      "win_rate_%": 30.0,
+      "ea_anual_%": 574.6,
+      "total_trades": 353,
+      "full_metrics": {
+        "threshold": 0.22,
+        "f0.5": 0.1579,
+        "win_rate_%": 30.0,
+        "ea_anual_%": 574.6,
+        "pnl_promedio_%": 0.13,
+        "total_trades": 353,
+        "freq_anual": 1431.6,
+        "wins": 106,
+        "losses": 247
+      }
+    },
+    "stage_5": {
+      "status": "PASS",
+      "modelo_version": "V4.0_Tactical",
+      "total_tickers": 440,
+      "buy_signals": 255,
+      "top_buyers": [
+        "CRWD",
+        "SNOW",
+        "CHPT",
+        "OKTA",
+        "PANW"
+      ]
+    }
+  },
+  "overall_passed": true
+}

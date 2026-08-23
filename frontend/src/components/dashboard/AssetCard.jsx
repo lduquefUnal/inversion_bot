@@ -45,28 +45,29 @@ const getGeminiKey = () =>
   '';
 
 const MODELS = [
-  'gemini-3.1-flash-lite',
-  'gemini-3.5-flash-lite',
-  'gemini-2.5-flash-lite',
-  'gemini-2.5-flash',
-  'gemini-3-flash',
   'gemini-3.5-flash',
   'gemini-3.6-flash',
-  'gemini-2.5-flash-preview-05-20',
-  'gemma-4-26b-it',
+  'gemini-3.0-pro',
+  'gemini-3.1-flash-lite',
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-pro',
+  'gemini-1.5-flash',
 ];
 
 // ─── Constructor del prompt (exportado para mostrarlo al usuario) ──────────────
 export const buildPrompt = (item) => {
   const {
-    Ticker, Nombre, Categoria, Precio_Actual,
+    Ticker, Nombre, Categoria, Precio_Actual, Sector,
     'Probabilidad_Exito_%': prob, 'WinRate_Modelo_%': winRate,
     Veredicto, Veredicto_V2,
-    'Drawdown_52W_%': drawdown, RSI_14D: rsi14, RSI_2D: rsi2,
-    FCF: fcf, PE_Ratio: pe, Beta: beta,
+    'Drawdown_52W_%': drawdown, 'Drawdown_10W_%': dd10w, RSI_14D: rsi14, RSI_2D: rsi2,
+    FCF: fcf, PE_Ratio: pe, Beta: beta, Beta_60D: beta60,
+    Kalman_Slope: kalman, GARCH_Regime: garch, TP_ATR: tpAtr,
+    'Dist_SMA50_%': distSma50, 'Dist_SMA200_%': distSma200, 'ATR_%': atrPct,
   } = item;
 
-  const veredictoVal = Veredicto || Veredicto_V2 || 'HOLD';
+  const veredictoVal = Veredicto || Veredicto_V2 || 'BUY';
   const p = getCategoryParams(Categoria);
   const tpPct = item['Take_Profit_%'] ?? p.tp;
   const slPct = item['Stop_Loss_%'] ?? p.sl;
@@ -75,36 +76,48 @@ export const buildPrompt = (item) => {
   const priceNum = Number(Precio_Actual || 0);
   const tpPrice = item.Take_Profit_$ ?? (priceNum ? (priceNum * (1 + tpPct / 100)).toFixed(2) : 'N/A');
   const slPrice = item.Stop_Loss_ATR_$ ?? item.Stop_Loss_ATR_USD ?? (priceNum ? (priceNum * (1 - slPct / 100)).toFixed(2) : 'N/A');
+  const sectorStr = Sector || (Nombre?.toLowerCase().includes('inc') || Nombre?.toLowerCase().includes('corp') ? 'Renta Variable / Tech & Growth' : 'Mercado Accionario US');
 
-  return `Eres un analista cuantitativo senior especializado en Swing Trading y Captura Táctica de Dips.
-Estrategia: Swing trading de dips tácticos de corto plazo (sobreventa RSI 2D/14D, rebote en soportes y modelos ML especializados V3.7).
+  return `Eres un analista cuantitativo senior y gestor de portafolio táctico.
+Modelo de Entrada: LightGBM V4.0 Tactical (12 variables cuantitativas, filtro Kalman sin lag, volatilidad GARCH y gestión dinámico-adaptativa TP/SL por ATR).
 
-DATOS DEL ACTIVO — ${Ticker} (${Nombre}):
-• Categoría de Estrategia: ${Categoria}
-• Precio Actual: $${Precio_Actual} | Probabilidad Modelo ML: ${prob}% | Veredicto: ${veredictoVal}
-• Drawdown 52W: ${drawdown}% | RSI 14D: ${rsi14} | RSI 2D (Connors): ${rsi2}
-• FCF: ${fcf} | P/E: ${pe} | Beta: ${beta}
-• Parámetros Operativos: Take Profit +${tpPct}% ($${tpPrice}) | Stop Loss -${slPct}% ($${slPrice}) | Límite Días (Time Stop): ${limiteDias} días
+FICHA TÁCTICA DEL ACTIVO — ${Ticker} (${Nombre}):
+• Perfil & Sector: ${sectorStr} | Categoría Táctica: ${Categoria}
+• Precio Actual: $${Precio_Actual} USD | Probabilidad Modelo ML: ${prob}% | Veredicto: ${veredictoVal}
+• Estructura Táctica (V4):
+  - Tendencia Kalman Slope: ${kalman ?? 'Positiva/En formación'} | Régimen GARCH Vol: ${garch ?? 'Normal'}
+  - Ratio TP/ATR: ${tpAtr ? `${tpAtr}x` : '2.2x'} | Volatilidad ATR: ${atrPct ? `${atrPct}%` : 'Moderada'}
+  - Desviación SMA50: ${distSma50 != null ? `${distSma50}%` : 'N/A'} | Desviación SMA200: ${distSma200 != null ? `${distSma200}%` : 'N/A'}
+• Osciladores y Drawdown:
+  - Drawdown 10W: ${dd10w != null ? `${dd10w}%` : 'N/A'} | Drawdown 52W: ${drawdown != null ? `${drawdown}%` : 'N/A'}
+  - RSI 14D: ${rsi14 ?? 'N/A'} | RSI 2D (Connors): ${rsi2 ?? 'N/A'}
+• Métricas Financieras & Riesgo:
+  - FCF: ${fcf ?? 'N/A'} | P/E: ${pe && pe !== 'N/A' ? pe : 'Negativo/Growth'} | Beta 60D: ${beta60 ?? beta ?? '1.0'}
+• Plan de Operación Adaptativo ATR:
+  - Take Profit Dinámico: +${tpPct}% ($${tpPrice} USD)
+  - Stop Loss por Volatilidad ATR: -${slPct}% ($${slPrice} USD)
+  - Time Stop (Expiración): ${limiteDias} días hábiles
 
-INSTRUCCIONES OBLIGATORIAS:
-- PROHIBIDO mencionar "ATR", "Trailing Stop" o "Kelly %".
-- Enfoca todo el análisis en la estrategia de Swing Trading de Dips Tácticos.
+INSTRUCCIONES DE REDACCIÓN:
+1. Define brevemente el tipo de empresa, modelo de negocio y sector según ${Ticker} (${Nombre}).
+2. Adapta la tesis al perfil táctico (${Categoria}): si es Recup. Rápida enfatiza la aceleración de tendencia (Kalman); si es Dips/Cuchillos enfatiza la sobreventa extrema RSI y la compresión GARCH.
+3. Integra explícitamente las variables V4 (Kalman Slope, GARCH, ratio TP/ATR o Beta 60D).
 
-Genera una TESIS DE INVERSIÓN estructurada:
+Estructura requerida:
 
-📈 **CASO BULL:**
-[2-3 líneas: catalizadores técnicos y fundamentales de rebote. RSI, drawdown y solidez de caja.]
+🏢 **RUBRO & PERFIL DE NEGOCIO:**
+[1-2 líneas definiendo el tipo de empresa y el contexto del sector.]
 
-📉 **CASO BEAR:**
-[2-3 líneas: riesgos principales de mercado, Beta alta o flujos de caja.]
+📈 **TESIS ALCISTA (CASO BULL):**
+[2-3 líneas: catalizadores tácticos de rebote respaldados por el filtro Kalman Slope, la compresión GARCH o el nivel de sobreventa RSI.]
 
-🎯 **VEREDICTO CUANTITATIVO:**
-[1-2 líneas directas evaluando si la probabilidad del ${prob}% valida la entrada al objetivo de Take Profit de $${tpPrice} (+${tpPct}%).]
+📉 **RIESGOS PRINCIPALES (CASO BEAR):**
+[2 líneas: riesgos clave por beta de mercado, desviación de SMA o flujos de caja.]
 
-⚠️ **GESTIÓN DE RIESGO:**
-[1 línea: salida estricta si toca el Stop Loss en $${slPrice} (-${slPct}%) o al vencer el Time Stop de ${limiteDias} días.]
+🎯 **PLAN CUANTITATIVO Y SALIDA:**
+[2 líneas: confirmación con la probabilidad del ${prob}%, buscando el TP de $${tpPrice} (+${tpPct}%) con Stop Loss en $${slPrice} (-${slPct}%) o cierre por expiración Time Stop en ${limiteDias}d.]
 
-Español. Tono cuantitativo y limpio. Sin relleno. Máximo 200 palabras.`;
+Español. Tono analítico, riguroso y adaptado al perfil del activo. Sin explicaciones genéricas. Máximo 220 palabras.`;
 };
 
 // ─── Hook: llama Gemini con fallback ─────────────────────────────────────────
@@ -364,50 +377,78 @@ const AssetCard = ({ item, rank }) => {
           </div>
         </div>
 
-        {/* Pills de métricas */}
+        {/* Pills de métricas con Tooltips Explicativos completos */}
         <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+          <Pill label="Kalman:" value={item.Kalman_Slope != null ? (Number(item.Kalman_Slope) > 0 ? `+${item.Kalman_Slope}` : `${item.Kalman_Slope}`) : 'En formación'}
+            color={Number(item.Kalman_Slope ?? 0) > 0 ? '#10b981' : '#f43f5e'}
+            bg={Number(item.Kalman_Slope ?? 0) > 0 ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.12)'}
+            border={Number(item.Kalman_Slope ?? 0) > 0 ? 'rgba(16,185,129,0.3)' : 'rgba(244,63,94,0.3)'}
+            title="Kalman Slope: Pendiente y velocidad de tendencia real calculada por el Filtro de Kalman de 2 estados sin desfasaje." />
+          <Pill label="GARCH:" value={item.GARCH_Regime != null ? `${item.GARCH_Regime}x` : '1.00x'}
+            color="#38bdf8" bg="rgba(56,189,248,0.12)" border="rgba(56,189,248,0.3)"
+            title="GARCH Regime: Ratio de régimen de volatilidad esperada en tiempo real vs mediana de 60 días." />
+          <Pill label="TP/ATR:" value={item.TP_ATR != null ? `${item.TP_ATR}x` : (atr_pct ? (tpPct / atr_pct).toFixed(2) + 'x' : 'N/A')}
+            color="#a78bfa" bg="rgba(167,139,250,0.1)" border="rgba(167,139,250,0.3)"
+            title="TP/ATR: Multiplicador de Take Profit en unidades de volatilidad ATR. Medida de beneficio relativo por ruido." />
+          <Pill label="Kelly:" value={item['Position_Sizing_Kelly_%'] != null ? `${item['Position_Sizing_Kelly_%']}%` : 'N/A'}
+            color="#38bdf8" bg="rgba(56,189,248,0.1)" border="rgba(56,189,248,0.3)"
+            title="Kelly %: Asignación máxima recomendada de tu portafolio calculada mediante el Criterio de Kelly Medio." />
+          <Pill label="Beta 60D:" value={item.Beta_60D != null ? `${item.Beta_60D}` : 'N/A'}
+            color="#f59e0b" bg="rgba(245,158,11,0.1)" border="rgba(245,158,11,0.3)"
+            title="Beta 60D: Volatilidad y sensibilidad de riesgo rodante de 60 días en tiempo real vs mercado." />
+          <Pill label="SMA 50:" value={item['Dist_SMA50_%'] != null ? `${item['Dist_SMA50_%']}%` : 'N/A'}
+            color={Number(item['Dist_SMA50_%'] ?? 0) >= 0 ? '#10b981' : '#ef4444'}
+            title="Distancia % a SMA 50: Desviación respecto a la media móvil táctica de 50 días." />
+          <Pill label="DD 10W:" value={item['Drawdown_10W_%'] != null ? `${item['Drawdown_10W_%']}%` : 'N/A'}
+            color="#94a3b8"
+            title="Drawdown 10 Semanas: Caída máxima porcentual registrada en los últimos 10 fines de semana." />
           <Pill label="DD 52W:" value={drawdown != null ? `${drawdown}%` : 'N/A'}
             color={dd > 40 ? '#ef4444' : dd > 20 ? '#f59e0b' : '#10b981'}
             bg={dd > 40 ? 'rgba(239,68,68,0.1)' : dd > 20 ? 'rgba(245,158,11,0.1)' : 'rgba(16,185,129,0.1)'}
             border={dd > 40 ? 'rgba(239,68,68,0.3)' : dd > 20 ? 'rgba(245,158,11,0.3)' : 'rgba(16,185,129,0.3)'}
-            title="Caída desde máximo 52 semanas. >40% = dip agresivo (Connors)." />
+            title="Drawdown 52 Semanas: Caída acumulada respecto al pico máximo de las últimas 52 semanas." />
           <Pill label="RSI 14D:" value={rsi14n.toFixed(1)}
             color={rsi14n < 30 ? '#10b981' : rsi14n > 70 ? '#ef4444' : '#eab308'}
             bg={rsi14n < 30 ? 'rgba(16,185,129,0.1)' : 'rgba(30,41,59,0.9)'}
             border={rsi14n < 30 ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.08)'}
-            title="RSI 14 días. <30 = sobreventa. >70 = sobrecompra." />
+            title="RSI 14 Días: Índice de Fuerza Relativa de 14 días. <30 indica sobreventa." />
           <Pill label="RSI 2D:" value={rsi2 != null ? Number(rsi2).toFixed(1) : 'N/A'}
             color={Number(rsi2) < 10 ? '#10b981' : '#a78bfa'}
-            title="RSI 2 días (Connors). <10 = entrada extrema de corto plazo." />
+            title="RSI 2 Días (Connors): Indicador de sobreventa de muy corto plazo. <10 indica dip extremo." />
+          <Pill label="ATR %:" value={item['ATR_%'] != null ? `${item['ATR_%']}%` : 'N/A'}
+            color="#60a5fa"
+            title="ATR %: Volatilidad promedio del rango diario expresada como porcentaje del precio actual." />
           <Pill label="FCF:" value={fcf != null && fcf !== 'N/A' ? String(fcf) : 'N/A'}
             color={fcfNeg ? '#ef4444' : '#10b981'}
             bg={fcfNeg ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'}
             border={fcfNeg ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}
-            title="Free Cash Flow. Positivo = empresa genera caja real." />
-          <Pill label="P/E:" value={pe != null && pe !== 'N/A' ? String(pe) : 'N/A'} title="Price/Earnings. <15 barato, >30 caro." />
-          <Pill label="Beta:" value={beta != null && beta !== 'N/A' ? Number(betaN).toFixed(2) : 'N/A'}
-            color={betaN > 1.5 ? '#f59e0b' : '#94a3b8'}
-            title="Volatilidad vs S&P 500. >1.5 = activo especulativo." />
+            title="Free Cash Flow: Flujo de Caja Libre generado por la compañía en los estados financieros." />
+          <Pill
+            label="P/E:"
+            value={pe != null && pe !== 'N/A' ? String(pe) : (item.PS_Ratio ? `P/S ${item.PS_Ratio}` : 'Neg. (Growth)')}
+            color={pe != null && pe !== 'N/A' ? undefined : '#f59e0b'}
+            title={pe != null && pe !== 'N/A' ? "Price / Earnings Ratio: Múltiplo de valoración sobre ganancias netas." : "P/E No Aplicable: La compañía reporta utilidad neta negativa (etapa de crecimiento o alta reinversión). Evaluar FCF."}
+          />
         </div>
 
-        {/* Parámetros Operativos V3.7: TP, SL, Días y Umbral */}
+        {/* Parámetros Operativos V4: TP, SL, Días y Umbral con Tooltips */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <div style={{ flex: '1 1 95px', background: 'rgba(16,185,129,0.08)', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.2)', padding: '10px 14px' }}>
+          <div title="Take Profit Objetivo: Precio y % donde el bot ejecutará el cobro de ganancias dinámico." style={{ flex: '1 1 95px', background: 'rgba(16,185,129,0.08)', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.2)', padding: '10px 14px', cursor: 'help' }}>
             <div style={{ fontSize: '0.62rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>🎯 Take Profit</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#10b981' }}>+{tpPct}%</div>
             <div style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 700, marginTop: '2px' }}>(${tpPrice})</div>
           </div>
-          <div style={{ flex: '1 1 95px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.2)', padding: '10px 14px' }}>
+          <div title="Stop Loss de Protección: Límite máximo de pérdida adaptado a la volatilidad ATR del activo." style={{ flex: '1 1 95px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.2)', padding: '10px 14px', cursor: 'help' }}>
             <div style={{ fontSize: '0.62rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>🛑 Stop Loss</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#ef4444' }}>-{slPct}%</div>
             <div style={{ fontSize: '0.72rem', color: '#dc2626', fontWeight: 700, marginTop: '2px' }}>(${slPrice})</div>
           </div>
-          <div style={{ flex: '1 1 95px', background: 'rgba(96,165,250,0.08)', borderRadius: '10px', border: '1px solid rgba(96,165,250,0.2)', padding: '10px 14px' }}>
+          <div title="Límite de Días (Time Stop): Tiempo máximo de permanencia antes de cerrar la orden para rotar capital." style={{ flex: '1 1 95px', background: 'rgba(96,165,250,0.08)', borderRadius: '10px', border: '1px solid rgba(96,165,250,0.2)', padding: '10px 14px', cursor: 'help' }}>
             <div style={{ fontSize: '0.62rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>⏱️ Límite Días</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#60a5fa' }}>{limiteDias}d</div>
             <div style={{ fontSize: '0.72rem', color: '#3b82f6', fontWeight: 600, marginTop: '2px' }}>expiración</div>
           </div>
-          <div style={{ flex: '1 1 95px', background: 'rgba(30,41,59,0.8)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', padding: '10px 14px' }}>
+          <div title="Umbral Mínimo del Modelo: Probabilidad requerida por LightGBM V4 para calificar la señal como BUY." style={{ flex: '1 1 95px', background: 'rgba(30,41,59,0.8)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', padding: '10px 14px', cursor: 'help' }}>
             <div style={{ fontSize: '0.62rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Umbral Modelo</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#94a3b8' }}>{umbralVal}%</div>
             <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, marginTop: '2px' }}>prob. mínima</div>

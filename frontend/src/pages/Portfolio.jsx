@@ -1265,18 +1265,16 @@ const Portfolio = () => {
   };
 
   const fechaActualizacionStr = useMemo(() => {
-    const rawDate = marketData?._fecha_db || marketData?.fecha_generacion;
+    const rawDate = marketData?.fecha_inferencia || marketData?._fecha_db || marketData?.fecha_generacion;
     if (!rawDate) return 'Tiempo Real';
     try {
-      const d = new Date(rawDate);
+      const d = new Date(rawDate.includes('T') ? rawDate : rawDate.replace(' ', 'T'));
       if (isNaN(d.getTime())) return rawDate;
-      
-      const utcStr = d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }) +
-        ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC';
 
-      const cotStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' }) + ' COT';
+      const cotStr = d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) + ' · ' +
+        d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' }) + ' COT';
 
-      return `${utcStr} · ${cotStr}`;
+      return cotStr;
     } catch (e) {
       return rawDate;
     }
@@ -1327,11 +1325,11 @@ const Portfolio = () => {
           </div>
           <p className="subtitle">Seguimiento de compras y gestión táctica de posiciones reales</p>
           <p className="data-date">
-            🕒 Última actualización de datos: <strong>{fechaActualizacionStr}</strong> {marketData?._fuente === 'supabase' ? '⚡ (Supabase Real-Time)' : ''}
+            🕒 Precios de Mercado: <strong>{fechaActualizacionStr}</strong> {marketData?._fuente === 'supabase' ? '⚡ (Supabase Live)' : ''}
             {tickersParaLive.some(t => livePrices[t]) && !liveLoading && (
-              <span> · 🔴 Criptos en vivo: {tickersParaLive.filter(t => livePrices[t]).join(', ')}</span>
+              <span> · 🔴 Criptos: CoinGecko (En Vivo)</span>
             )}
-            {tickersParaLive.some(t => !livePrices[t]) && <span> · 📦 Acciones: snapshot Supabase (4x/día)</span>}
+            {tickersParaLive.some(t => !livePrices[t]) && <span> · 📦 Acciones: Snapshot Supabase (4x/día intradía)</span>}
           </p>
         </div>
 

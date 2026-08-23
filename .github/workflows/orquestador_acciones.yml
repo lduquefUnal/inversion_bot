@@ -1,17 +1,21 @@
-name: Orquestador - Inferencia ML V3.7 & Sync Supabase (Modo Ligero)
+name: Orquestador - Inferencia ML V4.0 & Sync Portafolio Supabase
 
 on:
   schedule:
     - cron: '0 13,16,19,21 * * 1-5' # 4x al día en días hábiles de mercado (UTC: 13:00, 16:00, 19:00, 21:00)
-  workflow_dispatch:
+  workflow_dispatch:                 # Permite dispararlo manualmente en cualquier momento
 
 jobs:
-  flujo-orquestado:
+  flujo-orquestado-v4:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configurar Python 3.10
         uses: actions/setup-python@v5
@@ -24,17 +28,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requerimientos_bot.txt
 
-      - name: Paso 1 - Extracción Ligera de Datos de Mercado
+      - name: Paso 1 - Extracción Ligera de Precios en Vivo y Métricas
         run: python flujo/paso1_descargar.py --ligero
 
-      - name: Paso 1.5 - Actualización Incremental de Caché OHLCV (1x/día o Idempotente)
+      - name: Paso 2 - Actualización Incremental de Caché OHLCV
         run: python flujo_ml/12_actualizar_ohlcv.py
 
-      - name: Paso 2 - Inferencia en Tiempo Real Modelo V3.7
+      - name: Paso 3 - Inferencia en Tiempo Real Modelo LightGBM V4.0 Tactical
         run: python flujo_ml/4_inferencia_oraculo.py
 
-      - name: Paso 3 - Publicar resultados en Supabase PostgreSQL
+      - name: Paso 4 - Publicar Precios Actualizados y Señales en Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python utils/publicar_supabase.py
+
+      - name: Paso 5 - Commit & Push de Precios y Predicciones V4 (Deploy Vercel)
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Orquestador V4"
+          git add flujo_datos/predicciones_v2.json frontend/public/predicciones_v2.json
+          git commit -m "📊 Orquestador V4: Precios Intradía de Portafolio y Predicciones Actualizadas" || echo "No hay cambios para comitear"
+          git push

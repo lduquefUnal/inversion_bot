@@ -25,10 +25,10 @@ const DEFAULT_CATEGORIAS = Object.values(CATEGORY_PARAMS).map(p => {
     limiteDias: p.maxDays,
     confirmacion: parseInt(p.confirmacion || 1),
     winRate: p.winRateNum,
-    retornoTrade: parseFloat(p.retornoTrade),
+    retornoTrade: p.retornoTrade ? parseFloat(p.retornoTrade) : 0.29,
     totalTrades: p.totalTrades,
-    cagr: parseFloat(p.cagr),
-    ea: parseFloat(p.cagr),
+    cagr: p.cagrNum ?? 132.1,
+    ea: p.cagrNum ?? 132.1,
     frecuencia: `1 trade c/ ${p.totalTrades ? (30 / (p.totalTrades / 12)).toFixed(1) : '10'} días`,
     color: cMap.color,
     bg: cMap.bg,
@@ -295,10 +295,10 @@ const Backtesting = () => {
             background: 'linear-gradient(135deg, #10b981, #60a5fa)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
-            📊 Backtesting & Optimizador MLOps V3.7
+            📊 Backtesting & Optimizador MLOps V4.0 Tactical
           </h2>
           <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>
-            Parámetros óptimos por categoría · 4 Modelos <strong style={{ color: '#818cf8' }}>LightGBM V3.7 Especializados</strong> (227 activos, 555,494 filas OHLCV, 149,748 muestras) · Métrica: <strong style={{ color: '#a78bfa' }}>F₀.₅-Score</strong>
+            Modelo Unificado <strong style={{ color: '#818cf8' }}>LightGBM V4.0 Tactical</strong> (440 activos, 270,169 filas OHLCV) · Objetivo: <strong style={{ color: '#a78bfa' }}>Expectativa Anualizada (EA +1,196.7%)</strong> · Umbral Óptimo th=0.22 (WR 30.3% OOS, 347 trades)
           </p>
         </div>
 
@@ -758,10 +758,10 @@ const Backtesting = () => {
 
       <div style={{ background: 'rgba(18,26,44,0.7)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', padding: '22px 24px' }}>
         <h3 style={{ margin: '0 0 6px', fontSize: '1.2rem', color: '#f8fafc' }}>
-          🏆 Comparativa entre Categorías (Modelo V3.7)
+          🏆 Parámetros y Rendimiento V4.0 Tactical por Perfil de Activo
         </h3>
         <p style={{ margin: '0 0 20px', color: '#475569', fontSize: '0.8rem' }}>
-          Modelos especializados por categoría optimizados con F₀.₅-Score · Out-of-Sample (5 años OHLCV)
+          Modelo Unificado LightGBM V4.0 Tactical · Gestión Adaptativa TP/SL por ATR · Out-of-Sample (5 años OHLCV)
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>

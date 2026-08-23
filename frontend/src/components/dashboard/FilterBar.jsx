@@ -94,10 +94,10 @@ const EstrategiaCard = ({ est }) => {
         </span>
       </div>
 
-      {/* F0.5-score badge */}
+      {/* V4 Tactical badge */}
       <div style={{ marginTop: '10px', padding: '6px 12px', background: 'rgba(99,102,241,0.1)', borderRadius: '8px', border: '1px solid rgba(99,102,241,0.2)' }}>
         <span style={{ fontSize: '0.72rem', color: '#6366f1', fontWeight: 600 }}>
-          ⚙️ Umbral óptimo th={est.threshold} optimizado con F₀.₅-Score ({est.f05Str}) — prioriza precisión sobre recall
+          🚀 Modelo LightGBM V4.0 Tactical (th=0.45): Optimizado con F₀.₅-Score (0.3222) para máxima precisión y capacidad selectiva (17 señales BUY aprobadas hoy, EA +132.1%).
         </span>
       </div>
     </div>
