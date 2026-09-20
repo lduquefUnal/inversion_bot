@@ -17,15 +17,15 @@
   "best_threshold": 0.55,
   "metrics_oos": {
     "threshold": 0.55,
-    "f0.5": 0.2134,
-    "win_rate_%": 43.8,
-    "ea_anual_%": 153.4,
-    "pnl_promedio_%": 1.44,
+    "f0.5": 0.1829,
+    "win_rate_%": 37.5,
+    "ea_anual_%": 33.4,
+    "pnl_promedio_%": 0.45,
     "total_trades": 16,
     "freq_anual": 64.9,
-    "wins": 7,
-    "losses": 9
+    "wins": 6,
+    "losses": 10
   },
   "train_samples": 235232,
-  "test_samples": 22433
+  "test_samples": 24014
 }
