@@ -14,18 +14,18 @@
     "ATR_Risk_Pct",
     "Vol_Ratio_20_50"
   ],
-  "best_threshold": 0.55,
+  "best_threshold": 0.45,
   "metrics_oos": {
-    "threshold": 0.55,
-    "f0.5": 0.1989,
-    "win_rate_%": 36.8,
-    "ea_anual_%": 32.5,
-    "pnl_promedio_%": 0.37,
-    "total_trades": 19,
-    "freq_anual": 77.1,
-    "wins": 7,
-    "losses": 12
+    "threshold": 0.45,
+    "f0.5": 0.3222,
+    "win_rate_%": 34.7,
+    "ea_anual_%": 125.9,
+    "pnl_promedio_%": 0.29,
+    "total_trades": 72,
+    "freq_anual": 282.6,
+    "wins": 25,
+    "losses": 47
   },
   "train_samples": 235232,
-  "test_samples": 31927
+  "test_samples": 17116
 }

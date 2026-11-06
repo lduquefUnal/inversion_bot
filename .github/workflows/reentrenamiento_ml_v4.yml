@@ -57,4 +57,5 @@ jobs:
           git config --local user.name "GitHub Action MLOps V4"
           git add Modelos/ flujo_datos/ frontend/public/
           git commit -m "🤖 MLOps: Re-entrenamiento Semanal V4.0 Tactical, Modelo Actualizado y Métricas OOS" || echo "No hay cambios para comitear"
+          git pull --rebase origin main || true
           git push

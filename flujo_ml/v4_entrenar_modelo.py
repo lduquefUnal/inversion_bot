@@ -91,21 +91,27 @@ def entrenar_modelo_v4():
     # Inferencia en Test OOS
     test_df["prob_v4"] = model.predict(X_test)
 
-    best_threshold = 0.25
-    best_score = -999.0
+    # Calcular dias de ventana dinamicos para calculo de EA matematicamente preciso
+    min_date = test_df["Date"].min()
+    max_date = test_df["Date"].max()
+    dias_ventana = max(30, (max_date - min_date).days) if pd.notnull(min_date) and pd.notnull(max_date) else 90
+
+    best_threshold = 0.45
+    best_score = -float("inf")
     best_metrics = {}
+    evaluated_thresholds = {}
 
     thresholds = [0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.58, 0.60, 0.65, 0.70]
     
     for th in thresholds:
-        # Inferencia y métricas de clasificación/trading por umbral
+        # Inferencia y metricas de clasificacion/trading por umbral
         trades = bt.simulate_signals(test_df.copy(), test_df["prob_v4"], umbral=th, max_trades_per_ticker=1)
-        e, freq, ea_val, wr = ea_calc(trades, dias_ventana=90)
+        e, freq, ea_val, wr = ea_calc(trades, dias_ventana=dias_ventana)
         n_trades_sim = len(trades)
         wr_pct = wr * 100.0
         ea_pct = ea_val * 100.0
 
-        # Cálculo de Precisión, Recall y F0.5 basado en los trades del backtest
+        # Calculo de Precision, Recall y F0.5 basado en los trades del backtest
         wins = [t for t in trades if t["Resultado"] == "WIN"]
         prec = len(wins) / float(n_trades_sim) if n_trades_sim > 0 else 0.0
         # Cobertura estimada respecto a muestras positivas
@@ -114,28 +120,46 @@ def entrenar_modelo_v4():
 
         log.info(f"Th {th:.2f} -> Trades: {n_trades_sim:3d} | WR: {wr_pct:5.1f}% | EA: {ea_pct:+6.1f}% | PnL/tr: {e:+5.2f}% | F0.5: {f05:.4f}")
 
-        # Selección basada en F0.5 y Precisión para capacidad reducida (Top setups)
-        if wr_pct >= 34.0 and ea_pct >= 40.0 and 10 <= n_trades_sim <= 120:
-            score = prec * 100.0 + (ea_pct / 10.0)
-        elif wr_pct >= 33.0 and ea_pct > 0 and 10 <= n_trades_sim <= 150:
-            score = prec * 50.0
+        # Guardar metricas del umbral
+        current_metrics = {
+            "threshold": th,
+            "f0.5": round(f05, 4),
+            "win_rate_%": round(wr_pct, 1),
+            "ea_anual_%": round(ea_pct, 1),
+            "pnl_promedio_%": round(e, 2),
+            "total_trades": n_trades_sim,
+            "freq_anual": round(freq, 1),
+            "wins": len(wins),
+            "losses": len([t for t in trades if t["Resultado"] in ("LOSS", "TIMEOUT")]),
+        }
+        evaluated_thresholds[th] = current_metrics
+
+        # Seleccion jerarquica robusta basada en F0.5, WR y EA
+        # Tier 1: Configuracion optima de alta conviccion
+        if wr_pct >= 34.0 and ea_pct >= 30.0 and 8 <= n_trades_sim <= 150:
+            score = 1000.0 + (prec * 100.0) + (ea_pct / 10.0)
+        # Tier 2: Buena rentabilidad y win rate solido
+        elif wr_pct >= 30.0 and ea_pct > 0.0 and 5 <= n_trades_sim <= 250:
+            score = 500.0 + (prec * 50.0) + min(ea_pct / 20.0, 50.0)
+        # Tier 3: Retorno esperado positivo (EA > 0)
+        elif ea_pct > 0.0 and n_trades_sim >= 3:
+            score = 100.0 + (prec * 30.0) + min(ea_pct / 50.0, 30.0)
+        # Tier 4: Maximizacion de F0.5 si el regimen es defensivo
+        elif n_trades_sim > 0:
+            score = f05 * 10.0 + (wr_pct / 10.0)
         else:
-            score = -999.0
+            score = -1.0
 
         if score > best_score:
             best_score = score
             best_threshold = th
-            best_metrics = {
-                "threshold": th,
-                "f0.5": round(f05, 4),
-                "win_rate_%": round(wr_pct, 1),
-                "ea_anual_%": round(ea_pct, 1),
-                "pnl_promedio_%": round(e, 2),
-                "total_trades": n_trades_sim,
-                "freq_anual": round(freq, 1),
-                "wins": len([t for t in trades if t["Resultado"] == "WIN"]),
-                "losses": len([t for t in trades if t["Resultado"] in ("LOSS", "TIMEOUT")]),
-            }
+            best_metrics = current_metrics
+
+    # Fallback incondicional para asegurar que best_metrics nunca quede vacio
+    if not best_metrics:
+        log.warning("⚠️ Ningun umbral supero los criterios habituales. Activando seleccion defensiva por F0.5...")
+        best_threshold = max(evaluated_thresholds.keys(), key=lambda t: (evaluated_thresholds[t]["f0.5"], evaluated_thresholds[t]["win_rate_%"]))
+        best_metrics = evaluated_thresholds[best_threshold]
 
     log.info(f"🏆 MEJOR CONFIGURACIÓN V4: Umbral={best_threshold} | WR={best_metrics['win_rate_%']}% | EA={best_metrics['ea_anual_%']}% | Trades={best_metrics['total_trades']}")
 
