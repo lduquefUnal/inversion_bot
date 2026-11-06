@@ -22,37 +22,35 @@ const Footer = () => {
           Si el análisis cuantitativo te aportó valor o te ayudó a tomar mejores decisiones, puedes apoyar el desarrollo e investigación invitándome a un café.
         </p>
 
-        {/* Opciones de Donación: Bre-B (Colombia) y PayPal (Internacional) */}
+        {/* Opción de Donación: Bre-B (Colombia) */}
         <div style={{
-          display: 'flex', justifyContent: 'center', alignItems: 'stretch',
-          gap: '16px', flexWrap: 'wrap', margin: '0 auto 30px'
+          maxWidth: '440px', margin: '0 auto 30px'
         }}>
-          {/* Opción 1: Bre-B Colombia */}
           <div style={{
             background: 'linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95))',
             borderRadius: '16px', border: '1px solid rgba(16,185,129,0.3)',
-            padding: '16px 20px', minWidth: '280px', flex: '1 1 300px',
-            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            padding: '20px 24px',
+            display: 'flex', flexDirection: 'column', gap: '14px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🇨🇴</span>
-                <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: '1.25rem' }}>🇨🇴</span>
+                <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Bre-B · Colombia (Transferencias)
                 </span>
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '12px', lineHeight: 1.4 }}>
+              <div style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.5 }}>
                 Transfiere desde cualquier banco o billetera digital (Bancolombia, Nequi, Daviplata, etc.) usando la llave oficial:
               </div>
             </div>
 
             <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              background: 'rgba(16,185,129,0.08)', borderRadius: '12px', padding: '8px 12px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
+              background: 'rgba(16,185,129,0.08)', borderRadius: '12px', padding: '10px 16px',
               border: '1px dashed rgba(16,185,129,0.4)'
             }}>
-              <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#f8fafc', letterSpacing: '0.05em', fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f8fafc', letterSpacing: '0.05em', fontVariantNumeric: 'tabular-nums' }}>
                 @LDF628
               </span>
               <button
@@ -62,54 +60,14 @@ const Footer = () => {
                   background: copied ? '#10b981' : 'rgba(16,185,129,0.2)',
                   color: copied ? '#fff' : '#10b981',
                   border: '1px solid rgba(16,185,129,0.4)',
-                  borderRadius: '8px', padding: '6px 12px',
-                  fontSize: '0.75rem', fontWeight: 700,
+                  borderRadius: '8px', padding: '7px 14px',
+                  fontSize: '0.78rem', fontWeight: 700,
                   cursor: 'pointer', transition: 'background-color 0.2s ease, color 0.2s ease'
                 }}
               >
-                {copied ? '✅ ¡Copiada!' : '📋 Copiar'}
+                {copied ? '✅ ¡Copiada!' : '📋 Copiar Llave'}
               </button>
             </div>
-          </div>
-
-          {/* Opción 2: PayPal Internacional */}
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95))',
-            borderRadius: '16px', border: '1px solid rgba(255,196,57,0.3)',
-            padding: '16px 20px', minWidth: '240px', flex: '1 1 260px',
-            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-          }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🌎</span>
-                <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  PayPal · Internacional
-                </span>
-              </div>
-              <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '12px', lineHeight: 1.4 }}>
-                Aportes internacionales en USD o cualquier moneda mediante tarjeta o saldo PayPal:
-              </div>
-            </div>
-
-            <a
-              href="https://paypal.me/luisduquef"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Donar en PayPal a Luis Duque"
-              style={{
-                background: 'linear-gradient(135deg, #ffc439, #f59e0b)',
-                color: '#0f172a', padding: '10px 18px', borderRadius: '12px',
-                fontWeight: 800, fontSize: '0.85rem', textDecoration: 'none',
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                boxShadow: '0 4px 12px rgba(245,158,11,0.25)',
-                transition: 'transform 0.2s ease'
-              }}
-              onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-              onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
-            >
-              💛 Donar en PayPal
-            </a>
           </div>
         </div>
 
