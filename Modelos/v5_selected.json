@@ -1,0 +1,35 @@
+{
+  "version": "v5.0-karpathy-master",
+  "n_selected": 12,
+  "selected_features": [
+    "TP_ATR",
+    "ATR_%",
+    "Drawdown_10W_%",
+    "Dist_SMA200_%",
+    "CMF_20",
+    "Bear_Power_Delta_3D",
+    "Price_Reversal_Giro",
+    "RS_vs_SPY_5D",
+    "RSI_2",
+    "MACD_Hist",
+    "GARCH_Regime",
+    "Vol_Ratio_20_50"
+  ],
+  "best_threshold": 0.66,
+  "expected_win_rate_%": 51.9,
+  "expected_avg_pnl_%": 3.78,
+  "top_features_with_scores": [
+    {"feature": "TP_ATR", "importance": 1678.84, "spearman": -0.2756},
+    {"feature": "ATR_%", "importance": 684.43, "spearman": 0.2305},
+    {"feature": "Dist_SMA200_%", "importance": 563.24, "spearman": -0.1231},
+    {"feature": "GARCH_Regime", "importance": 522.52, "spearman": 0.0159},
+    {"feature": "Vol_Ratio_20_50", "importance": 433.29, "spearman": 0.0054},
+    {"feature": "MACD_Hist", "importance": 383.16, "spearman": 0.0515},
+    {"feature": "Drawdown_10W_%", "importance": 360.89, "spearman": -0.2040},
+    {"feature": "CMF_20", "importance": 360.38, "spearman": -0.0380},
+    {"feature": "RS_vs_SPY_5D", "importance": 218.19, "spearman": -0.0070},
+    {"feature": "Bear_Power_Delta_3D", "importance": 164.70, "spearman": 0.0487},
+    {"feature": "RSI_2", "importance": 124.20, "spearman": 0.0631},
+    {"feature": "Price_Reversal_Giro", "importance": 7.40, "spearman": 0.0482}
+  ]
+}

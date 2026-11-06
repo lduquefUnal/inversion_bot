@@ -3,27 +3,27 @@
     "stage_1": {
       "status": "PASS",
       "tickers_count": 440,
-      "total_rows": 577704,
+      "total_rows": 581688,
       "min_date": "2021-08-08",
-      "max_date": "2026-10-25"
+      "max_date": "2026-11-06"
     },
     "stage_2": {
       "status": "PASS",
-      "total_samples": 270169,
+      "total_samples": 287464,
       "unique_tickers": 440,
       "category_distribution": {
-        "Cuchillos Cayendo": 133668,
-        "Recup. Rapida": 49631,
-        "Sweet Spot": 49617,
-        "Cazador Dips": 37253
+        "Cuchillos Cayendo": 142284,
+        "Sweet Spot": 53569,
+        "Recup. Rapida": 52054,
+        "Cazador Dips": 39557
       },
       "nan_counts": {},
       "inf_counts": {},
       "degenerate_constant_cols": [],
       "outlier_warnings": {
-        "ATR_%": "Escala extrema o atípico desproporcionado: min=0.0569476568244445, max=7992119.180956714",
+        "ATR_%": "Escala extrema o atípico desproporcionado: min=0.0569476568237423, max=7992118.570031908",
         "MACD_Hist": "Escala extrema o atípico desproporcionado: min=-734907.113934069, max=1026108.3203697136",
-        "ATR_Risk_Pct": "Escala extrema o atípico desproporcionado: min=0.113895313648889, max=15984238.361913428",
+        "ATR_Risk_Pct": "Escala extrema o atípico desproporcionado: min=0.1138953136474847, max=15984237.140063817",
         "Abs_Drawdown": "Drawdown positivo atípico: max=99.9999693375732%",
         "RSI2_RSI14": "RSI fuera de rango [0,100]: min=-99.99991954029144, max=98.67633718738516"
       },

@@ -1,0 +1,64 @@
+{
+  "global_top_features": [
+    {
+      "feature": "TP_ATR",
+      "gain": 1678.84,
+      "pct": 30.5
+    },
+    {
+      "feature": "ATR_%",
+      "gain": 684.43,
+      "pct": 12.4
+    },
+    {
+      "feature": "Dist_SMA200_%",
+      "gain": 563.24,
+      "pct": 10.2
+    },
+    {
+      "feature": "GARCH_Regime",
+      "gain": 522.52,
+      "pct": 9.5
+    },
+    {
+      "feature": "Vol_Ratio_20_50",
+      "gain": 433.29,
+      "pct": 7.9
+    },
+    {
+      "feature": "MACD_Hist",
+      "gain": 383.16,
+      "pct": 7.0
+    },
+    {
+      "feature": "Drawdown_10W_%",
+      "gain": 360.89,
+      "pct": 6.6
+    },
+    {
+      "feature": "CMF_20",
+      "gain": 360.38,
+      "pct": 6.5
+    },
+    {
+      "feature": "RS_vs_SPY_5D",
+      "gain": 218.19,
+      "pct": 4.0
+    },
+    {
+      "feature": "Bear_Power_Delta_3D",
+      "gain": 164.7,
+      "pct": 3.0
+    },
+    {
+      "feature": "RSI_2",
+      "gain": 124.2,
+      "pct": 2.3
+    },
+    {
+      "feature": "Price_Reversal_Giro",
+      "gain": 7.4,
+      "pct": 0.1
+    }
+  ]
+}

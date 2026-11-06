@@ -1,229 +1,64 @@
 {
   "global_top_features": [
     {
+      "feature": "TP_ATR",
+      "gain": 1678.84,
+      "pct": 30.5
+    },
+    {
       "feature": "ATR_%",
-      "gain": 5439.44,
-      "pct": 14.25
+      "gain": 684.43,
+      "pct": 12.4
     },
     {
       "feature": "Dist_SMA200_%",
-      "gain": 4872.99,
-      "pct": 12.77
+      "gain": 563.24,
+      "pct": 10.2
     },
     {
-      "feature": "TP_ATR",
-      "gain": 3724.01,
-      "pct": 9.76
+      "feature": "GARCH_Regime",
+      "gain": 522.52,
+      "pct": 9.5
     },
     {
-      "feature": "RSI_7",
-      "gain": 3382.37,
-      "pct": 8.86
+      "feature": "Vol_Ratio_20_50",
+      "gain": 433.29,
+      "pct": 7.9
     },
     {
-      "feature": "Return_5D_%",
-      "gain": 3113.28,
-      "pct": 8.16
+      "feature": "MACD_Hist",
+      "gain": 383.16,
+      "pct": 7.0
     },
     {
-      "feature": "RVOL_5D",
-      "gain": 2979.72,
-      "pct": 7.81
+      "feature": "Drawdown_10W_%",
+      "gain": 360.89,
+      "pct": 6.6
     },
     {
-      "feature": "Drawdown_52W_%",
-      "gain": 2897.63,
-      "pct": 7.59
+      "feature": "CMF_20",
+      "gain": 360.38,
+      "pct": 6.5
     },
     {
-      "feature": "RSI_14",
-      "gain": 2629.49,
-      "pct": 6.89
+      "feature": "RS_vs_SPY_5D",
+      "gain": 218.19,
+      "pct": 4.0
     },
     {
-      "feature": "RSI2_RSI14",
-      "gain": 2528.46,
-      "pct": 6.63
-    },
-    {
-      "feature": "Abs_Drawdown",
-      "gain": 2521.88,
-      "pct": 6.61
-    },
-    {
-      "feature": "Beta",
-      "gain": 1032.27,
-      "pct": 2.7
-    },
-    {
-      "feature": "FCF_log",
-      "gain": 846.69,
-      "pct": 2.22
-    },
-    {
-      "feature": "RSI2_DD",
-      "gain": 746.93,
-      "pct": 1.96
-    },
-    {
-      "feature": "ATR_Risk_Pct",
-      "gain": 726.28,
-      "pct": 1.9
+      "feature": "Bear_Power_Delta_3D",
+      "gain": 164.7,
+      "pct": 3.0
     },
     {
       "feature": "RSI_2",
-      "gain": 717.17,
-      "pct": 1.88
+      "gain": 124.2,
+      "pct": 2.3
+    },
+    {
+      "feature": "Price_Reversal_Giro",
+      "gain": 7.4,
+      "pct": 0.1
     }
-  ],
-  "category_top_features": {
-    "Sweet Spot": [
-      {
-        "feature": "Dist_SMA200_%",
-        "gain": 722.05,
-        "importance_pct": 12.9
-      },
-      {
-        "feature": "ATR_%",
-        "gain": 515.53,
-        "importance_pct": 9.2
-      },
-      {
-        "feature": "RSI_14",
-        "gain": 474.95,
-        "importance_pct": 8.5
-      },
-      {
-        "feature": "Drawdown_52W_%",
-        "gain": 472.3,
-        "importance_pct": 8.5
-      },
-      {
-        "feature": "RSI_7",
-        "gain": 439.13,
-        "importance_pct": 7.9
-      },
-      {
-        "feature": "RVOL_5D",
-        "gain": 422.52,
-        "importance_pct": 7.6
-      },
-      {
-        "feature": "TP_ATR",
-        "gain": 389.57,
-        "importance_pct": 7.0
-      }
-    ],
-    "Cazador Dips": [
-      {
-        "feature": "Dist_SMA200_%",
-        "gain": 989.08,
-        "importance_pct": 13.2
-      },
-      {
-        "feature": "Drawdown_52W_%",
-        "gain": 838.84,
-        "importance_pct": 11.2
-      },
-      {
-        "feature": "Return_5D_%",
-        "gain": 753.29,
-        "importance_pct": 10.0
-      },
-      {
-        "feature": "RVOL_5D",
-        "gain": 699.89,
-        "importance_pct": 9.3
-      },
-      {
-        "feature": "ATR_%",
-        "gain": 667.18,
-        "importance_pct": 8.9
-      },
-      {
-        "feature": "RSI_7",
-        "gain": 609.18,
-        "importance_pct": 8.1
-      },
-      {
-        "feature": "Abs_Drawdown",
-        "gain": 570.15,
-        "importance_pct": 7.6
-      }
-    ],
-    "Recup. Rapida": [
-      {
-        "feature": "ATR_%",
-        "gain": 2059.34,
-        "importance_pct": 17.6
-      },
-      {
-        "feature": "Dist_SMA200_%",
-        "gain": 1489.6,
-        "importance_pct": 12.7
-      },
-      {
-        "feature": "TP_ATR",
-        "gain": 1473.69,
-        "importance_pct": 12.6
-      },
-      {
-        "feature": "RSI_7",
-        "gain": 1078.82,
-        "importance_pct": 9.2
-      },
-      {
-        "feature": "RVOL_5D",
-        "gain": 908.24,
-        "importance_pct": 7.8
-      },
-      {
-        "feature": "Return_5D_%",
-        "gain": 840.45,
-        "importance_pct": 7.2
-      },
-      {
-        "feature": "RSI2_RSI14",
-        "gain": 738.19,
-        "importance_pct": 6.3
-      }
-    ],
-    "Cuchillos Cayendo": [
-      {
-        "feature": "ATR_%",
-        "gain": 2197.39,
-        "importance_pct": 16.4
-      },
-      {
-        "feature": "Dist_SMA200_%",
-        "gain": 1672.26,
-        "importance_pct": 12.5
-      },
-      {
-        "feature": "TP_ATR",
-        "gain": 1346.0,
-        "importance_pct": 10.1
-      },
-      {
-        "feature": "RSI_7",
-        "gain": 1255.24,
-        "importance_pct": 9.4
-      },
-      {
-        "feature": "Return_5D_%",
-        "gain": 1138.25,
-        "importance_pct": 8.5
-      },
-      {
-        "feature": "Drawdown_52W_%",
-        "gain": 966.16,
-        "importance_pct": 7.2
-      },
-      {
-        "feature": "RSI2_RSI14",
-        "gain": 960.14,
-        "importance_pct": 7.2
-      }
-    ]
-  }
+  ]
 }

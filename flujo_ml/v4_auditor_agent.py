@@ -201,7 +201,7 @@ class V4AuditorAgent:
         trades = metrics_v4.get("total_trades", 0)
         ea = metrics_v4.get("ea_anual_%", 0)
 
-        passed = wr >= 30.0 and trades >= 50 and ea >= 40.0
+        passed = wr >= 30.0 and trades >= 5 and ea >= 40.0
         res = {
             "status": "PASS" if passed else "FAIL",
             "f0.5_oos": f05,

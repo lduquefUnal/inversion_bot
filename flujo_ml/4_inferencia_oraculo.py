@@ -95,6 +95,26 @@ def ejecutar_inferencia():
     feat_all = enrich_derived(feat_all)
     feat_all = enrich_fundamentals(feat_all)
 
+    # Predecir probabilidades históricas para calcular Momentum de Score (Racha y RSI_3)
+    feat_all["prob"] = model.predict(feat_all[selected_features].fillna(0))
+
+    def calc_ticker_momentum(g):
+        g = g.sort_values("Date").reset_index(drop=True)
+        g["Score_Diff"] = g["prob"].diff()
+        up = (g["Score_Diff"] > 0).astype(int)
+        streak = up.groupby((up != up.shift()).cumsum()).cumsum() * up
+        g["Score_Streak"] = streak
+        delta = g["Score_Diff"]
+        gain = delta.clip(lower=0)
+        loss = -delta.clip(upper=0)
+        avg_gain = gain.rolling(window=3, min_periods=1).mean()
+        avg_loss = loss.rolling(window=3, min_periods=1).mean()
+        rs = avg_gain / (avg_loss + 1e-9)
+        g["Score_RSI_3"] = 100 - (100 / (1 + rs))
+        return g
+
+    groups = [calc_ticker_momentum(g) for _, g in feat_all.groupby("Ticker")]
+    feat_all = pd.concat(groups, ignore_index=True) if groups else feat_all
     latest_feats = feat_all.groupby("Ticker").last().reset_index()
 
     activos = mercado_data.get("TOP_25_DIPS", []) + mercado_data.get("TOP_50_DIPS", [])
@@ -162,6 +182,25 @@ def ejecutar_inferencia():
         fcf = a.get("FCF", a.get("Free Cash Flow", "N/A"))
         beta = a.get("Beta", a.get("Beta (Volatilidad)", "N/A"))
 
+        score_streak = int(r.get("Score_Streak", 0))
+        score_rsi_3 = round(float(r.get("Score_RSI_3", 50.0)), 1)
+        cmf_20 = round(float(r.get("CMF_20", 0.0)), 3)
+        price_rev = int(r.get("Price_Reversal_Giro", 1))
+        gatillo_precio = "Confirmado" if price_rev == 1 else "Pendiente"
+
+        # Validación multi-capa para broker Trii
+        if veredicto == "BUY":
+            if cmf_20 < -0.15:
+                trii_estado = "BLOQUEADO_LIQUIDACION_CMF"
+            elif score_streak < 1:
+                trii_estado = "ESPERANDO_RACHA_SCORE"
+            elif price_rev == 0:
+                trii_estado = "ESPERANDO_GIRO_PRECIO"
+            else:
+                trii_estado = "EJECUTAR_TRII"
+        else:
+            trii_estado = "EN_SEGUIMIENTO"
+
         resultados.append({
             "Ticker": ticker,
             "Nombre": a.get("Nombre", ticker),
@@ -179,6 +218,15 @@ def ejecutar_inferencia():
             "TP_ATR": tp_atr,
             "Limite_Dias": params["limite_dias"],
             "Umbral_Optimo_%": round(th_optimo * 100.0, 1),
+            "Score_Streak": score_streak,
+            "Score_RSI_3": score_rsi_3,
+            "CMF_20": cmf_20,
+            "Gatillo_Precio": gatillo_precio,
+            "Trii_Estado": trii_estado,
+            "Trii_TP_USD": take_profit_precio,
+            "Trii_SL_USD": stop_loss_atr_precio,
+            "Trii_TimeStop_Dias": 4,
+            "Trii_RR_Ratio": round(tp_pct / max(0.1, sl_pct), 2),
             "Drawdown_52W_%": round(float(r["Drawdown_52W_%"]), 1),
             "Dist_SMA50_%": round(float(r["Dist_SMA50_%"]), 1),
             "Drawdown_10W_%": round(float(r["Drawdown_10W_%"]), 1),
