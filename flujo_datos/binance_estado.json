@@ -1,35 +1,8 @@
 {
-  "generado_utc": "2026-11-05T04:42:47.923923+00:00",
-  "total_ticker": 8,
-  "senales_compra": 2,
-  "mejores_oportunidades": [
-    {
-      "ticker": "AVAXUSDT",
-      "precio": 8.802,
-      "probabilidad": 0.606,
-      "umbral": 0.45,
-      "accion": "COMPRAR",
-      "categoria": "Cazador Dips",
-      "confianza": "ALTA",
-      "timestamp_utc": "2026-11-05T04:42:47.923880+00:00",
-      "dd_5w_%": -13.94,
-      "dist_sma50_%": -11.24,
-      "nota": "Paper trading - sin ejecución real. Revisar antes de operar."
-    },
-    {
-      "ticker": "LINKUSDT",
-      "precio": 11.601,
-      "probabilidad": 0.451,
-      "umbral": 0.45,
-      "accion": "COMPRAR",
-      "categoria": "Sweet Spot",
-      "confianza": "BAJA",
-      "timestamp_utc": "2026-11-05T04:42:47.238555+00:00",
-      "dd_5w_%": -9.96,
-      "dist_sma50_%": -8.25,
-      "nota": "Paper trading - sin ejecución real. Revisar antes de operar."
-    }
-  ],
-  "requiere_accion_humana": true,
+  "generado_utc": "2026-11-06T11:45:14.184191+00:00",
+  "total_ticker": 0,
+  "senales_compra": 0,
+  "mejores_oportunidades": [],
+  "requiere_accion_humana": false,
   "nota": "Revisar señales y aprobar/rechazar antes de ejecutar en Binance."
 }
