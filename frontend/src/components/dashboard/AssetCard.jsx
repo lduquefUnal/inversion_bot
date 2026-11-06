@@ -251,6 +251,7 @@ const Bar = ({ value, color = '#6366f1' }) => {
 const AssetCard = ({ item, rank }) => {
   const navigate = useNavigate();
   const [nameHover, setNameHover] = useState(false);
+  const [showChart, setShowChart] = useState(rank <= 10);
 
   const {
     Ticker, Nombre, Categoria, Precio_Actual,
@@ -277,6 +278,28 @@ const AssetCard = ({ item, rank }) => {
   const umbralVal = item['Umbral_Optimo_%'] ?? item['Umbral_Requerido_%'] ?? 40.0;
   const winRateVal = item['WinRate_Modelo_%'] ?? getCategoryWinRate(Categoria);
 
+  // ─── Variables V5 Cuantitativas & Trii ──────────────────────────────────────
+  const scoreStreak = item.Score_Streak != null ? Number(item.Score_Streak) : 0;
+  const scoreRsi = item.Score_RSI_3 != null ? Number(item.Score_RSI_3) : null;
+  const cmfVal = item.CMF_20 != null ? Number(item.CMF_20) : null;
+  const gatilloPrecio = item.Gatillo_Precio || (item.Price_Reversal_Giro === 1 ? 'Confirmado' : 'Pendiente');
+  const triiEstado = item.Trii_Estado || (veredictoVal === 'BUY' ? (cmfVal < -0.15 ? 'BLOQUEADO_LIQUIDACION_CMF' : (scoreStreak < 1 ? 'ESPERANDO_RACHA_SCORE' : (gatilloPrecio === 'Pendiente' ? 'ESPERANDO_GIRO_PRECIO' : 'EJECUTAR_TRII'))) : 'EN_SEGUIMIENTO');
+  const triiTp = item.Trii_TP_USD ?? tpPrice;
+  const triiSl = item.Trii_SL_USD ?? slPrice;
+  const triiRr = item.Trii_RR_Ratio ?? (tpPct / Math.max(0.1, slPct)).toFixed(1);
+
+  // Badge de estado Trii
+  let triiCfg = { color: '#64748b', bg: 'rgba(100,116,139,0.1)', border: 'rgba(255,255,255,0.08)', label: '📊 EN SEGUIMIENTO', icon: '⏱️' };
+  if (triiEstado === 'EJECUTAR_TRII') {
+    triiCfg = { color: '#10b981', bg: 'rgba(16,185,129,0.18)', border: '#10b981', label: '💎 LISTO PARA TRII (BRACKET)', icon: '🚀' };
+  } else if (triiEstado === 'ESPERANDO_GIRO_PRECIO') {
+    triiCfg = { color: '#f59e0b', bg: 'rgba(245,158,11,0.18)', border: '#f59e0b', label: '⏳ ESPERANDO GIRO DE PRECIO', icon: '🛡️' };
+  } else if (triiEstado === 'BLOQUEADO_LIQUIDACION_CMF') {
+    triiCfg = { color: '#ef4444', bg: 'rgba(239,68,68,0.18)', border: '#ef4444', label: '🚫 BLOQUEADO: LIQUIDACIÓN CMF', icon: '⚠️' };
+  } else if (triiEstado === 'ESPERANDO_RACHA_SCORE') {
+    triiCfg = { color: '#38bdf8', bg: 'rgba(56,189,248,0.18)', border: '#38bdf8', label: '⏳ ACUMULANDO RACHA DE SCORE', icon: '📈' };
+  }
+
   const cfg = getCategoryConfig(Categoria);
   const probNum = Number(prob ?? 0);
   const probColor = probNum >= 60 ? '#10b981' : probNum >= 40 ? '#eab308' : '#ef4444';
@@ -284,7 +307,6 @@ const AssetCard = ({ item, rank }) => {
   const fcfNeg = typeof fcf === 'string' && (fcf.startsWith('-') || fcf.startsWith('$-'));
   const dd = Math.abs(Number(drawdown ?? 0));
   const rsi14n = Number(rsi14 ?? 50);
-  const betaN = Number(beta ?? 0);
 
   const { text: thesis, loading, currentModel, error, modelUsed, generate } = useGeminiThesis(item);
 
@@ -293,11 +315,133 @@ const AssetCard = ({ item, rank }) => {
     navigate(`/activo/${Ticker}`);
   };
 
+  // ═════════════════════════════════════════════════════════════════════════════
+  // MODO COMPACTO COLAPSADO PARA RANK > 10 (Sin gráfica por defecto)
+  // ═════════════════════════════════════════════════════════════════════════════
+  if (rank > 10 && !showChart) {
+    return (
+      <article
+        onClick={goToDetail}
+        tabIndex={0}
+        role="button"
+        aria-label={`Ver detalles tácticos de ${Ticker}`}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') goToDetail(e); }}
+        style={{
+          background: 'rgba(14, 20, 36, 0.82)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255,255,255,0.06)',
+          padding: '16px 20px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '14px',
+          transition: 'transform 0.2s ease, border-color 0.2s',
+        }}
+        onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.28)'; }}
+        onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+      >
+        {/* Identificador y Categoría */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '220px' }}>
+          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.78rem', fontWeight: 800, color: '#94a3b8' }}>
+            #{rank}
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900, color: '#f8fafc', fontVariantNumeric: 'tabular-nums' }}>{Ticker}</h3>
+              <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{Nombre}</span>
+            </div>
+            <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+              <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 700, background: cfg.bg, color: cfg.color }}>{cfg.emoji} {Categoria}</span>
+              <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 700, background: `${verdColor}1a`, color: verdColor }}>{emojiVal} {veredictoVal}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Métricas V5 Compactas */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ width: '120px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '3px', fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ color: '#64748b' }}>Prob. Éxito</span>
+              <strong style={{ color: probColor }}>{probNum}%</strong>
+            </div>
+            <Bar value={probNum} color={probColor} />
+          </div>
+
+          {/* Badge Trii */}
+          <span style={{
+            padding: '4px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 700,
+            background: triiCfg.bg, color: triiCfg.color, border: `1px solid ${triiCfg.border}`,
+            display: 'inline-flex', alignItems: 'center', gap: '4px'
+          }}>
+            {triiCfg.icon} {triiCfg.label}
+          </span>
+
+          {/* Racha Score */}
+          <span title="Racha de aumento del Score: Días consecutivos con convicción alcista" style={{ fontSize: '0.74rem', fontWeight: 700, color: scoreStreak >= 2 ? '#10b981' : '#f59e0b', background: scoreStreak >= 2 ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.04)', padding: '4px 8px', borderRadius: '8px', border: scoreStreak >= 2 ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.06)', fontVariantNumeric: 'tabular-nums' }}>
+            🔥 {scoreStreak}d racha
+          </span>
+
+          {/* CMF */}
+          <span title="Chaikin Money Flow: Flujo institucional de dinero en 20 días" style={{ fontSize: '0.74rem', fontWeight: 700, color: cmfVal > 0 ? '#10b981' : cmfVal < -0.15 ? '#ef4444' : '#94a3b8', background: cmfVal < -0.15 ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.04)', padding: '4px 8px', borderRadius: '8px', border: cmfVal < -0.15 ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(255,255,255,0.06)', fontVariantNumeric: 'tabular-nums' }}>
+            💧 CMF: {cmfVal != null ? (cmfVal > 0 ? `+${cmfVal.toFixed(2)}` : cmfVal.toFixed(2)) : 'N/A'}
+          </span>
+
+          {/* Gatillo Giro */}
+          <span title="Acción de Precio: Vela de absorción o Higher Low" style={{ fontSize: '0.74rem', fontWeight: 700, color: gatilloPrecio === 'Confirmado' ? '#10b981' : '#f59e0b', background: 'rgba(255,255,255,0.04)', padding: '4px 8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            🎯 {gatilloPrecio}
+          </span>
+        </div>
+
+        {/* Precio & Botón de Gráfica */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginLeft: 'auto' }}>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f8fafc', fontVariantNumeric: 'tabular-nums' }}>
+              ${Number(Precio_Actual).toFixed(2)}
+            </div>
+            <div style={{ fontSize: '0.68rem', color: '#10b981', fontWeight: 600 }}>
+              TP: +{tpPct}% · SL: -{slPct}%
+            </div>
+          </div>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowChart(true); }}
+            aria-label={`Desplegar gráfica de ${Ticker}`}
+            style={{
+              background: 'rgba(99,102,241,0.12)',
+              border: '1px solid rgba(99,102,241,0.3)',
+              color: '#818cf8',
+              padding: '7px 12px',
+              borderRadius: '8px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            📊 Ver Gráfica
+          </button>
+        </div>
+      </article>
+    );
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════════
+  // MODO COMPLETO (Top 10 o Activo Desplegado a Demanda)
+  // ═════════════════════════════════════════════════════════════════════════════
   return (
-    <div
+    <article
       onClick={goToDetail}
+      tabIndex={0}
+      role="button"
+      aria-label={`Detalle completo de ${Ticker}`}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') goToDetail(e); }}
       style={{
-        background: 'rgba(14, 20, 36, 0.85)',
+        background: 'rgba(14, 20, 36, 0.88)',
         backdropFilter: 'blur(20px)',
         borderRadius: '20px',
         border: '1px solid rgba(255,255,255,0.06)',
@@ -313,7 +457,7 @@ const AssetCard = ({ item, rank }) => {
       onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.28)'; }}
       onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
     >
-      {/* ══ COLUMNA IZQUIERDA: Métricas + Tesis ══════════════════════════ */}
+      {/* ══ COLUMNA IZQUIERDA: Métricas V5 + Trii + Tesis ═════════════════ */}
       <div style={{ flex: '1 1 380px', minWidth: '320px', padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
         {/* Header */}
@@ -324,7 +468,7 @@ const AssetCard = ({ item, rank }) => {
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <h2 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 900, color: '#f8fafc' }}>{Ticker}</h2>
+                <h2 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 900, color: '#f8fafc', fontVariantNumeric: 'tabular-nums' }}>{Ticker}</h2>
                 {/* Nombre con tooltip */}
                 <div style={{ position: 'relative' }}>
                   <span
@@ -354,112 +498,178 @@ const AssetCard = ({ item, rank }) => {
             </div>
           </div>
 
-          {/* Precio */}
+          {/* Precio & Botón colapsar si rank > 10 */}
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#f8fafc', letterSpacing: '-0.5px' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#f8fafc', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>
               ${Number(Precio_Actual).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
-            <div style={{ fontSize: '0.65rem', color: '#334155' }}>🔍 ver gráfica →</div>
+            {rank > 10 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowChart(false); }}
+                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.7rem', cursor: 'pointer', padding: '2px 0' }}
+              >
+                🔼 Colapsar gráfica
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Barras prob + winrate */}
+        {/* ── HUD DE EJECUCIÓN TRII & PROTECCIÓN V5 ────────────────────────── */}
+        <div style={{
+          padding: '11px 16px', borderRadius: '14px',
+          background: triiCfg.bg, border: `1px solid ${triiCfg.border}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '8px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '1.05rem' }}>{triiCfg.icon}</span>
+            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: triiCfg.color, letterSpacing: '0.03em' }}>
+              {triiCfg.label}
+            </span>
+          </div>
+          <div style={{ fontSize: '0.73rem', color: '#94a3b8', fontVariantNumeric: 'tabular-nums', display: 'flex', gap: '10px' }}>
+            <span>TimeStop: <strong style={{ color: '#f8fafc' }}>4d</strong></span>
+            <span>·</span>
+            <span>R:R: <strong style={{ color: '#f8fafc' }}>{triiRr}x</strong></span>
+            <span>·</span>
+            <span>Gatillo: <strong style={{ color: gatilloPrecio === 'Confirmado' ? '#10b981' : '#f59e0b' }}>{gatilloPrecio}</strong></span>
+          </div>
+        </div>
+
+        {/* Barras de Convicción del Modelo */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '0.7rem', color: '#475569', width: '110px', flexShrink: 0 }}>Prob. Éxito</span>
+            <span style={{ fontSize: '0.7rem', color: '#64748b', width: '100px', flexShrink: 0 }}>Prob. Éxito V5</span>
             <Bar value={probNum} color={probColor} />
-            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: probColor, width: '40px', textAlign: 'right' }}>{probNum}%</span>
+            <span style={{ fontSize: '0.78rem', fontWeight: 800, color: probColor, width: '45px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{probNum}%</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '0.7rem', color: '#475569', width: '110px', flexShrink: 0 }}>Win Rate Modelo</span>
+            <span style={{ fontSize: '0.7rem', color: '#64748b', width: '100px', flexShrink: 0 }}>Win Rate OOS</span>
             <Bar value={Number(winRateVal ?? 0)} color="#6366f1" />
-            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#818cf8', width: '40px', textAlign: 'right' }}>{winRateVal}%</span>
+            <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#818cf8', width: '45px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{winRateVal}%</span>
           </div>
         </div>
 
-        {/* Pills de métricas con Tooltips Explicativos completos */}
+        {/* ── HUD CUANTITATIVO V5: RACHA SCORE & CMF & GATILLOS ───────────── */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px',
+          background: 'rgba(15,23,42,0.6)', padding: '10px', borderRadius: '12px',
+          border: '1px solid rgba(255,255,255,0.05)'
+        }}>
+          {/* Tile 1: Racha de Score */}
+          <div title="Score Streak: Días consecutivos con probabilidad creciente. Racha ≥ 2 días eleva el Win Rate al 51.9%." style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 10px', borderRadius: '8px', border: scoreStreak >= 2 ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.04)', cursor: 'help' }}>
+            <div style={{ fontSize: '0.64rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>🔥 Racha Score</div>
+            <div style={{ fontSize: '1rem', fontWeight: 900, color: scoreStreak >= 2 ? '#10b981' : '#f59e0b', marginTop: '2px', fontVariantNumeric: 'tabular-nums' }}>
+              {scoreStreak} {scoreStreak === 1 ? 'Día' : 'Días'}
+            </div>
+            <div style={{ fontSize: '0.64rem', color: scoreStreak >= 2 ? '#10b981' : '#64748b', fontWeight: 600, marginTop: '2px' }}>
+              {scoreStreak >= 2 ? '✅ Validada' : '⏳ Acumulando'}
+            </div>
+          </div>
+
+          {/* Tile 2: CMF 20D */}
+          <div title="Chaikin Money Flow (20D): Presión de acumulación institucional. CMF < -0.15 alerta sobre liquidación agresiva." style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 10px', borderRadius: '8px', border: cmfVal < -0.15 ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(255,255,255,0.04)', cursor: 'help' }}>
+            <div style={{ fontSize: '0.64rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>💧 Flujo CMF</div>
+            <div style={{ fontSize: '1rem', fontWeight: 900, color: cmfVal > 0 ? '#10b981' : cmfVal < -0.15 ? '#ef4444' : '#eab308', marginTop: '2px', fontVariantNumeric: 'tabular-nums' }}>
+              {cmfVal != null ? (cmfVal > 0 ? `+${cmfVal.toFixed(3)}` : cmfVal.toFixed(3)) : 'N/A'}
+            </div>
+            <div style={{ fontSize: '0.64rem', color: cmfVal > 0 ? '#10b981' : cmfVal < -0.15 ? '#ef4444' : '#64748b', fontWeight: 600, marginTop: '2px' }}>
+              {cmfVal > 0 ? '🟢 Acumulación' : cmfVal < -0.15 ? '🔴 Liquidación' : '⚪ Neutral'}
+            </div>
+          </div>
+
+          {/* Tile 3: Score-RSI3 */}
+          <div title="Score-RSI (3 Días): Momentum del scoring cuantitativo. >50 señala aceleración de compras." style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)', cursor: 'help' }}>
+            <div style={{ fontSize: '0.64rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>⚡ Score-RSI3</div>
+            <div style={{ fontSize: '1rem', fontWeight: 900, color: (scoreRsi ?? 50) >= 50 ? '#10b981' : '#94a3b8', marginTop: '2px', fontVariantNumeric: 'tabular-nums' }}>
+              {scoreRsi != null ? scoreRsi.toFixed(1) : 'N/A'}
+            </div>
+            <div style={{ fontSize: '0.64rem', color: (scoreRsi ?? 50) >= 50 ? '#10b981' : '#64748b', fontWeight: 600, marginTop: '2px' }}>
+              {(scoreRsi ?? 50) >= 50 ? '🚀 Acelerando' : '⚪ En espera'}
+            </div>
+          </div>
+
+          {/* Tile 4: Gatillo de Giro */}
+          <div title="Gatillo de Giro: Confirmado por vela de absorción con mecha inferior o formación de Higher Low." style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 10px', borderRadius: '8px', border: gatilloPrecio === 'Confirmado' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.04)', cursor: 'help' }}>
+            <div style={{ fontSize: '0.64rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>🎯 Acción Giro</div>
+            <div style={{ fontSize: '1rem', fontWeight: 900, color: gatilloPrecio === 'Confirmado' ? '#10b981' : '#f59e0b', marginTop: '2px' }}>
+              {gatilloPrecio === 'Confirmado' ? 'Confirmado' : 'Pendiente'}
+            </div>
+            <div style={{ fontSize: '0.64rem', color: gatilloPrecio === 'Confirmado' ? '#10b981' : '#f59e0b', fontWeight: 600, marginTop: '2px' }}>
+              {gatilloPrecio === 'Confirmado' ? '✅ Vela Verde/HL' : '⏳ Espera Reversión'}
+            </div>
+          </div>
+        </div>
+
+        {/* Parámetros Operativos Bracket Trii */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+          <div title="Take Profit Trii: Precio exacto en USD y porcentaje para orden Bracket." style={{ background: 'rgba(16,185,129,0.08)', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.2)', padding: '9px 12px', cursor: 'help' }}>
+            <div style={{ fontSize: '0.62rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>🎯 TP Bracket</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#10b981', fontVariantNumeric: 'tabular-nums' }}>+{tpPct}%</div>
+            <div style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 700, marginTop: '1px', fontVariantNumeric: 'tabular-nums' }}>(${triiTp})</div>
+          </div>
+          <div title="Stop Loss Trii: Límite de pérdida exacto en USD para orden Bracket." style={{ background: 'rgba(239,68,68,0.08)', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.2)', padding: '9px 12px', cursor: 'help' }}>
+            <div style={{ fontSize: '0.62rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>🛑 SL Bracket</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#ef4444', fontVariantNumeric: 'tabular-nums' }}>-{slPct}%</div>
+            <div style={{ fontSize: '0.72rem', color: '#dc2626', fontWeight: 700, marginTop: '1px', fontVariantNumeric: 'tabular-nums' }}>(${triiSl})</div>
+          </div>
+          <div title="TimeStop Trii: Cierre de seguridad a los 4 días hábiles si no alcanza TP para reasignar capital." style={{ background: 'rgba(96,165,250,0.08)', borderRadius: '10px', border: '1px solid rgba(96,165,250,0.2)', padding: '9px 12px', cursor: 'help' }}>
+            <div style={{ fontSize: '0.62rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>⏱️ TimeStop</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#60a5fa', fontVariantNumeric: 'tabular-nums' }}>4 Días</div>
+            <div style={{ fontSize: '0.7rem', color: '#3b82f6', fontWeight: 600, marginTop: '1px' }}>rotación rápida</div>
+          </div>
+          <div title="Ratio Riesgo-Beneficio: Relación entre ganancia potencial y riesgo asumido (mínimo 2.0x)." style={{ background: 'rgba(30,41,59,0.8)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', padding: '9px 12px', cursor: 'help' }}>
+            <div style={{ fontSize: '0.62rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>⚖️ Ratio R:R</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#f8fafc', fontVariantNumeric: 'tabular-nums' }}>{triiRr}x</div>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 600, marginTop: '1px' }}>mínimo 2:1</div>
+          </div>
+        </div>
+
+        {/* Pills de métricas técnicas secundarias */}
         <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-          <Pill label="Kalman:" value={item.Kalman_Slope != null ? (Number(item.Kalman_Slope) > 0 ? `+${item.Kalman_Slope}` : `${item.Kalman_Slope}`) : 'En formación'}
-            color={Number(item.Kalman_Slope ?? 0) > 0 ? '#10b981' : '#f43f5e'}
-            bg={Number(item.Kalman_Slope ?? 0) > 0 ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.12)'}
-            border={Number(item.Kalman_Slope ?? 0) > 0 ? 'rgba(16,185,129,0.3)' : 'rgba(244,63,94,0.3)'}
-            title="Kalman Slope: Pendiente y velocidad de tendencia real calculada por el Filtro de Kalman de 2 estados sin desfasaje." />
-          <Pill label="GARCH:" value={item.GARCH_Regime != null ? `${item.GARCH_Regime}x` : '1.00x'}
-            color="#38bdf8" bg="rgba(56,189,248,0.12)" border="rgba(56,189,248,0.3)"
-            title="GARCH Regime: Ratio de régimen de volatilidad esperada en tiempo real vs mediana de 60 días." />
-          <Pill label="TP/ATR:" value={item.TP_ATR != null ? `${item.TP_ATR}x` : (atr_pct ? (tpPct / atr_pct).toFixed(2) + 'x' : 'N/A')}
-            color="#a78bfa" bg="rgba(167,139,250,0.1)" border="rgba(167,139,250,0.3)"
-            title="TP/ATR: Multiplicador de Take Profit en unidades de volatilidad ATR. Medida de beneficio relativo por ruido." />
-          <Pill label="Kelly:" value={item['Position_Sizing_Kelly_%'] != null ? `${item['Position_Sizing_Kelly_%']}%` : 'N/A'}
-            color="#38bdf8" bg="rgba(56,189,248,0.1)" border="rgba(56,189,248,0.3)"
-            title="Kelly %: Asignación máxima recomendada de tu portafolio calculada mediante el Criterio de Kelly Medio." />
-          <Pill label="Beta 60D:" value={item.Beta_60D != null ? `${item.Beta_60D}` : 'N/A'}
-            color="#f59e0b" bg="rgba(245,158,11,0.1)" border="rgba(245,158,11,0.3)"
-            title="Beta 60D: Volatilidad y sensibilidad de riesgo rodante de 60 días en tiempo real vs mercado." />
-          <Pill label="SMA 50:" value={item['Dist_SMA50_%'] != null ? `${item['Dist_SMA50_%']}%` : 'N/A'}
-            color={Number(item['Dist_SMA50_%'] ?? 0) >= 0 ? '#10b981' : '#ef4444'}
-            title="Distancia % a SMA 50: Desviación respecto a la media móvil táctica de 50 días." />
-          <Pill label="DD 10W:" value={item['Drawdown_10W_%'] != null ? `${item['Drawdown_10W_%']}%` : 'N/A'}
-            color="#94a3b8"
-            title="Drawdown 10 Semanas: Caída máxima porcentual registrada en los últimos 10 fines de semana." />
-          <Pill label="DD 52W:" value={drawdown != null ? `${drawdown}%` : 'N/A'}
-            color={dd > 40 ? '#ef4444' : dd > 20 ? '#f59e0b' : '#10b981'}
-            bg={dd > 40 ? 'rgba(239,68,68,0.1)' : dd > 20 ? 'rgba(245,158,11,0.1)' : 'rgba(16,185,129,0.1)'}
-            border={dd > 40 ? 'rgba(239,68,68,0.3)' : dd > 20 ? 'rgba(245,158,11,0.3)' : 'rgba(16,185,129,0.3)'}
-            title="Drawdown 52 Semanas: Caída acumulada respecto al pico máximo de las últimas 52 semanas." />
-          <Pill label="RSI 14D:" value={rsi14n.toFixed(1)}
-            color={rsi14n < 30 ? '#10b981' : rsi14n > 70 ? '#ef4444' : '#eab308'}
-            bg={rsi14n < 30 ? 'rgba(16,185,129,0.1)' : 'rgba(30,41,59,0.9)'}
-            border={rsi14n < 30 ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.08)'}
-            title="RSI 14 Días: Índice de Fuerza Relativa de 14 días. <30 indica sobreventa." />
-          <Pill label="RSI 2D:" value={rsi2 != null ? Number(rsi2).toFixed(1) : 'N/A'}
-            color={Number(rsi2) < 10 ? '#10b981' : '#a78bfa'}
-            title="RSI 2 Días (Connors): Indicador de sobreventa de muy corto plazo. <10 indica dip extremo." />
-          <Pill label="ATR %:" value={item['ATR_%'] != null ? `${item['ATR_%']}%` : 'N/A'}
-            color="#60a5fa"
-            title="ATR %: Volatilidad promedio del rango diario expresada como porcentaje del precio actual." />
-          <Pill label="FCF:" value={fcf != null && fcf !== 'N/A' ? String(fcf) : 'N/A'}
-            color={fcfNeg ? '#ef4444' : '#10b981'}
-            bg={fcfNeg ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'}
-            border={fcfNeg ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}
-            title="Free Cash Flow: Flujo de Caja Libre generado por la compañía en los estados financieros." />
           <Pill
-            label="P/E:"
-            value={pe != null && pe !== 'N/A' ? String(pe) : (item.PS_Ratio ? `P/S ${item.PS_Ratio}` : 'Neg. (Growth)')}
-            color={pe != null && pe !== 'N/A' ? undefined : '#f59e0b'}
-            title={pe != null && pe !== 'N/A' ? "Price / Earnings Ratio: Múltiplo de valoración sobre ganancias netas." : "P/E No Aplicable: La compañía reporta utilidad neta negativa (etapa de crecimiento o alta reinversión). Evaluar FCF."}
+            label="Kalman:"
+            value={item.Kalman_Slope != null ? (Number(item.Kalman_Slope) > 0 ? `+${item.Kalman_Slope}` : `${item.Kalman_Slope}`) : 'En formación'}
+            color={Number(item.Kalman_Slope ?? 0) > 0 ? '#10b981' : '#f43f5e'}
+            title="Kalman Slope: Pendiente de tendencia estimada por Filtro de Kalman sin desfasaje."
+          />
+          <Pill
+            label="GARCH:"
+            value={item.GARCH_Regime != null ? `${item.GARCH_Regime}x` : '1.00x'}
+            color="#38bdf8"
+            title="GARCH Regime: Ratio de volatilidad actual vs histórica de 60 días."
+          />
+          <Pill
+            label="TP/ATR:"
+            value={item.TP_ATR != null ? `${item.TP_ATR}x` : (item['ATR_%'] ? (tpPct / item['ATR_%']).toFixed(2) + 'x' : 'N/A')}
+            color="#a78bfa"
+            title="TP/ATR: Multiplicador de Take Profit normalizado por volatilidad."
+          />
+          <Pill
+            label="Kelly:"
+            value={item['Position_Sizing_Kelly_%'] != null ? `${item['Position_Sizing_Kelly_%']}%` : 'N/A'}
+            color="#38bdf8"
+            title="Kelly %: Tamaño óptimo recomendado de posición."
+          />
+          <Pill
+            label="DD 10W:"
+            value={item['Drawdown_10W_%'] != null ? `${item['Drawdown_10W_%']}%` : 'N/A'}
+            color="#94a3b8"
+            title="Drawdown 10 Semanas: Caída táctica máxima en la ventana de 10 semanas."
+          />
+          <Pill
+            label="RSI 2D:"
+            value={rsi2 != null ? Number(rsi2).toFixed(1) : 'N/A'}
+            color={Number(rsi2) < 10 ? '#10b981' : '#a78bfa'}
+            title="RSI 2D Connors: Sobreventa extrema de corto plazo."
           />
         </div>
 
-        {/* Parámetros Operativos V4: TP, SL, Días y Umbral con Tooltips */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <div title="Take Profit Objetivo: Precio y % donde el bot ejecutará el cobro de ganancias dinámico." style={{ flex: '1 1 95px', background: 'rgba(16,185,129,0.08)', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.2)', padding: '10px 14px', cursor: 'help' }}>
-            <div style={{ fontSize: '0.62rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>🎯 Take Profit</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#10b981' }}>+{tpPct}%</div>
-            <div style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 700, marginTop: '2px' }}>(${tpPrice})</div>
-          </div>
-          <div title="Stop Loss de Protección: Límite máximo de pérdida adaptado a la volatilidad ATR del activo." style={{ flex: '1 1 95px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.2)', padding: '10px 14px', cursor: 'help' }}>
-            <div style={{ fontSize: '0.62rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>🛑 Stop Loss</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#ef4444' }}>-{slPct}%</div>
-            <div style={{ fontSize: '0.72rem', color: '#dc2626', fontWeight: 700, marginTop: '2px' }}>(${slPrice})</div>
-          </div>
-          <div title="Límite de Días (Time Stop): Tiempo máximo de permanencia antes de cerrar la orden para rotar capital." style={{ flex: '1 1 95px', background: 'rgba(96,165,250,0.08)', borderRadius: '10px', border: '1px solid rgba(96,165,250,0.2)', padding: '10px 14px', cursor: 'help' }}>
-            <div style={{ fontSize: '0.62rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>⏱️ Límite Días</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#60a5fa' }}>{limiteDias}d</div>
-            <div style={{ fontSize: '0.72rem', color: '#3b82f6', fontWeight: 600, marginTop: '2px' }}>expiración</div>
-          </div>
-          <div title="Umbral Mínimo del Modelo: Probabilidad requerida por LightGBM V4 para calificar la señal como BUY." style={{ flex: '1 1 95px', background: 'rgba(30,41,59,0.8)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', padding: '10px 14px', cursor: 'help' }}>
-            <div style={{ fontSize: '0.62rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Umbral Modelo</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#94a3b8' }}>{umbralVal}%</div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, marginTop: '2px' }}>prob. mínima</div>
-          </div>
-        </div>
-
-        {/* ── Tesis AI (auto-generada) ──────────────────────────────────── */}
+        {/* ── Tesis AI (generada bajo demanda) ─────────────────────────── */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '14px' }} onClick={e => e.stopPropagation()}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>🤖 Tesis de Inversión</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>🤖 Tesis Cuantitativa</span>
               {modelUsed && <span style={{ fontSize: '0.65rem', color: '#334155', fontFamily: 'monospace' }}>· {modelUsed}</span>}
             </div>
             {!thesis && !loading && (
@@ -475,7 +685,6 @@ const AssetCard = ({ item, rank }) => {
             )}
           </div>
 
-          {/* Estado de carga */}
           {loading && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(99,102,241,0.06)', borderRadius: '8px', border: '1px solid rgba(99,102,241,0.12)' }}>
               <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#6366f1', animation: 'pulse 1s infinite' }} />
@@ -506,14 +715,14 @@ const AssetCard = ({ item, rank }) => {
         display: 'flex', flexDirection: 'column',
       }}>
         <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '0.72rem', color: '#334155', fontWeight: 600 }}>📈 GRÁFICA · {Ticker}</span>
+          <span style={{ fontSize: '0.72rem', color: '#334155', fontWeight: 600 }}>📈 GRÁFICA TÁCTICA · {Ticker}</span>
           <a href={`/activo/${Ticker}`} style={{ fontSize: '0.68rem', color: '#6366f1', textDecoration: 'none', fontWeight: 600 }} onClick={e => e.stopPropagation()}>Ver análisis completo ↗</a>
         </div>
         <div style={{ flex: 1, padding: '8px' }}>
           <TradingViewChart ticker={Ticker} />
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 
