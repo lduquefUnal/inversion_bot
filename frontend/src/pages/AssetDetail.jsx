@@ -360,7 +360,7 @@ const AssetDetail = () => {
           <div style={{ marginTop: '30px', display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(0, 1fr)', gap: '20px' }}>
             {/* Tesis */}
             <div style={{ background: 'var(--panel-bg)', padding: '25px', borderRadius: '15px', border: '1px solid var(--border-color)', lineHeight: '1.8' }}>
-              <h3 style={{ marginTop: 0 }}>🧠 Tesis de Inversión MLOps V4</h3>
+              <h3 style={{ marginTop: 0 }}>🧠 Tesis de Inversión MLOps V5.0 Master</h3>
               <div dangerouslySetInnerHTML={{
                 __html: (() => {
                   if (assetInfo?.AI_Details) {
@@ -370,23 +370,26 @@ const AssetDetail = () => {
                       .replace(/<strong style='color:#a78bfa;'>Caso Bear(?: \(Bajista\))?:<\/strong>/g, "<strong style='color:#ef4444;'>📉 Caso Bear:</strong>");
                   }
                   const tk = ticker || assetInfo?.Ticker || 'este activo';
-                  const veredicto = assetInfo?.Veredicto || 'BUY';
+                  const veredicto = assetInfo?.Veredicto || assetInfo?.Veredicto_V2 || 'BUY';
                   const prob = assetInfo?.['Probabilidad_Exito_%'] ?? 'N/A';
                   const cat = assetInfo?.Categoria || 'Sweet Spot';
-                  const dd = assetInfo?.['Drawdown_52W_%'] ?? assetInfo?.['Drawdown 52W %'] ?? 'N/A';
-                  const rsi14 = assetInfo?.RSI_14D ?? assetInfo?.['RSI 14D'] ?? 'N/A';
+                  const dd = assetInfo?.['Drawdown_10W_%'] ?? assetInfo?.['Drawdown_52W_%'] ?? 'N/A';
+                  const cmf = assetInfo?.CMF_20 != null ? Number(assetInfo.CMF_20).toFixed(3) : 'N/A';
+                  const streak = assetInfo?.Score_Streak != null ? `${assetInfo.Score_Streak}d` : '0d';
+                  const giro = assetInfo?.Gatillo_Precio || (assetInfo?.Price_Reversal_Giro === 1 ? 'Confirmado' : 'Pendiente');
                   const tp = assetInfo?.['Take_Profit_%'] ?? '8.95';
                   const sl = assetInfo?.['Stop_Loss_%'] ?? '4.07';
-                  const kelly = assetInfo?.['Position_Sizing_Kelly_%'] ?? '15.0';
-                  const kalman = assetInfo?.Kalman_Slope ?? 'Positiva';
-                  const garch = assetInfo?.GARCH_Regime ?? '1.12x';
+                  const tpUSD = assetInfo?.Trii_TP_USD ?? assetInfo?.Take_Profit_$ ?? 'N/A';
+                  const slUSD = assetInfo?.Trii_SL_USD ?? assetInfo?.Stop_Loss_ATR_$ ?? 'N/A';
+                  const timeStop = assetInfo?.Trii_TimeStop_Dias ?? 4;
+                  const rr = assetInfo?.Trii_RR_Ratio ?? (tp / Math.max(0.1, sl)).toFixed(1);
 
                   return `
                     <ul style="padding-left:18px; margin:0; list-style:none;">
-                      <li style="margin-bottom:10px;"><strong style="color:#a78bfa;">🎯 Algoritmo LightGBM V4.0 Tactical:</strong> Categorizado en <span style="color:#38bdf8; font-weight:700;">${cat}</span> con recomendación <strong style="color:${veredicto === 'BUY' ? '#10b981' : '#eab308'};">${veredicto}</strong> (Probabilidad de Éxito: <strong>${prob}%</strong>).</li>
-                      <li style="margin-bottom:10px;"><strong style="color:#10b981;">📈 Filtro Kalman & Régimen Volatilidad:</strong> Velocidad de tendencia real <strong>${kalman}</strong> sin desfasaje (200d) con ratio de régimen GARCH <strong>${garch}</strong>.</li>
-                      <li style="margin-bottom:10px;"><strong style="color:#38bdf8;">📊 Estructura Táctica:</strong> ${tk} registra un drawdown del <strong>${dd}%</strong> y RSI 14D de <strong>${rsi14}</strong>. Se projeta Take Profit dinámico por ATR de <strong style="color:#10b981;">+${tp}%</strong>.</li>
-                      <li style="margin-bottom:10px;"><strong style="color:#ef4444;">🛡️ Gestión de Riesgo ATR & Time Stop:</strong> Stop Loss calibrado por ATR en <strong style="color:#ef4444;">-${sl}%</strong> con expiración en <strong>11 días hábiles</strong>. Asignación recomendada: <strong>${kelly}%</strong>.</li>
+                      <li style="margin-bottom:10px;"><strong style="color:#a78bfa;">🎯 Algoritmo LightGBM V5.0 Master:</strong> Categorizado en <span style="color:#38bdf8; font-weight:700;">${cat}</span> con recomendación <strong style="color:${veredicto === 'BUY' ? '#10b981' : '#eab308'};">${veredicto}</strong> (Probabilidad de Éxito V5: <strong>${prob}%</strong> · Racha de Score: <strong>${streak}</strong>).</li>
+                      <li style="margin-bottom:10px;"><strong style="color:#10b981;">💧 Flujo CMF & Agotamiento Bajista:</strong> Chaikin Money Flow institucional <strong>${cmf}</strong> (> -0.15 requerido) con gatillo de giro de precio <strong>${giro}</strong>.</li>
+                      <li style="margin-bottom:10px;"><strong style="color:#38bdf8;">📊 Estructura Táctica:</strong> ${tk} registra un Drawdown táctico de <strong>${dd}%</strong> con ratio riesgo-beneficio proyectado de <strong style="color:#10b981;">${rr}:1</strong>.</li>
+                      <li style="margin-bottom:10px;"><strong style="color:#ef4444;">🛡️ Orden Bracket Trii:</strong> Take Profit en <strong>+$${tpUSD} (+${tp}%)</strong>, Stop Loss en <strong>-$${slUSD} (-${sl}%)</strong> y TimeStop a los <strong>${timeStop} días hábiles</strong>.</li>
                     </ul>
                   `;
                 })()

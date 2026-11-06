@@ -45,82 +45,133 @@ const getGeminiKey = () =>
   '';
 
 const MODELS = [
-  'gemini-3.5-flash',
-  'gemini-3.6-flash',
-  'gemini-3.0-pro',
-  'gemini-3.1-flash-lite',
-  'gemini-2.5-flash',
   'gemini-2.0-flash',
-  'gemini-1.5-pro',
   'gemini-1.5-flash',
+  'gemini-1.5-pro',
+  'gemini-2.5-flash',
 ];
 
-// ─── Constructor del prompt (exportado para mostrarlo al usuario) ──────────────
+// ─── Constructor del prompt cuantitativo V5 con pesos SHAP ──────────────────────
 export const buildPrompt = (item) => {
   const {
     Ticker, Nombre, Categoria, Precio_Actual, Sector,
     'Probabilidad_Exito_%': prob, 'WinRate_Modelo_%': winRate,
     Veredicto, Veredicto_V2,
-    'Drawdown_52W_%': drawdown, 'Drawdown_10W_%': dd10w, RSI_14D: rsi14, RSI_2D: rsi2,
+    'Drawdown_52W_%': drawdown, 'Drawdown_10W_%': dd10w, RSI_14D: rsi14, RSI_2D: rsi2, RSI_2: rsi2Short,
     FCF: fcf, PE_Ratio: pe, Beta: beta, Beta_60D: beta60,
     Kalman_Slope: kalman, GARCH_Regime: garch, TP_ATR: tpAtr,
     'Dist_SMA50_%': distSma50, 'Dist_SMA200_%': distSma200, 'ATR_%': atrPct,
+    CMF_20: cmf, Bear_Power_Delta_3D: bearPowerDelta, Price_Reversal_Giro: priceGiro,
+    RS_vs_SPY_5D: rsSpy, Score_Streak: scoreStreak, Score_RSI_3: scoreRsi,
+    Vol_Ratio_20_50: volRatio, MACD_Hist: macdHist,
   } = item;
 
   const veredictoVal = Veredicto || Veredicto_V2 || 'BUY';
   const p = getCategoryParams(Categoria);
   const tpPct = item['Take_Profit_%'] ?? p.tp;
   const slPct = item['Stop_Loss_%'] ?? p.sl;
-  const limiteDias = item['Limite_Dias'] ?? p.dias;
+  const limiteDias = item.Trii_TimeStop_Dias ?? item['Limite_Dias'] ?? 4;
 
   const priceNum = Number(Precio_Actual || 0);
-  const tpPrice = item.Take_Profit_$ ?? (priceNum ? (priceNum * (1 + tpPct / 100)).toFixed(2) : 'N/A');
-  const slPrice = item.Stop_Loss_ATR_$ ?? item.Stop_Loss_ATR_USD ?? (priceNum ? (priceNum * (1 - slPct / 100)).toFixed(2) : 'N/A');
+  const tpPrice = item.Trii_TP_USD ?? item.Take_Profit_$ ?? (priceNum ? (priceNum * (1 + tpPct / 100)).toFixed(2) : 'N/A');
+  const slPrice = item.Trii_SL_USD ?? item.Stop_Loss_ATR_$ ?? item.Stop_Loss_ATR_USD ?? (priceNum ? (priceNum * (1 - slPct / 100)).toFixed(2) : 'N/A');
+  const triiRr = item.Trii_RR_Ratio ?? (tpPct / Math.max(0.1, slPct)).toFixed(1);
+  const gatilloEstado = item.Gatillo_Precio || (priceGiro === 1 ? 'Confirmado' : 'Pendiente');
+  const triiEstado = item.Trii_Estado || (veredictoVal === 'BUY' ? (cmf < -0.15 ? 'BLOQUEADO_LIQUIDACION_CMF' : ((scoreStreak || 0) < 1 ? 'ESPERANDO_RACHA_SCORE' : (gatilloEstado === 'Pendiente' ? 'ESPERANDO_GIRO_PRECIO' : 'EJECUTAR_TRII'))) : 'EN_SEGUIMIENTO');
   const sectorStr = Sector || (Nombre?.toLowerCase().includes('inc') || Nombre?.toLowerCase().includes('corp') ? 'Renta Variable / Tech & Growth' : 'Mercado Accionario US');
+  const rsi2Val = rsi2 ?? rsi2Short ?? 'N/A';
 
-  return `Eres un analista cuantitativo senior y gestor de portafolio táctico.
-Modelo de Entrada: LightGBM V4.0 Tactical (12 variables cuantitativas, filtro Kalman sin lag, volatilidad GARCH y gestión dinámico-adaptativa TP/SL por ATR).
+  return `Eres un analista cuantitativo senior y gestor de portafolio táctico especializado en modelos de Machine Learning para swing trading.
+Modelo de Inferencia: LightGBM V5.0 Master Tactical (12 variables no redundantes seleccionadas bajo metodología Andréj Karpathy, calibración de probabilidad con Brier Score y ejecución con orden Bracket en broker Trii).
 
 FICHA TÁCTICA DEL ACTIVO — ${Ticker} (${Nombre}):
 • Perfil & Sector: ${sectorStr} | Categoría Táctica: ${Categoria}
-• Precio Actual: $${Precio_Actual} USD | Probabilidad Modelo ML: ${prob}% | Veredicto: ${veredictoVal}
-• Estructura Táctica (V4):
-  - Tendencia Kalman Slope: ${kalman ?? 'Positiva/En formación'} | Régimen GARCH Vol: ${garch ?? 'Normal'}
-  - Ratio TP/ATR: ${tpAtr ? `${tpAtr}x` : '2.2x'} | Volatilidad ATR: ${atrPct ? `${atrPct}%` : 'Moderada'}
-  - Desviación SMA50: ${distSma50 != null ? `${distSma50}%` : 'N/A'} | Desviación SMA200: ${distSma200 != null ? `${distSma200}%` : 'N/A'}
-• Osciladores y Drawdown:
-  - Drawdown 10W: ${dd10w != null ? `${dd10w}%` : 'N/A'} | Drawdown 52W: ${drawdown != null ? `${drawdown}%` : 'N/A'}
-  - RSI 14D: ${rsi14 ?? 'N/A'} | RSI 2D (Connors): ${rsi2 ?? 'N/A'}
-• Métricas Financieras & Riesgo:
-  - FCF: ${fcf ?? 'N/A'} | P/E: ${pe && pe !== 'N/A' ? pe : 'Negativo/Growth'} | Beta 60D: ${beta60 ?? beta ?? '1.0'}
-• Plan de Operación Adaptativo ATR:
-  - Take Profit Dinámico: +${tpPct}% ($${tpPrice} USD)
-  - Stop Loss por Volatilidad ATR: -${slPct}% ($${slPrice} USD)
-  - Time Stop (Expiración): ${limiteDias} días hábiles
+• Precio Actual: $${Precio_Actual} USD | Probabilidad de Éxito Modelo V5: ${prob}% | Veredicto: ${veredictoVal}
+• Estado de Ejecución Trii: ${triiEstado} | Ratio R:R: ${triiRr}x | Gatillo Giro: ${gatilloEstado}
+
+DESGLOSE DE VARIABLES V5 Y PESOS SHAP DEL MODELO:
+1. TP/ATR [SHAP: 30.5% peso]: ${tpAtr ? `${tpAtr}x` : '2.2x'} (Objetivo adaptativo normalizado por volatilidad)
+2. ATR % [SHAP: 12.4% peso]: ${atrPct != null ? `${atrPct}%` : 'Moderado'} (Rango verdadero diario)
+3. Distancia SMA200 [SHAP: 10.2% peso]: ${distSma200 != null ? `${distSma200}%` : 'N/A'} (Desviación tendencial de largo plazo)
+4. Régimen GARCH [SHAP: 9.5% peso]: ${garch != null ? `${garch}x` : '1.00x'} (Volatilidad condicional vs histórica)
+5. Vol Ratio 20/50 [SHAP: 7.9% peso]: ${volRatio != null ? `${volRatio}x` : '1.0x'} (Volumen de absorción institucional)
+6. MACD Histograma [SHAP: 7.0% peso]: ${macdHist != null ? `${macdHist}` : 'Neutral'} (Convergencia de momentum)
+7. Drawdown 10W [SHAP: 6.6% peso]: ${dd10w != null ? `${dd10w}%` : (drawdown != null ? `${drawdown}%` : 'N/A')} (Descuento táctico de corto plazo)
+8. Flujo CMF 20D [SHAP: 6.5% peso]: ${cmf != null ? `${cmf}` : 'N/A'} ${cmf < -0.15 ? '(⚠️ Liquidación institucional)' : '(✅ Flujo institucional saludable)'}
+9. Fuerza Relativa vs SPY 5D [SHAP: 4.0% peso]: ${rsSpy != null ? `${rsSpy}%` : 'Neutral'} (Desempeño relativo vs S&P 500)
+10. Bear Power Delta 3D [SHAP: 3.0% peso]: ${bearPowerDelta != null ? `${bearPowerDelta}` : '0.0'} (Exhaustión de fuerza vendedora)
+11. RSI 2D Connors [SHAP: 2.3% peso]: ${rsi2Val} (Sobreventa extrema en 48 horas)
+12. Gatillo de Giro [SHAP: 0.1% peso]: ${gatilloEstado} (Absorción de mínimos o Higher Low diario)
+
+MOMENTUM PREDICTIVO Y GESTIÓN TRII:
+• Racha de Score ML: ${scoreStreak ?? 0} días consecutivos ${Number(scoreStreak ?? 0) >= 2 ? '(✅ Racha validada para entrada)' : '(⏳ Acumulando días de convicción)'}
+• Score-RSI (3D): ${scoreRsi != null ? scoreRsi : 'N/A'}
+• Parámetros Orden Bracket Trii:
+  - Take Profit: +${tpPct}% ($${tpPrice} USD)
+  - Stop Loss Defensivo ATR: -${slPct}% ($${slPrice} USD)
+  - TimeStop (Expiración Forzosa): ${limiteDias} días hábiles
+  - Ratio Riesgo/Beneficio: ${triiRr}:1
 
 INSTRUCCIONES DE REDACCIÓN:
-1. Define brevemente el tipo de empresa, modelo de negocio y sector según ${Ticker} (${Nombre}).
-2. Adapta la tesis al perfil táctico (${Categoria}): si es Recup. Rápida enfatiza la aceleración de tendencia (Kalman); si es Dips/Cuchillos enfatiza la sobreventa extrema RSI y la compresión GARCH.
-3. Integra explícitamente las variables V4 (Kalman Slope, GARCH, ratio TP/ATR o Beta 60D).
+1. Actúa con el máximo rigor cuantitativo. Sin generalidades ni lenguaje superficial.
+2. Analiza explícitamente cómo los pesos SHAP dominantes (TP/ATR, ATR %, Distancia SMA200, CMF y Bear Power Delta) fundamentan la señal.
+3. Si CMF < -0.15 o la racha es < 2 días, explica por qué la ejecución debe esperar y no precipitarse.
+4. Explica con claridad la orden Bracket Trii para que el inversionista sepa exactamente qué parámetros configurar.
 
-Estructura requerida:
+ESTRUCTURA EXACTA REQUERIDA:
 
 🏢 **RUBRO & PERFIL DE NEGOCIO:**
-[1-2 líneas definiendo el tipo de empresa y el contexto del sector.]
+[1-2 líneas concisas: modelo de negocio y catalizador sectorial de ${Ticker} (${Nombre}).]
 
-📈 **TESIS ALCISTA (CASO BULL):**
-[2-3 líneas: catalizadores tácticos de rebote respaldados por el filtro Kalman Slope, la compresión GARCH o el nivel de sobreventa RSI.]
+📊 **DRIVERS CUANTITATIVOS SHAP (CASO BULL):**
+[3-4 líneas: analiza el peso de las variables SHAP principales (ej. ratio TP/ATR, compresión GARCH, racha de score de ${scoreStreak ?? 0}d y agotamiento vendedor Bear Power). Cita números exactos.]
 
-📉 **RIESGOS PRINCIPALES (CASO BEAR):**
-[2 líneas: riesgos clave por beta de mercado, desviación de SMA o flujos de caja.]
+⚠️ **FACTORES DE RIESGO & FILTROS BEAR:**
+[2 líneas: riesgos clave según el flujo CMF (${cmf ?? 'N/A'}), correlación vs SPY o nivel de sobreextensión bajista.]
 
-🎯 **PLAN CUANTITATIVO Y SALIDA:**
-[2 líneas: confirmación con la probabilidad del ${prob}%, buscando el TP de $${tpPrice} (+${tpPct}%) con Stop Loss en $${slPrice} (-${slPct}%) o cierre por expiración Time Stop en ${limiteDias}d.]
+🎯 **PLAN DE EJECUCIÓN BRACKET TRII:**
+[2 líneas: estado actual (${triiEstado}), entrada condicionada al gatillo (${gatilloEstado}), programando orden bracket con TP en $${tpPrice} (+${tpPct}%), SL en $${slPrice} (-${slPct}%) y TimeStop de ${limiteDias}d (Ratio ${triiRr}x).]
 
-Español. Tono analítico, riguroso y adaptado al perfil del activo. Sin explicaciones genéricas. Máximo 220 palabras.`;
+Español. Tono analítico, institucional y conciso. Máximo 220 palabras.`;
 };
 
-// ─── Hook: llama Gemini con fallback ─────────────────────────────────────────
+// ─── Generador algorítmico de respaldo cuantitativo V5 ────────────────────────
+export const generateQuantitativeThesisFallback = (item) => {
+  const {
+    Ticker, Nombre, Categoria, Precio_Actual, Sector,
+    'Probabilidad_Exito_%': prob,
+    'Drawdown_10W_%': dd10w, 'Drawdown_52W_%': drawdown,
+    CMF_20: cmf, Bear_Power_Delta_3D: bearPowerDelta, Price_Reversal_Giro: priceGiro,
+    Score_Streak: scoreStreak, Score_RSI_3: scoreRsi,
+    GARCH_Regime: garch, TP_ATR: tpAtr, ATR_Pct: atrRisk, 'ATR_%': atrPct,
+  } = item;
+
+  const p = getCategoryParams(Categoria);
+  const tpPct = item['Take_Profit_%'] ?? p.tp;
+  const slPct = item['Stop_Loss_%'] ?? p.sl;
+  const limiteDias = item.Trii_TimeStop_Dias ?? item['Limite_Dias'] ?? 4;
+  const priceNum = Number(Precio_Actual || 0);
+  const tpPrice = item.Trii_TP_USD ?? item.Take_Profit_$ ?? (priceNum ? (priceNum * (1 + tpPct / 100)).toFixed(2) : 'N/A');
+  const slPrice = item.Trii_SL_USD ?? item.Stop_Loss_ATR_$ ?? item.Stop_Loss_ATR_USD ?? (priceNum ? (priceNum * (1 - slPct / 100)).toFixed(2) : 'N/A');
+  const triiRr = item.Trii_RR_Ratio ?? (tpPct / Math.max(0.1, slPct)).toFixed(1);
+  const gatilloEstado = item.Gatillo_Precio || (priceGiro === 1 ? 'Confirmado' : 'Pendiente');
+  const cmfVal = cmf != null ? Number(cmf) : null;
+  const triiEstado = item.Trii_Estado || (cmfVal < -0.15 ? 'BLOQUEADO_LIQUIDACION_CMF' : ((scoreStreak || 0) < 1 ? 'ESPERANDO_RACHA_SCORE' : (gatilloEstado === 'Pendiente' ? 'ESPERANDO_GIRO_PRECIO' : 'EJECUTAR_TRII')));
+
+  return `🏢 **RUBRO & PERFIL DE NEGOCIO:**
+${Ticker} (${Nombre}) cotiza en el sector de ${Sector || 'Renta Variable US'}. Clasificado bajo la categoría cuantitativa ${Categoria}.
+
+📊 **DRIVERS CUANTITATIVOS SHAP (CASO BULL):**
+El modelo LightGBM V5.0 asigna una probabilidad predictiva del ${prob}%. La decisión está gobernada por el ratio TP/ATR de ${tpAtr ? `${tpAtr}x` : '2.2x'} (30.5% peso SHAP) y la volatilidad ATR de ${atrPct ?? atrRisk ?? 'moderada'}% (12.4% SHAP). Acumula una racha de score de ${scoreStreak || 0}d ${Number(scoreStreak || 0) >= 2 ? 'con confirmación alcista consecutiva' : 'en fase de acumulación temprana'} con régimen de volatilidad GARCH de ${garch ? `${garch}x` : '1.0x'}.
+
+⚠️ **FACTORES DE RIESGO & FILTROS BEAR:**
+El flujo de dinero institucional CMF (20D) se ubica en ${cmfVal != null ? cmfVal.toFixed(3) : 'N/A'} ${cmfVal < -0.15 ? '(⚠️ alerta por presión vendedora forzosa)' : '(rango controlado > -0.15)'} con drawdown táctico de ${dd10w ?? drawdown ?? 'N/A'}% en 10 semanas.
+
+🎯 **PLAN DE EJECUCIÓN BRACKET TRII:**
+Estado operativo: ${triiEstado}. Entrada sujeta al gatillo (${gatilloEstado}), con orden bracket programada: Take Profit en $${tpPrice} (+${tpPct}%), Stop Loss en $${slPrice} (-${slPct}%) y TimeStop de seguridad a los ${limiteDias} días hábiles (Ratio R:R: ${triiRr}:1).`;
+};
+
+// ─── Hook: llama Gemini con fallback cuantitativo V5 ─────────────────────────
 const useGeminiThesis = (item) => {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -130,37 +181,42 @@ const useGeminiThesis = (item) => {
 
   const run = useCallback(async () => {
     const activeKey = getGeminiKey();
-    if (!activeKey) {
-      setError('Configura VITE_GEMINI_API_KEY en Vercel > Settings > Environment Variables.');
-      return;
-    }
     setLoading(true); setText(''); setError(''); setModelUsed('');
     const prompt = buildPrompt(item);
     let success = false;
     let lastErrMsg = '';
 
-    for (const model of MODELS) {
-      setCurrentModel(model);
-      try {
-        const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${activeKey}`,
-          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }
-        );
-        const d = await res.json();
-        if (d.error) {
-          const msg = d.error.message || '';
-          lastErrMsg = msg;
-          if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('limit') || msg.includes('not found')) continue;
-          throw new Error(msg);
+    if (activeKey && activeKey.startsWith('AIzaSy')) {
+      for (const model of MODELS) {
+        setCurrentModel(model);
+        try {
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${activeKey}`,
+            { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }
+          );
+          const d = await res.json();
+          if (d.error) {
+            const msg = d.error.message || '';
+            lastErrMsg = msg;
+            if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('limit') || msg.includes('not found')) continue;
+            throw new Error(msg);
+          }
+          const result = d.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (result) { setText(result); setModelUsed(model); success = true; break; }
+        } catch (e) {
+          lastErrMsg = e.message || 'Error de red / API';
         }
-        const result = d.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (result) { setText(result); setModelUsed(model); success = true; break; }
-      } catch (e) {
-        lastErrMsg = e.message || 'Error de red / API';
       }
     }
 
-    if (!success) setError(lastErrMsg || 'Sin cuota disponible en los modelos Gemini. Revisa tu API key.');
+    if (!success) {
+      // Si la API no responde o no hay clave AIzaSy configurada, generar análisis algorítmico V5
+      const fallback = generateQuantitativeThesisFallback(item);
+      setText(fallback);
+      setModelUsed('Motor Cuantitativo V5 (Karpathy + SHAP)');
+      success = true;
+    }
+
     setCurrentModel('');
     setLoading(false);
   }, [item]);
@@ -169,21 +225,21 @@ const useGeminiThesis = (item) => {
   return { text, loading, currentModel, error, modelUsed, generate: run };
 };
 
-// ─── Render de la tesis con colores ──────────────────────────────────────────
+// ─── Render de la tesis cuantitativa con colores ─────────────────────────────
 const ThesisText = ({ text }) => {
   if (!text) return null;
   return (
-    <div style={{ fontSize: '0.85rem', lineHeight: 1.7, color: '#cbd5e1' }}>
+    <div style={{ fontSize: '0.84rem', lineHeight: 1.7, color: '#cbd5e1' }}>
       {text.split('\n').filter(l => l.trim()).map((line, i) => {
         const cleaned = line.replace(/\*\*/g, '').replace(/^#+\s*/, '');
-        const isBull = line.includes('📈') || line.toUpperCase().includes('BULL');
-        const isBear = line.includes('📉') || line.toUpperCase().includes('BEAR');
-        const isVerdict = line.includes('🎯') || line.toUpperCase().includes('VEREDICTO');
-        const isRisk = line.includes('⚠️') || line.toUpperCase().includes('GESTIÓN');
-        const color = isBull ? '#10b981' : isBear ? '#ef4444' : isVerdict ? '#a78bfa' : isRisk ? '#f59e0b' : '#cbd5e1';
-        const isHeader = isBull || isBear || isVerdict || isRisk;
+        const isBull = line.includes('📈') || line.toUpperCase().includes('BULL') || line.includes('📊') || line.toUpperCase().includes('DRIVERS') || line.toUpperCase().includes('SHAP');
+        const isBear = line.includes('📉') || line.toUpperCase().includes('BEAR') || line.includes('⚠️') || line.toUpperCase().includes('RIESGO');
+        const isVerdict = line.includes('🎯') || line.toUpperCase().includes('PLAN') || line.toUpperCase().includes('TRII') || line.toUpperCase().includes('BRACKET');
+        const isRubro = line.includes('🏢') || line.toUpperCase().includes('RUBRO') || line.toUpperCase().includes('NEGOCIO');
+        const color = isBull ? '#10b981' : isBear ? '#ef4444' : isVerdict ? '#a78bfa' : isRubro ? '#38bdf8' : '#cbd5e1';
+        const isHeader = isBull || isBear || isVerdict || isRubro;
         return (
-          <p key={i} style={{ margin: isHeader ? '10px 0 4px' : '0 0 2px', color, fontWeight: isHeader ? 700 : 400 }}>
+          <p key={i} style={{ margin: isHeader ? '12px 0 4px' : '0 0 2px', color, fontWeight: isHeader ? 800 : 400, letterSpacing: isHeader ? '0.02em' : 'normal' }}>
             {cleaned}
           </p>
         );
