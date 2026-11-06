@@ -389,7 +389,7 @@ const AssetDetail = () => {
                       <li style="margin-bottom:10px;"><strong style="color:#a78bfa;">🎯 Algoritmo LightGBM V5.0 Master:</strong> Categorizado en <span style="color:#38bdf8; font-weight:700;">${cat}</span> con recomendación <strong style="color:${veredicto === 'BUY' ? '#10b981' : '#eab308'};">${veredicto}</strong> (Probabilidad de Éxito V5: <strong>${prob}%</strong> · Racha de Score: <strong>${streak}</strong>).</li>
                       <li style="margin-bottom:10px;"><strong style="color:#10b981;">💧 Flujo CMF & Agotamiento Bajista:</strong> Chaikin Money Flow institucional <strong>${cmf}</strong> (> -0.15 requerido) con gatillo de giro de precio <strong>${giro}</strong>.</li>
                       <li style="margin-bottom:10px;"><strong style="color:#38bdf8;">📊 Estructura Táctica:</strong> ${tk} registra un Drawdown táctico de <strong>${dd}%</strong> con ratio riesgo-beneficio proyectado de <strong style="color:#10b981;">${rr}:1</strong>.</li>
-                      <li style="margin-bottom:10px;"><strong style="color:#ef4444;">🛡️ Orden Bracket Trii:</strong> Take Profit en <strong>+$${tpUSD} (+${tp}%)</strong>, Stop Loss en <strong>-$${slUSD} (-${sl}%)</strong> y TimeStop a los <strong>${timeStop} días hábiles</strong>.</li>
+                      <li style="margin-bottom:10px;"><strong style="color:#a78bfa;">🎯 Plan de Ejecución Táctico (Orden Bracket / OCO):</strong> Válido para Trii o cualquier broker internacional · Take Profit objetivo en <strong>+$${tpUSD} (+${tp}%)</strong>, Stop Loss defensivo en <strong>-$${slUSD} (-${sl}%)</strong> y TimeStop a los <strong>${timeStop} días hábiles</strong> (Ratio R:R: <strong>${rr}:1</strong>).</li>
                     </ul>
                   `;
                 })()

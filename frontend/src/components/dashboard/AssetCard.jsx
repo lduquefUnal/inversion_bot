@@ -51,6 +51,204 @@ const MODELS = [
   'gemini-2.5-flash',
 ];
 
+// ─── Diccionario Maestro de Rubros & Perfiles de Negocio ──────────────────────
+export const KNOWN_COMPANY_PROFILES = {
+  // CRIPTO, MINERÍA & BLOCKCHAIN HPC
+  CIFR: {
+    tipo: 'Actor disruptor de alto crecimiento en computación HPC e infraestructura blockchain',
+    rubro: 'Centros de datos de computación de alto rendimiento (HPC) y minería industrial de Bitcoin',
+    modelo: 'Opera infraestructura propia con energía renovable de bajo costo en Texas. Monetiza mediante recompensas de bloque y arriendo de capacidad de cómputo para Inteligencia Artificial.'
+  },
+  CLSK: {
+    tipo: 'Minero de Bitcoin líder en eficiencia energética y rápido crecimiento operativo',
+    rubro: 'Infraestructura de centros de datos y minería institucional de Bitcoin',
+    modelo: 'Centros de datos propios con energía limpia en EE.UU., monetizando mediante acumulación y venta de Bitcoin con uno de los costos de extracción más bajos de la industria.'
+  },
+  RIOT: {
+    tipo: 'Gigante y uno de los mayores operadores cotizados de minería de Bitcoin en Norteamérica',
+    rubro: 'Centros de datos industriales e infraestructura eléctrica a escala de gigavatios',
+    modelo: 'Monetiza mediante minería masiva de Bitcoin (facilidad Corsicana) y créditos de energía por estabilización de la red eléctrica en Texas.'
+  },
+  MARA: {
+    tipo: 'Líder indiscutido por capitalización bursátil y hashrate en minería de Bitcoin en Occidente',
+    rubro: 'Cómputo distribuido y gestión de tesorería corporativa en Bitcoin',
+    modelo: 'Estrategia de retención integral de Bitcoin minado y expansión de infraestructura de centros de datos globales.'
+  },
+  WULF: {
+    tipo: 'Operador de infraestructura digital de cero emisiones de carbono',
+    rubro: 'Centros de datos con energía nuclear e hidroeléctrica para Bitcoin e Inteligencia Artificial',
+    modelo: 'Monetiza aprovechando energía libre de carbono de base nuclear para minería de criptoactivos y provisión de hosting HPC para clusters de IA.'
+  },
+  COIN: {
+    tipo: 'Líder regulado y principal exchange de criptoactivos en EE.UU.',
+    rubro: 'Plataformas de corretaje, custodia institucional y servicios de infraestructura Web3',
+    modelo: 'Monetiza mediante comisiones de trading institucional/retail, custodia de más del 80% de los ETFs spot de Bitcoin/Ethereum y rendimientos por reservas de stablecoins (USDC).'
+  },
+  MSTR: {
+    tipo: 'Mayor tenedor corporativo de Bitcoin del mundo y desarrollador de software empresarial',
+    rubro: 'Vehículo de tesorería institucional apalancado sobre Bitcoin y software de Business Intelligence',
+    modelo: 'Emisión de deuda convertible y acciones para acumular reservas de Bitcoin a gran escala, respaldado por su flujo operativo de software corporativo.'
+  },
+
+  // SOLAR & ENERGÍA LIMPIA
+  ENPH: {
+    tipo: 'Líder global indiscutido y pionero tecnológico en microinversores solares a nivel de módulo (MLPE)',
+    rubro: 'Energía solar residencial distribuida, microinversores inteligentes IQ y baterías de almacenamiento',
+    modelo: 'Venta de ecosistemas integrados de generación fotovoltaica, baterías modulares y software de gestión energética inteligente a instaladores globales.'
+  },
+  SEDG: {
+    tipo: 'Gigante global y líder industrial en inversores solares con optimizadores de potencia DC',
+    rubro: 'Tecnología fotovoltaica comercial y residencial, baterías y cargadores de vehículos eléctricos',
+    modelo: 'Monetiza mediante optimizadores a nivel de panel que maximizan la cosecha de energía en techos residenciales y plantas comerciales en más de 130 países.'
+  },
+  FSLR: {
+    tipo: 'Mayor fabricante de módulos fotovoltaicos de EE.UU. y líder en tecnología de capa fina (CadTel)',
+    rubro: 'Paneles solares a escala de servicios públicos (Utility-Scale) y manufactura industrial protegida',
+    modelo: 'Venta de paneles a gran escala para parques solares de utilities, fuertemente beneficiado por subsidios de fabricación doméstica de la Ley IRA.'
+  },
+  RUN: {
+    tipo: 'Líder y mayor proveedor de energía solar residencial y baterías bajo suscripción en EE.UU.',
+    rubro: 'Energía solar distribuida como servicio (Solar-as-a-Service) y centrales eléctricas virtuales (VPP)',
+    modelo: 'Contratos PPA y leasing a 20-25 años con propietarios residenciales, generando ingresos recurrentes y monetizando la venta de energía a la red eléctrica.'
+  },
+  PLUG: {
+    tipo: 'Pionero de alto beta en la economía del hidrógeno verde y celdas de combustible',
+    rubro: 'Celdas de combustible de hidrógeno (PEM), electrolizadores y logística de repostaje',
+    modelo: 'Provisión de sistemas de energía para flotas de montacargas (Amazon, Walmart) y construcción de plantas de generación de hidrógeno líquido verde.'
+  },
+
+  // SEMICONDUCTORES & HARDWARE IA
+  NVDA: {
+    tipo: 'Monopolio tecnológico y líder absoluto mundial en computación acelerada e Inteligencia Artificial',
+    rubro: 'GPUs para centros de datos, arquitectura Blackwell/Hopper y plataforma de software CUDA',
+    modelo: 'Venta de procesadores gráficos y sistemas integrados de supercómputo (DGX, HGX) a proveedores cloud y corporaciones que entrenan modelos fundacionales de IA.'
+  },
+  TSM: {
+    tipo: 'Líder monopólico global en fundición y manufactura avanzada de obleas de silicio',
+    rubro: 'Fabricación de semiconductores de vanguardia (nodos de 3nm, 2nm y empaquetado CoWoS)',
+    modelo: 'Fundición exclusiva para Apple, Nvidia, AMD y Qualcomm; produce más del 90% de los chips más avanzados del mundo con márgenes operativos líderes.'
+  },
+  ARM: {
+    tipo: 'Líder monopólico mundial en diseño de arquitectura y licencias de procesadores',
+    rubro: 'Propiedad intelectual (IP) y arquitecturas RISC para silicio móvil, automotriz y servidores',
+    modelo: 'Cobro de regalías y licencias por cada chip fabricado con arquitectura ARM (presente en más del 99% de smartphones y en servidores cloud Neoverse).'
+  },
+  MU: {
+    tipo: 'Uno de los tres gigantes globales oligopólicos en memorias DRAM y almacenamiento NAND Flash',
+    rubro: 'Semiconductores de memoria de alto ancho de banda (HBM3e) y almacenamiento masivo para servidores',
+    modelo: 'Venta de módulos de memoria de alta densidad para aceleradores de IA (Nvidia H200/B200), computadoras y teléfonos inteligentes de gama alta.'
+  },
+  AMD: {
+    tipo: 'Segundo líder mundial en procesadores de alto rendimiento y principal retador en GPUs para IA',
+    rubro: 'CPUs para servidores (EPYC), procesadores cliente (Ryzen) y aceleradores de IA (Instinct MI300)',
+    modelo: 'Venta de procesadores fabless de alto margen para centros de datos, computación personal y consolas de videojuegos (PlayStation, Xbox).'
+  },
+  ON: {
+    tipo: 'Líder industrial en semiconductores de potencia y sensores inteligentes',
+    rubro: 'Carburo de silicio (SiC) y electrónica de potencia para movilidad eléctrica e industria',
+    modelo: 'Suministro de inversores de potencia y sensores de tracción para fabricantes de vehículos eléctricos, energías renovables y automatización.'
+  },
+  MCHP: {
+    tipo: 'Líder consolidado en microcontroladores embebidos y soluciones de conectividad',
+    rubro: 'Semiconductores de control analógico y microprocesadores embebidos para industria y defensa',
+    modelo: 'Catálogo diversificado con más de 125.000 clientes industriales, monetizando con productos de ciclo de vida prolongado y alta retención de clientes.'
+  },
+
+  // AEROESPACIAL, ESPACIO & ROBÓTICA
+  RKLB: {
+    tipo: 'Segundo líder en lanzamientos orbitales espaciales comerciales en EE.UU. tras SpaceX',
+    rubro: 'Cohetes de lanzamiento orbital (Electron, Neutron) y manufactura de satélites espaciales',
+    modelo: 'Contratos de transporte espacial para agencias gubernamentales (NASA, Space Force) y constelaciones comerciales, complementado con venta de componentes satelitales.'
+  },
+  LUNR: {
+    tipo: 'Contratista aeroespacial líder en exploración y servicios de logística lunar comercial',
+    rubro: 'Módulos de aterrizaje lunar (Nova-C), satélites de telecomunicaciones orbitales y cargas científicas',
+    modelo: 'Contratos comerciales de servicios de carga útil lunar (CLPS) de la NASA para el programa Artemis y servicios de comunicación en el espacio profundo.'
+  },
+  JOBY: {
+    tipo: 'Líder pionero en aeronaves eléctricas de despegue y aterrizaje vertical (eVTOL)',
+    rubro: 'Movilidad aérea urbana y taxis aéreos eléctricos de cero emisiones operativas',
+    modelo: 'Desarrollo y certificación comercial con la FAA para operar redes de transporte aéreo interurbano con el respaldo estratégico de Toyota y Delta Air Lines.'
+  },
+  ACHR: {
+    tipo: 'Retador de rápido crecimiento en aviación eléctrica urbana (eVTOL Midnight)',
+    rubro: 'Movilidad aérea urbana, manufactura aeroespacial y taxis aéreos comerciales',
+    modelo: 'Venta de flotas de aeronaves eléctricas a aerolíneas (United Airlines) y operación de rutas urbanas en asociación con Stellantis.'
+  },
+  ASTS: {
+    tipo: 'Líder pionero en conectividad satelital directa a teléfonos inteligentes estándar',
+    rubro: 'Constelaciones satelitales LEO de banda ancha celular directa al móvil (Direct-to-Cell)',
+    modelo: 'Alianzas con operadores móviles líderes (AT&T, Verizon, Vodafone, Google) para brindar cobertura celular 5G global sin requerir antenas modificadas.'
+  },
+
+  // FINTECH & LATAM
+  SOFI: {
+    tipo: 'Neobanco líder y plataforma fintech integrada de servicios financieros digitales en EE.UU.',
+    rubro: 'Banca digital, originación de créditos personales/estudiantiles, corretaje y tecnología bancaria (Galileo)',
+    modelo: 'Ecosistema de banca sin sucursales físicas que monetiza por margen financiero de préstamos, depósitos remunerados y cobro de licencias de infraestructura API.'
+  },
+  MELI: {
+    tipo: 'Líder indiscutido y gigante del comercio electrónico y fintech en América Latina',
+    rubro: 'Marketplace digital, logística de última milla (Mercado Envíos) y pagos digitales (Mercado Pago)',
+    modelo: 'Comisiones transaccionales de e-commerce, publicidad digital (Mercado Ads), procesamiento de pagos y servicios de crédito financiero en Brasil, México y Argentina.'
+  },
+  NU: {
+    tipo: 'Mayor plataforma de banca digital del mundo occidental por número de clientes activos',
+    rubro: 'Neobanca digital, tarjetas de crédito sin comisión, cuentas de ahorro y préstamos en LatAm',
+    modelo: 'Adquisición de clientes de muy bajo costo en Brasil, México y Colombia, monetizando mediante margen de intermediación financiera, tarjetas y seguros.'
+  },
+
+  // BIG TECH & ENTERPRISE SAAS
+  PLTR: {
+    tipo: 'Líder indiscutido en plataformas de software para operaciones de datos e Inteligencia Artificial',
+    rubro: 'Sistemas operativos de IA corporativa y gubernamental (AIP, Gotham, Foundry)',
+    modelo: 'Contratos plurianuales de alto valor con agencias de defensa nacional, inteligencia y empresas Fortune 500 para orquestación de datos y toma de decisiones con IA.'
+  },
+  TEAM: {
+    tipo: 'Líder indiscutido en software de colaboración corporativa, gestión de proyectos y DevOps',
+    rubro: 'Plataformas SaaS de productividad empresarial (Jira, Confluence, Trello, Loom)',
+    modelo: 'Suscripciones mensuales y anuales por usuario corporativo en la nube, con una base masiva de empresas tecnológicas y alta tasa de retención neta.'
+  },
+};
+
+// Generador inteligente de perfil de negocio (Tipo de empresa, líder/challenger, rubro y modelo)
+export const getCompanyBusinessProfile = (item) => {
+  const tk = String(item?.Ticker || '').toUpperCase().trim();
+  if (KNOWN_COMPANY_PROFILES[tk]) {
+    const prof = KNOWN_COMPANY_PROFILES[tk];
+    const nameLabel = item?.Nombre && item.Nombre !== tk ? `${item.Nombre} (${tk})` : tk;
+    return `${nameLabel} es una compañía posicionada como **${prof.tipo}**, especializada en el rubro de **${prof.rubro}**. Modelo de negocio: ${prof.modelo}`;
+  }
+
+  // Análisis heurístico inteligente basado en datos del activo
+  const nombre = item?.Nombre || tk;
+  const sector = item?.Sector || '';
+  const cat = item?.Categoria || '';
+  const beta = Number(item?.Beta_60D ?? item?.Beta ?? 1.2);
+  const isBlueChip = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'JPM', 'V', 'MA', 'COST', 'WMT', 'UNH', 'LLY', 'XOM'].includes(tk);
+  const isCrypto = tk.includes('-USD') || ['BTC', 'ETH', 'SOL'].includes(tk);
+
+  let standing = 'actor especializado y competidor relevante';
+  if (isBlueChip) standing = 'líder de mercado indiscutido y titán corporativo global';
+  else if (beta > 1.8) standing = 'jugador de alto crecimiento y beta expansivo';
+  else if (beta < 0.9) standing = 'compañía defensiva consolidada con flujos de caja predecibles';
+  else if (cat.includes('Cazador') || cat.includes('Sweet')) standing = 'compañía de mediana/gran capitalización con alta sensibilidad al ciclo de rebote';
+
+  let rubroTexto = sector || 'renta variable y activos cotizados de alta liquidez';
+  if (isCrypto) rubroTexto = 'criptoactivos descentralizados, tecnología de contratos inteligentes y protocolos de capa 1';
+  else if (nombre.toLowerCase().includes('solar') || nombre.toLowerCase().includes('energy') || tk === 'SEDG' || tk === 'ENPH') rubroTexto = 'transición energética, energía solar distribuida y equipamiento fotovoltaico';
+  else if (nombre.toLowerCase().includes('semi') || nombre.toLowerCase().includes('micro') || nombre.toLowerCase().includes('tech')) rubroTexto = 'tecnología de semiconductores, hardware avanzado y computación digital';
+  else if (nombre.toLowerCase().includes('pharma') || nombre.toLowerCase().includes('bio') || nombre.toLowerCase().includes('therap')) rubroTexto = 'biotecnología, desarrollo farmacéutico y ciencias de la salud';
+  else if (nombre.toLowerCase().includes('bank') || nombre.toLowerCase().includes('finan')) rubroTexto = 'servicios financieros, crédito e intermediación bancaria';
+
+  let modeloTexto = `Monetiza mediante la comercialización de productos y servicios especializados en su sector, respondiendo a la dinámica de mercado del perfil ${cat || 'táctico'}.`;
+  if (isCrypto) {
+    modeloTexto = 'Monetiza a través de la adopción de red, tarifas de gas por procesamiento de transacciones y seguridad criptográfica en consenso distribuido.';
+  }
+
+  return `${nombre} (${tk}) está posicionada como **${standing}** en el rubro de **${rubroTexto}**. ${modeloTexto}`;
+};
+
 // ─── Constructor del prompt cuantitativo V5 con pesos SHAP ──────────────────────
 export const buildPrompt = (item) => {
   const {
@@ -77,17 +275,19 @@ export const buildPrompt = (item) => {
   const slPrice = item.Trii_SL_USD ?? item.Stop_Loss_ATR_$ ?? item.Stop_Loss_ATR_USD ?? (priceNum ? (priceNum * (1 - slPct / 100)).toFixed(2) : 'N/A');
   const triiRr = item.Trii_RR_Ratio ?? (tpPct / Math.max(0.1, slPct)).toFixed(1);
   const gatilloEstado = item.Gatillo_Precio || (priceGiro === 1 ? 'Confirmado' : 'Pendiente');
-  const triiEstado = item.Trii_Estado || (veredictoVal === 'BUY' ? (cmf < -0.15 ? 'BLOQUEADO_LIQUIDACION_CMF' : ((scoreStreak || 0) < 1 ? 'ESPERANDO_RACHA_SCORE' : (gatilloEstado === 'Pendiente' ? 'ESPERANDO_GIRO_PRECIO' : 'EJECUTAR_TRII'))) : 'EN_SEGUIMIENTO');
+  const triiEstado = item.Trii_Estado || (veredictoVal === 'BUY' ? (cmf < -0.15 ? 'BLOQUEADO_LIQUIDACION_CMF' : ((scoreStreak || 0) < 1 ? 'ESPERANDO_RACHA_SCORE' : (gatilloEstado === 'Pendiente' ? 'ESPERANDO_GIRO_PRECIO' : 'EJECUTAR_COMPRA'))) : 'EN_SEGUIMIENTO');
   const sectorStr = Sector || (Nombre?.toLowerCase().includes('inc') || Nombre?.toLowerCase().includes('corp') ? 'Renta Variable / Tech & Growth' : 'Mercado Accionario US');
   const rsi2Val = rsi2 ?? rsi2Short ?? 'N/A';
+  const profileContext = getCompanyBusinessProfile(item);
 
   return `Eres un analista cuantitativo senior y gestor de portafolio táctico especializado en modelos de Machine Learning para swing trading.
-Modelo de Inferencia: LightGBM V5.0 Master Tactical (12 variables no redundantes seleccionadas bajo metodología Andréj Karpathy, calibración de probabilidad con Brier Score y ejecución con orden Bracket en broker Trii).
+Modelo de Inferencia: LightGBM V5.0 Master Tactical (12 variables no redundantes seleccionadas bajo metodología Andréj Karpathy, calibración de probabilidad con Brier Score y ejecución con orden Bracket / OCO en cualquier broker).
 
 FICHA TÁCTICA DEL ACTIVO — ${Ticker} (${Nombre}):
+• Contexto de Negocio: ${profileContext}
 • Perfil & Sector: ${sectorStr} | Categoría Táctica: ${Categoria}
 • Precio Actual: $${Precio_Actual} USD | Probabilidad de Éxito Modelo V5: ${prob}% | Veredicto: ${veredictoVal}
-• Estado de Ejecución Trii: ${triiEstado} | Ratio R:R: ${triiRr}x | Gatillo Giro: ${gatilloEstado}
+• Estado Operativo: ${triiEstado} | Ratio R:R: ${triiRr}x | Gatillo Giro: ${gatilloEstado}
 
 DESGLOSE DE VARIABLES V5 Y PESOS SHAP DEL MODELO:
 1. TP/ATR [SHAP: 30.5% peso]: ${tpAtr ? `${tpAtr}x` : '2.2x'} (Objetivo adaptativo normalizado por volatilidad)
@@ -103,25 +303,28 @@ DESGLOSE DE VARIABLES V5 Y PESOS SHAP DEL MODELO:
 11. RSI 2D Connors [SHAP: 2.3% peso]: ${rsi2Val} (Sobreventa extrema en 48 horas)
 12. Gatillo de Giro [SHAP: 0.1% peso]: ${gatilloEstado} (Absorción de mínimos o Higher Low diario)
 
-MOMENTUM PREDICTIVO Y GESTIÓN TRII:
+MOMENTUM PREDICTIVO Y GESTIÓN DE SALIDA (BRACKET / OCO):
 • Racha de Score ML: ${scoreStreak ?? 0} días consecutivos ${Number(scoreStreak ?? 0) >= 2 ? '(✅ Racha validada para entrada)' : '(⏳ Acumulando días de convicción)'}
 • Score-RSI (3D): ${scoreRsi != null ? scoreRsi : 'N/A'}
-• Parámetros Orden Bracket Trii:
+• Parámetros de Orden Bracket / OCO (Genéricos para Trii, Interactive Brokers, Hapi o cualquier broker):
   - Take Profit: +${tpPct}% ($${tpPrice} USD)
   - Stop Loss Defensivo ATR: -${slPct}% ($${slPrice} USD)
-  - TimeStop (Expiración Forzosa): ${limiteDias} días hábiles
+  - TimeStop (Expiración Táctica): ${limiteDias} días hábiles
   - Ratio Riesgo/Beneficio: ${triiRr}:1
 
 INSTRUCCIONES DE REDACCIÓN:
-1. Actúa con el máximo rigor cuantitativo. Sin generalidades ni lenguaje superficial.
-2. Analiza explícitamente cómo los pesos SHAP dominantes (TP/ATR, ATR %, Distancia SMA200, CMF y Bear Power Delta) fundamentan la señal.
-3. Si CMF < -0.15 o la racha es < 2 días, explica por qué la ejecución debe esperar y no precipitarse.
-4. Explica con claridad la orden Bracket Trii para que el inversionista sepa exactamente qué parámetros configurar.
+1. En RUBRO & PERFIL DE NEGOCIO: Describe explícitamente:
+   a) El tipo de empresa y posición competitiva (si es líder mundial, gigante consolidado, retador de alto crecimiento o actor emergente especializado).
+   b) El rubro e industria específica.
+   c) Su modelo de negocio, generación de ingresos y ventaja competitiva.
+2. En DRIVERS SHAP: Analiza explícitamente cómo los pesos SHAP dominantes (TP/ATR, ATR %, Distancia SMA200, CMF y Bear Power Delta) fundamentan la señal alcista con números exactos.
+3. En FACTORES DE RIESGO: Analiza los riesgos según el flujo CMF (${cmf ?? 'N/A'}), correlación vs SPY o sobreextensión bajista.
+4. En PLAN DE EJECUCIÓN TÁCTICO: Redacta un plan genérico aplicable a cualquier broker (Trii, Interactive Brokers, Hapi, Charles Schwab, etc.) detallando entrada sujeta al gatillo, precio exacto de TP, SL y TimeStop en días.
 
 ESTRUCTURA EXACTA REQUERIDA:
 
 🏢 **RUBRO & PERFIL DE NEGOCIO:**
-[1-2 líneas concisas: modelo de negocio y catalizador sectorial de ${Ticker} (${Nombre}).]
+[2-3 líneas: posición competitiva (¿Líder, challenger o emergente?), rubro e industria exacta, y modelo de negocio/monetización de ${Ticker} (${Nombre}).]
 
 📊 **DRIVERS CUANTITATIVOS SHAP (CASO BULL):**
 [3-4 líneas: analiza el peso de las variables SHAP principales (ej. ratio TP/ATR, compresión GARCH, racha de score de ${scoreStreak ?? 0}d y agotamiento vendedor Bear Power). Cita números exactos.]
@@ -129,10 +332,10 @@ ESTRUCTURA EXACTA REQUERIDA:
 ⚠️ **FACTORES DE RIESGO & FILTROS BEAR:**
 [2 líneas: riesgos clave según el flujo CMF (${cmf ?? 'N/A'}), correlación vs SPY o nivel de sobreextensión bajista.]
 
-🎯 **PLAN DE EJECUCIÓN BRACKET TRII:**
-[2 líneas: estado actual (${triiEstado}), entrada condicionada al gatillo (${gatilloEstado}), programando orden bracket con TP en $${tpPrice} (+${tpPct}%), SL en $${slPrice} (-${slPct}%) y TimeStop de ${limiteDias}d (Ratio ${triiRr}x).]
+🎯 **PLAN DE EJECUCIÓN TÁCTICO (ORDEN BRACKET / OCO):**
+[2-3 líneas: plan genérico para Trii o cualquier broker con orden condicional/bracket. Detalla estado (${triiEstado}), entrada (${gatilloEstado}), TP en $${tpPrice} (+${tpPct}%), SL en $${slPrice} (-${slPct}%) y TimeStop de ${limiteDias}d (Ratio ${triiRr}x).]
 
-Español. Tono analítico, institucional y conciso. Máximo 220 palabras.`;
+Español. Tono analítico, institucional y conciso. Máximo 230 palabras.`;
 };
 
 // ─── Generador algorítmico de respaldo cuantitativo V5 ────────────────────────
@@ -156,19 +359,25 @@ export const generateQuantitativeThesisFallback = (item) => {
   const triiRr = item.Trii_RR_Ratio ?? (tpPct / Math.max(0.1, slPct)).toFixed(1);
   const gatilloEstado = item.Gatillo_Precio || (priceGiro === 1 ? 'Confirmado' : 'Pendiente');
   const cmfVal = cmf != null ? Number(cmf) : null;
-  const triiEstado = item.Trii_Estado || (cmfVal < -0.15 ? 'BLOQUEADO_LIQUIDACION_CMF' : ((scoreStreak || 0) < 1 ? 'ESPERANDO_RACHA_SCORE' : (gatilloEstado === 'Pendiente' ? 'ESPERANDO_GIRO_PRECIO' : 'EJECUTAR_TRII')));
+  const triiEstado = item.Trii_Estado || (cmfVal < -0.15 ? 'BLOQUEADO_LIQUIDACION_CMF' : ((scoreStreak || 0) < 1 ? 'ESPERANDO_RACHA_SCORE' : (gatilloEstado === 'Pendiente' ? 'ESPERANDO_GIRO_PRECIO' : 'EJECUTAR_COMPRA')));
+  const companyProfile = getCompanyBusinessProfile(item);
 
   return `🏢 **RUBRO & PERFIL DE NEGOCIO:**
-${Ticker} (${Nombre}) cotiza en el sector de ${Sector || 'Renta Variable US'}. Clasificado bajo la categoría cuantitativa ${Categoria}.
+${companyProfile}
 
 📊 **DRIVERS CUANTITATIVOS SHAP (CASO BULL):**
-El modelo LightGBM V5.0 asigna una probabilidad predictiva del ${prob}%. La decisión está gobernada por el ratio TP/ATR de ${tpAtr ? `${tpAtr}x` : '2.2x'} (30.5% peso SHAP) y la volatilidad ATR de ${atrPct ?? atrRisk ?? 'moderada'}% (12.4% SHAP). Acumula una racha de score de ${scoreStreak || 0}d ${Number(scoreStreak || 0) >= 2 ? 'con confirmación alcista consecutiva' : 'en fase de acumulación temprana'} con régimen de volatilidad GARCH de ${garch ? `${garch}x` : '1.0x'}.
+El modelo LightGBM V5.0 asigna una probabilidad predictiva del ${prob}%. La decisión táctica está gobernada por el ratio TP/ATR de ${tpAtr ? `${tpAtr}x` : '2.2x'} (30.5% peso SHAP) y la volatilidad ATR de ${atrPct ?? atrRisk ?? 'moderada'}% (12.4% SHAP). Acumula una racha de score de ${scoreStreak || 0}d ${Number(scoreStreak || 0) >= 2 ? 'con confirmación alcista consecutiva' : 'en fase de acumulación temprana'} con régimen de volatilidad GARCH de ${garch ? `${garch}x` : '1.0x'}.
 
 ⚠️ **FACTORES DE RIESGO & FILTROS BEAR:**
 El flujo de dinero institucional CMF (20D) se ubica en ${cmfVal != null ? cmfVal.toFixed(3) : 'N/A'} ${cmfVal < -0.15 ? '(⚠️ alerta por presión vendedora forzosa)' : '(rango controlado > -0.15)'} con drawdown táctico de ${dd10w ?? drawdown ?? 'N/A'}% en 10 semanas.
 
-🎯 **PLAN DE EJECUCIÓN BRACKET TRII:**
-Estado operativo: ${triiEstado}. Entrada sujeta al gatillo (${gatilloEstado}), con orden bracket programada: Take Profit en $${tpPrice} (+${tpPct}%), Stop Loss en $${slPrice} (-${slPct}%) y TimeStop de seguridad a los ${limiteDias} días hábiles (Ratio R:R: ${triiRr}:1).`;
+🎯 **PLAN DE EJECUCIÓN TÁCTICO (ORDEN BRACKET / OCO):**
+Configuración genérica válida para Trii, Interactive Brokers, Hapi o cualquier broker con órdenes condicionales OCO:
+• Estado Operativo: ${triiEstado} (Gatillo de precio: ${gatilloEstado})
+• Take Profit Objetivo: $${tpPrice} USD (+${tpPct}%)
+• Stop Loss Defensivo ATR: $${slPrice} USD (-${slPct}%)
+• TimeStop Táctico: ${limiteDias} días hábiles (expiración temporal por gestión de capital)
+• Ratio Riesgo/Beneficio: ${triiRr}:1`;
 };
 
 // ─── Hook: llama Gemini con fallback cuantitativo V5 ─────────────────────────
