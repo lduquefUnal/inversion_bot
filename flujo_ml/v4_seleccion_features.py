@@ -47,7 +47,10 @@ def seleccionar_features():
         "Dist_SMA50_%", "Drawdown_10W_%", "Drawdown_5W_%", "Dist_52W_High_%",
         "MACD_Hist", "RSI2_Trend", "Vol_Ratio_20_50", "Kalman_Slope", "GARCH_Regime",
         "RR_Ratio", "ATR_Risk_Pct", "TP_ATR", "Abs_Drawdown", "RSI2_DD", "RSI2_RSI14",
-        "FCF_log", "Beta"
+        "FCF_log", "Beta",
+        # Nuevas features V5 Karpathy
+        "CMF_20", "CMF_Slope_3D", "Bear_Power_Delta_3D", "Bull_Power_ATR",
+        "Price_Reversal_Giro", "Reversal_Higher_Low", "RS_vs_SPY_5D"
     ]
 
     # Filtrar solo columnas presentes en train_df
@@ -100,14 +103,31 @@ def seleccionar_features():
     df_rank.to_csv(RANKING_PATH, index=False)
     log.info(f"Ranking guardado en {RANKING_PATH}")
 
-    # Seleccionar Top 12 características (evitando redundancias idénticas)
-    selected_features = df_rank["feature"].head(12).tolist()
+    # Selección no-redundante Karpathy: filtrar correlaciones excesivas (>0.80) entre seleccionadas
+    selected_features = []
+    # Matriz de correlación entre candidatas
+    corr_matrix = train_df[candidate_cols].corr(method="spearman").abs()
 
-    # Garantizar que al menos estén presentes las variables tácticas clave V4
-    tactical_must = ["Dist_SMA50_%", "Drawdown_10W_%", "Drawdown_5W_%"]
-    for t in tactical_must:
-        if t in candidate_cols and t not in selected_features:
-            selected_features.append(t)
+    for feat in df_rank["feature"]:
+        if len(selected_features) >= 12:
+            break
+        # Verificar que no sea excesivamente redundante con ninguna ya seleccionada
+        too_correlated = False
+        for s_f in selected_features:
+            if s_f in corr_matrix.columns and feat in corr_matrix.columns:
+                if corr_matrix.loc[feat, s_f] > 0.80:
+                    too_correlated = True
+                    break
+        if not too_correlated:
+            selected_features.append(feat)
+
+    # Si faltan para llegar a 12, completar con las siguientes mejores
+    if len(selected_features) < 12:
+        for feat in df_rank["feature"]:
+            if feat not in selected_features:
+                selected_features.append(feat)
+            if len(selected_features) >= 12:
+                break
 
     selected_info = {
         "n_selected": len(selected_features),

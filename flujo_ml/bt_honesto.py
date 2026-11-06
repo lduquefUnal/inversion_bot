@@ -175,6 +175,12 @@ def load_fundamentals():
 # ── Features desde OHLCV (consistente train/test) ────────────────────────────
 def compute_features(ohlcv):
     rows = []
+    spy = ohlcv[ohlcv["Ticker"] == "SPY"].sort_values("Date")[["Date", "Close"]].drop_duplicates("Date")
+    spy_ret_map = {}
+    if not spy.empty:
+        spy["SPY_Ret5"] = spy["Close"].pct_change(5) * 100.0
+        spy_ret_map = dict(zip(spy["Date"], spy["SPY_Ret5"]))
+
     for ticker, g in ohlcv.groupby("Ticker"):
         g = g.sort_values("Date").reset_index(drop=True)
         if len(g) < 60:
@@ -183,10 +189,11 @@ def compute_features(ohlcv):
         g["RSI_7"] = rsi(g["Close"], 7)
         g["RSI_14"] = rsi(g["Close"], 14)
         g["ATR_14"] = atr(g)
-        g["ATR_%"] = g["ATR_14"] / g["Close"] * 100.0
+        g["ATR_%"] = g["ATR_14"] / (g["Close"] + 1e-9) * 100.0
         g["SMA_200"] = g["Close"].rolling(200).mean()
         g["SMA_50"] = g["Close"].rolling(50).mean()
         g["EMA_20"] = g["Close"].ewm(span=20, adjust=False).mean()
+        g["EMA_13"] = g["Close"].ewm(span=13, adjust=False).mean()
         g["EMA_12"] = g["Close"].ewm(span=12, adjust=False).mean()
         g["EMA_26"] = g["Close"].ewm(span=26, adjust=False).mean()
         macd = g["EMA_12"] - g["EMA_26"]
@@ -202,6 +209,19 @@ def compute_features(ohlcv):
         g["Vol_Ratio_20_50"] = g["Vol_SMA20"] / (vol_sma50 + 1e-5)
 
         g["Return_5D_%"] = g["Close"].pct_change(5) * 100.0
+
+        # CMF 20
+        mfm = ((g["Close"] - g["Low"]) - (g["High"] - g["Close"])) / (g["High"] - g["Low"] + 1e-9)
+        mfv = mfm * g["Volume"]
+        g["CMF_20"] = mfv.rolling(20).sum() / (g["Volume"].rolling(20).sum() + 1e-9)
+
+        # Elder-Ray Bear Power Delta 3D
+        bear_power = (g["Low"] - g["EMA_13"]) / (g["ATR_14"] + 1e-9)
+        g["Bear_Power_Delta_3D"] = bear_power.diff(3)
+
+        # Acción de Precio / Giro
+        reversal_hl = (g["Low"] > g["Low"].shift(1)).astype(int)
+        g["Price_Reversal_Giro"] = ((g["Close"] > g["Close"].shift(1)) | (reversal_hl == 1)).astype(int)
 
         hi52 = g["High"].rolling(252, min_periods=40).max()
         hi10w = g["High"].rolling(50, min_periods=20).max()
@@ -231,8 +251,12 @@ def compute_features(ohlcv):
             )
             if cat is None:
                 continue
+            date_val = r["Date"]
+            spy_ret = spy_ret_map.get(date_val, 0.0)
+            rs_vs_spy = r["Return_5D_%"] - spy_ret if pd.notnull(spy_ret) else 0.0
+
             rows.append({
-                "Date": r["Date"], "Ticker": ticker, "Categoria": cat, "Close": r["Close"],
+                "Date": date_val, "Ticker": ticker, "Categoria": cat, "Close": r["Close"],
                 "High": r["High"], "Low": r["Low"],
                 "Cat_Sweet_Spot": int(cat == "Sweet Spot"),
                 "Cat_Cazador_Dips": int(cat == "Cazador Dips"),
@@ -247,7 +271,12 @@ def compute_features(ohlcv):
                 "MACD_Hist": r["MACD_Hist"], "RSI2_Trend": r["RSI2_Trend"],
                 "Vol_Ratio_20_50": r["Vol_Ratio_20_50"], "Kalman_Slope": r["Kalman_Slope"],
                 "GARCH_Regime": r["GARCH_Regime"], "Beta_60D": r["Beta_60D"],
+                "CMF_20": r.get("CMF_20", 0.0),
+                "Bear_Power_Delta_3D": r.get("Bear_Power_Delta_3D", 0.0),
+                "Price_Reversal_Giro": r.get("Price_Reversal_Giro", 1),
+                "RS_vs_SPY_5D": rs_vs_spy,
             })
+    return pd.DataFrame(rows)
     return pd.DataFrame(rows)
 
 
@@ -284,6 +313,12 @@ def build_dataset(ohlcv, horizon=11):
     """Reconstruye dataset con MISMAS features que compute_features y target TP/SL
     (SL-prioridad, ventana horizon, igual a 1_extraer_dataset.py)."""
     rows = []
+    spy = ohlcv[ohlcv["Ticker"] == "SPY"].sort_values("Date")[["Date", "Close"]].drop_duplicates("Date")
+    spy_ret_map = {}
+    if not spy.empty:
+        spy["SPY_Ret5"] = spy["Close"].pct_change(5) * 100.0
+        spy_ret_map = dict(zip(spy["Date"], spy["SPY_Ret5"]))
+
     for ticker, g in ohlcv.groupby("Ticker"):
         g = g.sort_values("Date").reset_index(drop=True)
         if len(g) < 60:
@@ -292,10 +327,11 @@ def build_dataset(ohlcv, horizon=11):
         g["RSI_7"] = rsi(g["Close"], 7)
         g["RSI_14"] = rsi(g["Close"], 14)
         g["ATR_14"] = atr(g)
-        g["ATR_%"] = g["ATR_14"] / g["Close"] * 100.0
+        g["ATR_%"] = g["ATR_14"] / (g["Close"] + 1e-9) * 100.0
         g["SMA_200"] = g["Close"].rolling(200).mean()
         g["SMA_50"] = g["Close"].rolling(50).mean()
         g["EMA_20"] = g["Close"].ewm(span=20, adjust=False).mean()
+        g["EMA_13"] = g["Close"].ewm(span=13, adjust=False).mean()
         g["EMA_12"] = g["Close"].ewm(span=12, adjust=False).mean()
         g["EMA_26"] = g["Close"].ewm(span=26, adjust=False).mean()
         macd = g["EMA_12"] - g["EMA_26"]
@@ -311,6 +347,19 @@ def build_dataset(ohlcv, horizon=11):
         g["Vol_Ratio_20_50"] = g["Vol_SMA20"] / (vol_sma50 + 1e-5)
 
         g["Return_5D_%"] = g["Close"].pct_change(5) * 100.0
+
+        # CMF 20
+        mfm = ((g["Close"] - g["Low"]) - (g["High"] - g["Close"])) / (g["High"] - g["Low"] + 1e-9)
+        mfv = mfm * g["Volume"]
+        g["CMF_20"] = mfv.rolling(20).sum() / (g["Volume"].rolling(20).sum() + 1e-9)
+
+        # Elder-Ray Bear Power Delta 3D
+        bear_power = (g["Low"] - g["EMA_13"]) / (g["ATR_14"] + 1e-9)
+        g["Bear_Power_Delta_3D"] = bear_power.diff(3)
+
+        # Acción de Precio / Giro
+        reversal_hl = (g["Low"] > g["Low"].shift(1)).astype(int)
+        g["Price_Reversal_Giro"] = ((g["Close"] > g["Close"].shift(1)) | (reversal_hl == 1)).astype(int)
 
         hi52 = g["High"].rolling(252, min_periods=40).max()
         hi10w = g["High"].rolling(50, min_periods=20).max()
@@ -358,8 +407,12 @@ def build_dataset(ohlcv, horizon=11):
                     break
             days_old = (max_d - r["Date"]).days
             w = math.exp(-math.log(2) * (days_old / HALFLIFE_DAYS))
+            date_val = r["Date"]
+            spy_ret = spy_ret_map.get(date_val, 0.0)
+            rs_vs_spy = r["Return_5D_%"] - spy_ret if pd.notnull(spy_ret) else 0.0
+
             rows.append({
-                "Date": r["Date"], "Ticker": ticker, "Categoria": cat,
+                "Date": date_val, "Ticker": ticker, "Categoria": cat,
                 "Cat_Sweet_Spot": int(cat == "Sweet Spot"),
                 "Cat_Cazador_Dips": int(cat == "Cazador Dips"),
                 "Cat_Recup_Rapida": int(cat == "Recup. Rapida"),
@@ -374,6 +427,10 @@ def build_dataset(ohlcv, horizon=11):
                 "MACD_Hist": r["MACD_Hist"], "RSI2_Trend": r["RSI2_Trend"],
                 "Vol_Ratio_20_50": r["Vol_Ratio_20_50"], "Kalman_Slope": r["Kalman_Slope"],
                 "GARCH_Regime": r["GARCH_Regime"], "Beta_60D": r["Beta_60D"],
+                "CMF_20": r.get("CMF_20", 0.0),
+                "Bear_Power_Delta_3D": r.get("Bear_Power_Delta_3D", 0.0),
+                "Price_Reversal_Giro": r.get("Price_Reversal_Giro", 1),
+                "RS_vs_SPY_5D": rs_vs_spy,
                 "Sample_Weight": round(w, 4), "Target": target,
                 "TP_Pct": p["tp"] * 100.0, "SL_Pct": p["sl"] * 100.0,
             })
@@ -384,12 +441,14 @@ def build_dataset(ohlcv, horizon=11):
 
 
 # ── Simulación honesta ───────────────────────────────────────────────────────
-def simulate_signals(feat_df, prob_col, umbral, max_trades_per_ticker=1, dedupe_same_day=True, modo_timeout=False):
+def simulate_signals(feat_df, prob_col, umbral, max_trades_per_ticker=1, dedupe_same_day=True, modo_timeout=False,
+                     use_v5_gates=False, min_cmf=-0.15, require_reversal=False, timestop_days=None):
     """
     Recorre día a día la ventana de test. Abre trade al close del día de señal.
     Señales NO repetidas: máx `max_trades_per_ticker` por ticker.
     Si `modo_timeout=True`, ignora TP y SL intermedias y sostiene la posición
     hasta agotar el límite de días (TimeStop) o la fecha actual si está abierto.
+    Si `use_v5_gates=True`, aplica filtros anti-cuchillos de CMF y Giro de Precio.
     """
     feat = feat_df.copy()
     feat["prob"] = prob_col
@@ -401,13 +460,24 @@ def simulate_signals(feat_df, prob_col, umbral, max_trades_per_ticker=1, dedupe_
         count = 0
         for i, row in g.iterrows():
             if open_pos is None:
-                if row["prob"] >= umbral and count < max_trades_per_ticker:
+                pasa_prob = (row["prob"] >= umbral)
+                pasa_v5 = True
+                if use_v5_gates:
+                    cmf_val = row.get("CMF_20", 0.0)
+                    reversal_val = row.get("Price_Reversal_Giro", 1)
+                    if cmf_val < min_cmf:
+                        pasa_v5 = False
+                    if require_reversal and reversal_val == 0:
+                        pasa_v5 = False
+
+                if pasa_prob and pasa_v5 and count < max_trades_per_ticker:
                     cat = row["Categoria"]
                     p = CAT_PARAMS.get(cat, {"tp": 0.10, "sl": 0.07, "limite_dias": 11})
+                    lim = timestop_days if timestop_days else p["limite_dias"]
                     open_pos = {
                         "Ticker": ticker, "Categoria": cat, "prob": row["prob"],
                         "Fecha_Entrada": row["Date"], "Precio_Entrada": row["Close"],
-                        "tp_p": p["tp"], "sl_p": p["sl"], "limite": p["limite_dias"], "dias": 0,
+                        "tp_p": p["tp"], "sl_p": p["sl"], "limite": lim, "dias": 0,
                     }
             else:
                 open_pos["dias"] += 1

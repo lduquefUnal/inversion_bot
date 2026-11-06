@@ -3,31 +3,104 @@
     "stage_1": {
       "status": "PASS",
       "tickers_count": 440,
-      "total_rows": 577704,
+      "total_rows": 581688,
       "min_date": "2021-08-08",
-      "max_date": "2026-10-25"
+      "max_date": "2026-11-06"
     },
     "stage_2": {
       "status": "PASS",
-      "total_samples": 270169,
+      "total_samples": 287464,
       "unique_tickers": 440,
       "category_distribution": {
-        "Cuchillos Cayendo": 133668,
-        "Recup. Rapida": 49631,
-        "Sweet Spot": 49617,
-        "Cazador Dips": 37253
+        "Cuchillos Cayendo": 142284,
+        "Sweet Spot": 53569,
+        "Recup. Rapida": 52054,
+        "Cazador Dips": 39557
       },
       "nan_counts": {},
       "inf_counts": {},
       "degenerate_constant_cols": [],
       "outlier_warnings": {
-        "ATR_%": "Escala extrema o atípico desproporcionado: min=0.0569476568244445, max=7992119.180956714",
+        "ATR_%": "Escala extrema o atípico desproporcionado: min=0.0569476568237423, max=7992118.570031908",
         "MACD_Hist": "Escala extrema o atípico desproporcionado: min=-734907.113934069, max=1026108.3203697136",
-        "ATR_Risk_Pct": "Escala extrema o atípico desproporcionado: min=0.113895313648889, max=15984238.361913428",
+        "ATR_Risk_Pct": "Escala extrema o atípico desproporcionado: min=0.1138953136474847, max=15984237.140063817",
         "Abs_Drawdown": "Drawdown positivo atípico: max=99.9999693375732%",
         "RSI2_RSI14": "RSI fuera de rango [0,100]: min=-99.99991954029144, max=98.67633718738516"
       },
       "logic_errors": []
+    },
+    "stage_3": {
+      "status": "PASS",
+      "selected_count": 12,
+      "selected_features": [
+        "TP_ATR",
+        "ATR_%",
+        "Drawdown_10W_%",
+        "Dist_SMA200_%",
+        "CMF_20",
+        "Bear_Power_Delta_3D",
+        "Price_Reversal_Giro",
+        "RS_vs_SPY_5D",
+        "RSI_2",
+        "MACD_Hist",
+        "GARCH_Regime",
+        "Vol_Ratio_20_50"
+      ],
+      "top_3_spearman": [
+        {
+          "feature": "TP_ATR",
+          "spearman": -0.2756
+        },
+        {
+          "feature": "ATR_%",
+          "spearman": 0.2305
+        },
+        {
+          "feature": "ATR_Risk_Pct",
+          "spearman": 0.2305
+        }
+      ],
+      "top_3_importance": [
+        {
+          "feature": "TP_ATR",
+          "importance": 1998.11
+        },
+        {
+          "feature": "GARCH_Regime",
+          "importance": 382.38
+        },
+        {
+          "feature": "Dist_SMA200_%",
+          "importance": 335.78
+        }
+      ]
+    },
+    "stage_4": {
+      "status": "PASS",
+      "f0.5_oos": 0.1471,
+      "win_rate_%": 44.4,
+      "ea_anual_%": 56.7,
+      "total_trades": 9,
+      "full_metrics": {
+        "threshold": 0.55,
+        "f0.5": 0.1471,
+        "win_rate_%": 44.4,
+        "ea_anual_%": 56.7,
+        "pnl_promedio_%": 2.45,
+        "total_trades": 9,
+        "freq_anual": 18.6,
+        "wins": 4,
+        "losses": 5
+      }
+    },
+    "stage_5": {
+      "status": "PASS",
+      "modelo_version": "V4.0_Tactical",
+      "total_tickers": 440,
+      "buy_signals": 1,
+      "top_buyers": [
+        "CIFR"
+      ]
     }
   },
   "overall_passed": true
