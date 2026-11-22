@@ -14,18 +14,18 @@
     "GARCH_Regime",
     "Vol_Ratio_20_50"
   ],
-  "best_threshold": 0.6,
+  "best_threshold": 0.58,
   "metrics_oos": {
-    "threshold": 0.6,
+    "threshold": 0.58,
     "f0.5": 0.1339,
     "win_rate_%": 100.0,
-    "ea_anual_%": 67.1,
+    "ea_anual_%": 64.1,
     "pnl_promedio_%": 9.12,
     "total_trades": 3,
-    "freq_anual": 5.9,
+    "freq_anual": 5.7,
     "wins": 3,
     "losses": 0
   },
   "train_samples": 235232,
-  "test_samples": 36136
+  "test_samples": 37484
 }
